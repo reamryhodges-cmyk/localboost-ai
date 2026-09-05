@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LocalBoost AI — Your Social Media, Without the Hassle</title>
+<meta name="description" content="LocalBoost AI creates professional social media content for local businesses using AI.">
+<style>
+:root{--bg:#071218;--card:#0d1c24;--green:#48f58b;--white:#f7faf9;--muted:#a9b7bb;--line:#20323a}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--white);line-height:1.5}
+nav{display:flex;justify-content:space-between;align-items:center;padding:22px 7%;border-bottom:1px solid var(--line);position:sticky;top:0;background:rgba(7,18,24,.94);backdrop-filter:blur(10px);z-index:5}
+.logo{font-size:23px;font-weight:800}.logo span{color:var(--green)}nav a{color:var(--white);text-decoration:none;margin-left:24px;font-size:14px}
+.btn{display:inline-block;background:var(--green);color:#06100b;padding:13px 20px;border-radius:10px;text-decoration:none;font-weight:800}
+.hero{padding:90px 7% 75px;max-width:1100px;margin:auto;text-align:center}
+.eyebrow{color:var(--green);font-weight:800;letter-spacing:2px;text-transform:uppercase;font-size:13px}
+h1{font-size:clamp(44px,7vw,78px);line-height:.98;margin:18px 0}.hero h1 span{color:var(--green)}
+.hero p{max-width:680px;margin:0 auto 30px;color:var(--muted);font-size:19px}
+section{padding:65px 7%;max-width:1200px;margin:auto}h2{text-align:center;font-size:38px;margin:0 0 12px} .lead{text-align:center;color:var(--muted);max-width:650px;margin:0 auto 35px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:18px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:27px}
+.card h3{margin-top:0;font-size:22px}.price{font-size:42px;font-weight:900}.price small{font-size:14px;color:var(--muted);font-weight:400}
+.card li{margin:10px 0;color:#d7e0e1}.card ul{padding-left:20px}.popular{border:2px solid var(--green);position:relative}.tag{position:absolute;right:18px;top:-14px;background:var(--green);color:#06100b;padding:5px 10px;border-radius:20px;font-size:11px;font-weight:900}
+.examples .post{min-height:170px;background:linear-gradient(145deg,#122831,#0a151b);border-radius:16px;padding:22px;border:1px solid var(--line);display:flex;flex-direction:column;justify-content:flex-end}.post strong{font-size:24px}.post span{color:var(--green);font-weight:800;margin-top:8px}
+.steps{counter-reset:step}.step:before{counter-increment:step;content:counter(step);display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--green);color:#06100b;font-weight:900;margin-bottom:15px}
+.cta{background:var(--green);color:#06100b;border-radius:24px;text-align:center;padding:55px 25px;margin:40px 7% 70px}.cta h2{color:#06100b}.cta p{max-width:600px;margin:0 auto 25px}.cta .btn{background:#06100b;color:var(--white)}
+footer{border-top:1px solid var(--line);padding:28px 7%;color:var(--muted);display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+@media(max-width:700px){nav .links{display:none}.hero{padding-top:65px}h2{font-size:30px}}
+</style>
+</head>
+<body>
+<nav>
+  <div class="logo">LB <span>LocalBoost AI</span></div>
+  <div class="links"><a href="#services">Services</a><a href="#pricing">Pricing</a><a href="#examples">Examples</a><a href="#contact">Contact</a></div>
+  <a class="btn" href="#pricing">Choose a Package</a>
+</nav>
+
+<header class="hero">
+  <div class="eyebrow">AI-powered content for local businesses</div>
+  <h1>Get more customers with social media <span>that works.</span></h1>
+  <p>We create professional, engaging social-media content using AI — so local business owners can spend less time posting and more time doing what they do best.</p>
+  <a class="btn" href="#pricing">See Packages</a>
+</header>
+
+<section id="services">
+  <h2>What we do</h2>
+  <p class="lead">Simple content that keeps your business visible, professional and ready for the next enquiry.</p>
+  <div class="grid">
+    <div class="card"><h3>📱 Social Posts</h3><p>Ready-to-post Facebook and Instagram content tailored to your business.</p></div>
+    <div class="card"><h3>✍️ Captions</h3><p>Clear, persuasive captions written to encourage enquiries and bookings.</p></div>
+    <div class="card"><h3>🎯 Promotions</h3><p>Offers, seasonal campaigns and promotional ideas designed around your services.</p></div>
+    <div class="card"><h3>⏱️ Time Saved</h3><p>Stop staring at a blank screen wondering what to post. We handle the content.</p></div>
+  </div>
+</section>
+
+<section id="pricing">
+  <h2>Simple pricing</h2>
+  <p class="lead">Start small. See the quality. Upgrade when you're ready.</p>
+  <div class="grid">
+    <div class="card"><h3>Starter</h3><div class="price">£49 <small>one-off</small></div><ul><li>10 social posts</li><li>10 captions</li><li>Hashtags included</li><li>48-hour delivery</li></ul><a class="btn" href="https://buy.stripe.com/8x228r5midF86Sc9ZUbsc00" target="_blank" rel="noopener">Pay £49</a></div>
+    <div class="card popular"><div class="tag">MOST POPULAR</div><h3>Growth</h3><div class="price">£99 <small>/ month</small></div><ul><li>12 posts every month</li><li>Captions + hashtags</li><li>Promotional content</li><li>Monthly content plan</li></ul><a class="btn" href="https://buy.stripe.com/9B65kD2a630u4K46NIbsc01" target="_blank" rel="noopener">Pay £99/month</a></div>
+    <div class="card"><h3>Pro</h3><div class="price">£149 <small>/ month</small></div><ul><li>20 posts every month</li><li>Captions + hashtags</li><li>Promotional campaigns</li><li>Customer-review posts</li><li>Monthly content plan</li></ul><a class="btn" href="https://buy.stripe.com/bJeeVddSO9oSgsM9ZUbsc02" target="_blank" rel="noopener">Pay £149/month</a></div>
+  </div>
+</section>
+
+<section id="examples" class="examples">
+  <h2>Example content</h2>
+  <p class="lead">Content can be adapted for trades, home services, automotive, fitness, hospitality and other local businesses.</p>
+  <div class="grid">
+    <div class="post"><strong>Trusted Local Builders</strong><span>Extensions • Renovations • Free Quotes</span></div>
+    <div class="post"><strong>Transform Your Garden</strong><span>Patios • Fencing • Garden Design</span></div>
+    <div class="post"><strong>Quality Bathrooms</strong><span>Design • Supply • Installation</span></div>
+    <div class="post"><strong>MOT & Servicing</strong><span>Keep your car running smoothly</span></div>
+    <div class="post"><strong>Kitchens Built Around You</strong><span>Design • Supply • Installation</span></div>
+    <div class="post"><strong>A Fresh Look Makes a Big Difference</strong><span>Interior • Exterior • Commercial</span></div>
+  </div>
+</section>
+
+<section class="steps">
+  <h2>How it works</h2>
+  <p class="lead">No complicated setup.</p>
+  <div class="grid">
+    <div class="card step"><h3>Tell us about your business</h3><p>Send your services, photos, offers and preferred style.</p></div>
+    <div class="card step"><h3>We create the content</h3><p>AI helps us turn your information into polished social posts.</p></div>
+    <div class="card step"><h3>You post and grow</h3><p>Use the ready-to-post content to stay visible and generate enquiries.</p></div>
+  </div>
+</section>
+
+<div class="cta" id="contact">
+  <h2>Ready to grow your business?</h2>
+  <p>Get your first 10-post content pack for £49 and see what LocalBoost AI can do for your social media.</p>
+  <a class="btn" href="mailto:hello@localboostai.co.uk?subject=LocalBoost%20AI%20Enquiry">Email LocalBoost AI</a>
+</div>
+
+<footer><div><strong>LocalBoost AI</strong> — Your social media, without the hassle.</div><div>Secure checkout powered by Stripe. Payment links must be added before publishing.</div></footer>
+</body>
+</html>
