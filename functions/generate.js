@@ -1,3 +1,4 @@
+
 export async function onRequestPost(context) {
   try {
     const body = await context.request.json();
@@ -21,7 +22,9 @@ export async function onRequestPost(context) {
 
     // CREATE SOCIAL MEDIA POST
     const postPrompt = `
-Write ONE finished social media post for this local business.
+You are writing a finished social media post for a UK local business.
+
+Return ONLY the final customer-ready post.
 
 Business name: ${businessName}
 Business type: ${businessType}
@@ -29,34 +32,55 @@ Location: ${location}
 Service or offer: ${service}
 Extra details: ${extraDetails}
 
-Rules:
-- Output ONLY the finished social media post.
-- Do not explain your answer.
-- Do not give a breakdown.
-- Do not say "here is your post".
+Requirements:
 - Use natural British English.
-- Include a strong opening line.
+- Strong opening line.
+- Mention the service clearly.
 - Include a clear call to action.
 - Include exactly 5 relevant hashtags.
 - Suitable for Facebook and Instagram.
+- Keep it concise and professional.
 - Do not invent prices.
 - Do not invent phone numbers.
-- Do not invent awards or claims.
+- Do not invent awards.
+- Do not invent logos or branding.
+- Do not use excessive punctuation.
+- Do not use excessive capitalisation.
+- Do not explain your answer.
+- Do not include steps.
+- Do not include headings.
+- Do not include analysis.
+- Do not include notes.
+- Do not repeat these instructions.
+
+Your response must begin immediately with the finished social media post and end after the fifth hashtag.
 `;
 
     const textResponse = await context.env.AI.run(
       "@cf/meta/llama-3.1-8b-instruct-fast",
       {
-        prompt: postPrompt
+        prompt: postPrompt,
+        max_tokens: 220
       }
     );
 
-    const post =
+    let post =
       textResponse.response ||
       textResponse.result ||
       "";
 
-    // CREATE SIMPLE, SAFE IMAGE PROMPT
+    // CLEAN UP UNWANTED MODEL EXPLANATIONS
+    if (post.includes("---")) {
+      post = post.split("---")[0];
+    }
+
+    if (post.includes("## Step")) {
+      post = post.split("## Step")[0];
+    }
+
+    post = post.trim();
+
+    // CREATE SAFE IMAGE PROMPT
     const safeBusinessType = businessType
       .replace(/[^\w\s-]/g, "")
       .slice(0, 80);
