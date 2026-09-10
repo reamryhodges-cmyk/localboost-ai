@@ -19,8 +19,9 @@ export async function onRequestPost(context) {
       );
     }
 
+    // CREATE SOCIAL MEDIA POST
     const postPrompt = `
-Write ONE finished social media post for this local business.
+Create ONE finished social media post for this local business.
 
 Business name: ${businessName}
 Business type: ${businessType}
@@ -28,16 +29,17 @@ Location: ${location}
 Service or offer: ${service}
 Extra details: ${extraDetails}
 
-Rules:
+RULES:
 - Output ONLY the finished social media post.
-- Do not explain your answer.
-- Do not give a breakdown.
+- Keep it concise.
+- Do not explain the post.
+- Do not provide a breakdown.
 - Do not say "here is your post".
 - Use natural British English.
 - Include a strong opening line.
 - Include a clear call to action.
 - Include exactly 5 relevant hashtags.
-- Suitable for Facebook and Instagram.
+- Make it suitable for Facebook and Instagram.
 - Do not invent prices.
 - Do not invent phone numbers.
 - Do not invent awards or claims.
@@ -55,8 +57,9 @@ Rules:
       textResponse.result ||
       "";
 
+    // CREATE MATCHING PICTURE
     const imagePrompt = `
-Create a realistic professional social media advertising photograph.
+Create a realistic professional square social media advertising image.
 
 Business name: ${businessName}
 Business type: ${businessType}
@@ -64,12 +67,13 @@ Location: ${location}
 Service or offer: ${service}
 Extra details: ${extraDetails}
 
-Image requirements:
-- Square social media image.
+IMAGE RULES:
 - Realistic professional photography.
+- Square social media composition.
+- High quality.
 - Modern commercial advertising style.
-- Clean and high quality.
-- Relevant to the business and service.
+- Make the image relevant to the business.
+- Make the image relevant to the service being advertised.
 - No written text.
 - No logos.
 - No phone numbers.
@@ -81,7 +85,6 @@ Image requirements:
       "@cf/black-forest-labs/flux-1-schnell",
       {
         prompt: imagePrompt,
-        seed: Math.floor(Math.random() * 1000000),
         steps: 4
       }
     );
