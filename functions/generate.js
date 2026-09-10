@@ -1,48 +1,75 @@
-export async function onRequestPost({ request, env }) {
+export async function onRequestPost(context) {
   try {
-    const data = await request.json();
+    const body = await context.request.json();
 
-    const businessName = data.businessName || "";
-    const businessType = data.businessType || "";
-    const location = data.location || "";
-    const offer = data.offer || "";
+    const businessName = body.businessName || "";
+    const businessType = body.businessType || "";
+    const location = body.location || "";
+    const service = body.service || "";
+    const extraDetails = body.extraDetails || "";
 
-    if (!businessName) {
-      return new Response(
-        JSON.stringify({ error: "Business name is required." }),
-        {
-          status: 400,
-          headers: { "Content-Type": "application/json" }
-        }
+    if (!context.env.OPENAI_API_KEY) {
+      return Response.json(
+        { error: "OPENAI_API_KEY is not configured." },
+        { status: 500 }
       );
     }
 
     const prompt = `
-You are LocalBoost AI.
+You are an AI marketing assistant for UK local businesses.
 
-Create a professional social media marketing post for this UK business.
+Create professional marketing content using the information below.
 
 Business name: ${businessName}
 Business type: ${businessType}
 Location: ${location}
-Offer or service: ${offer}
-
-Include:
-- An engaging headline
-- A short Facebook and Instagram post
-- A clear call to action
-- 5 relevant hashtags
+Service: ${service}
+Extra details: ${extraDetails}
 
 Use clear, natural British English.
 Do not invent prices, awards, contact details or claims.
+
+Return useful customer-ready marketing content.
 `;
 
-    const aiResponse = await fetch(
+    const response = await fetch(
       "https://api.openai.com/v1/responses",
       {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${env.OPENAI_API_KEY}`,
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${context.env.OPENAI_API_KEY}`,
         },
-        body:
+        body: JSON.stringify({
+          model: "gpt-5.4-mini",
+          input: prompt,
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return Response.json(
+        {
+          error: "OpenAI request failed.",
+          details: data,
+        },
+        { status: response.status }
+      );
+    }
+
+    return Response.json({
+      success: true,
+      result: data.output_text || "",
+    });
+  } catch (error) {
+    return Response.json(
+      {
+        error: "Something went wrong.",
+        details: error.message,
+      },
+      { status: 500 }
+    );
+  }
+}
