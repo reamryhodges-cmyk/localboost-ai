@@ -6,11 +6,6 @@
 
   <title>LocalBoost AI - AI Marketing for Local Businesses</title>
 
-  <meta
-    name="description"
-    content="LocalBoost AI creates social media content and images for local businesses in seconds."
-  >
-
   <style>
     :root {
       --bg: #071218;
@@ -52,7 +47,7 @@
 
     .hero {
       text-align: center;
-      padding: 80px 7% 60px;
+      padding: 70px 7%;
       max-width: 1000px;
       margin: auto;
     }
@@ -69,18 +64,17 @@
     }
 
     h2 {
-      font-size: 34px;
-      margin-bottom: 10px;
+      font-size: 32px;
     }
 
-    .hero p,
-    .lead {
+    .lead,
+    .hero p {
       color: var(--muted);
       font-size: 18px;
     }
 
     section {
-      padding: 55px 7%;
+      padding: 50px 7%;
       max-width: 1100px;
       margin: auto;
     }
@@ -100,7 +94,6 @@
 
     .btn:disabled {
       opacity: 0.6;
-      cursor: wait;
     }
 
     .grid {
@@ -115,10 +108,6 @@
       border: 1px solid var(--line);
       border-radius: 16px;
       padding: 24px;
-    }
-
-    .card h3 {
-      margin-top: 0;
     }
 
     .generator {
@@ -139,7 +128,6 @@
 
     textarea {
       min-height: 100px;
-      resize: vertical;
     }
 
     #aiStatus {
@@ -179,19 +167,6 @@
       font-weight: bold;
     }
 
-    .cta {
-      text-align: center;
-      background: var(--green);
-      color: #06120d;
-      max-width: 100%;
-      padding: 55px 7%;
-    }
-
-    .cta .btn {
-      background: #06120d;
-      color: white;
-    }
-
     footer {
       text-align: center;
       padding: 35px;
@@ -204,54 +179,72 @@
 <body>
 
   <nav>
-    <div class="logo">LocalBoost <span>AI</span></div>
-    <a class="btn" href="#ai-generator">Try AI</a>
+    <div class="logo">
+      LocalBoost <span>AI</span>
+    </div>
+
+    <a class="btn" href="#ai-generator">
+      Try AI
+    </a>
   </nav>
 
   <header class="hero">
-    <div class="eyebrow">AI-powered marketing for local businesses</div>
 
-    <h1>Create social media content in seconds</h1>
+    <div class="eyebrow">
+      AI-powered marketing for local businesses
+    </div>
+
+    <h1>
+      Create your social media content in seconds
+    </h1>
 
     <p>
-      LocalBoost AI creates professional social media posts
-      and matching images for your business.
+      Generate a professional social media post
+      and matching AI picture for your business.
     </p>
 
-    <a class="btn" href="#ai-generator">Create My Content</a>
+    <a class="btn" href="#ai-generator">
+      Create My Content
+    </a>
+
   </header>
 
   <section>
-    <h2>What we do</h2>
+
+    <h2>What LocalBoost AI creates</h2>
 
     <div class="grid">
+
       <div class="card">
         <h3>📱 Social Posts</h3>
-        <p>Create engaging posts for your business.</p>
+        <p>Professional posts ready for your social media.</p>
       </div>
 
       <div class="card">
-        <h3>🖼️ AI Images</h3>
-        <p>Create matching images for your posts.</p>
+        <h3>🖼️ AI Pictures</h3>
+        <p>Matching AI-generated pictures for your posts.</p>
       </div>
 
       <div class="card">
         <h3>🎯 Promotions</h3>
-        <p>Advertise offers, services and events.</p>
+        <p>Promote your services, offers and events.</p>
       </div>
 
       <div class="card">
         <h3>⏱️ Save Time</h3>
-        <p>Create marketing content in seconds.</p>
+        <p>Create your marketing content in seconds.</p>
       </div>
+
     </div>
+
   </section>
 
   <section id="ai-generator" class="generator">
+
     <h2>✨ Try LocalBoost AI</h2>
 
     <p class="lead">
-      Enter your business details and we'll create your post and image.
+      Tell us about your business.
     </p>
 
     <div class="card">
@@ -265,24 +258,24 @@
       <input
         id="businessType"
         type="text"
-        placeholder="Business type - e.g. Garage, Barber, Cafe"
+        placeholder="Business type"
       >
 
       <input
         id="location"
         type="text"
-        placeholder="Location - e.g. Gloucester"
+        placeholder="Location"
       >
 
       <input
         id="service"
         type="text"
-        placeholder="Service or offer to promote"
+        placeholder="Service or offer"
       >
 
       <textarea
         id="extraDetails"
-        placeholder="Anything else? e.g. 20% off this weekend"
+        placeholder="Anything else you want included?"
       ></textarea>
 
       <button
@@ -299,13 +292,15 @@
 
       <img
         id="aiImage"
-        alt="AI generated social media image"
+        alt="AI generated picture"
       >
 
     </div>
+
   </section>
 
   <section id="pricing">
+
     <h2>Simple pricing</h2>
 
     <div class="grid">
@@ -313,60 +308,34 @@
       <div class="card">
         <h3>Starter</h3>
         <div class="price">£9.99</div>
-        <p>Perfect for trying LocalBoost AI.</p>
+        <p>Perfect for getting started.</p>
       </div>
 
       <div class="card popular">
         <div class="badge">MOST POPULAR</div>
         <h3>Business</h3>
         <div class="price">£24.99</div>
-        <p>More content for businesses posting regularly.</p>
+        <p>For businesses posting regularly.</p>
       </div>
 
       <div class="card">
         <h3>Pro</h3>
         <div class="price">£49.99</div>
-        <p>For businesses wanting regular marketing support.</p>
+        <p>For businesses needing regular content.</p>
       </div>
 
     </div>
+
   </section>
-
-  <section>
-    <h2>How it works</h2>
-
-    <div class="grid">
-
-      <div class="card">
-        <h3>1. Tell us about your business</h3>
-        <p>Enter a few simple details.</p>
-      </div>
-
-      <div class="card">
-        <h3>2. AI creates your content</h3>
-        <p>We generate your social media post and image.</p>
-      </div>
-
-      <div class="card">
-        <h3>3. Copy and post</h3>
-        <p>Use your content on Facebook and Instagram.</p>
-      </div>
-
-    </div>
-  </section>
-
-  <div class="cta">
-    <h2>Ready to grow your business?</h2>
-    <p>Create your next social media post now.</p>
-    <a class="btn" href="#ai-generator">Generate Content</a>
-  </div>
 
   <footer>
-    <strong>LocalBoost AI</strong><br>
+    <strong>LocalBoost AI</strong>
+    <br>
     AI-powered marketing for local businesses.
   </footer>
 
   <script>
+
     async function generateContent() {
 
       const status =
@@ -396,79 +365,190 @@
       const extraDetails =
         document.getElementById("extraDetails").value.trim();
 
+
       if (!businessName || !businessType) {
+
         status.textContent =
           "Please enter your business name and business type.";
+
         return;
       }
+
 
       status.textContent =
         "✨ Creating your post and picture...";
 
-      result.style.display = "none";
-      image.style.display = "none";
-
       result.textContent = "";
+
+      result.style.display = "none";
+
       image.src = "";
+
+      image.style.display = "none";
 
       button.disabled = true;
 
+
       try {
 
-        const response = await fetch("/generate", {
+        const response =
+          await fetch("/generate", {
 
-          method: "POST",
+            method: "POST",
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+            headers: {
+              "Content-Type": "application/json"
+            },
 
-          body: JSON.stringify({
-            businessName,
-            businessType,
-            location,
-            service,
-            extraDetails
-          })
-        });
+            body: JSON.stringify({
 
-        const data = await response.json();
+              businessName:
+                businessName,
+
+              businessType:
+                businessType,
+
+              location:
+                location,
+
+              service:
+                service,
+
+              extraDetails:
+                extraDetails
+
+            })
+
+          });
+
+
+        let data;
+
+        try {
+
+          data =
+            await response.json();
+
+        } catch (jsonError) {
+
+          throw new Error(
+            "Server returned an invalid response. HTTP status: "
+            + response.status
+          );
+
+        }
+
 
         if (!response.ok) {
-          throw new Error(
-            data.error ||
-            data.details ||
-            "AI request failed."
-          );
+
+          let message = "";
+
+          if (data.details) {
+
+            if (typeof data.details === "string") {
+
+              message =
+                data.details;
+
+            } else {
+
+              message =
+                JSON.stringify(data.details);
+
+            }
+
+          }
+
+          else if (data.error) {
+
+            message =
+              data.error;
+
+          }
+
+          else {
+
+            message =
+              "AI request failed. HTTP status: "
+              + response.status;
+
+          }
+
+          throw new Error(message);
+
         }
 
-        status.textContent =
-          "✅ Your content is ready!";
 
         if (data.result) {
-          result.textContent = data.result;
-          result.style.display = "block";
+
+          result.textContent =
+            data.result;
+
+          result.style.display =
+            "block";
+
         }
+
 
         if (data.image) {
-          image.src = data.image;
-          image.style.display = "block";
+
+          image.src =
+            data.image;
+
+          image.style.display =
+            "block";
+
         }
 
-      } catch (error) {
 
-        status.textContent =
-          "❌ Something went wrong.";
+        if (data.result && data.image) {
 
-        result.textContent = error.message;
-        result.style.display = "block";
+          status.textContent =
+            "✅ Your post and picture are ready!";
 
-      } finally {
+        }
 
-        button.disabled = false;
+        else if (data.result && !data.image) {
+
+          status.textContent =
+            "⚠️ Post created, but no picture was returned.";
+
+          result.style.display =
+            "block";
+
+        }
+
+        else {
+
+          status.textContent =
+            "⚠️ No content was returned.";
+
+        }
 
       }
+
+      catch (error) {
+
+        status.textContent =
+          "❌ Something went wrong";
+
+        result.textContent =
+          "ERROR DETAILS:\n\n" + error.message;
+
+        result.style.display =
+          "block";
+
+      }
+
+      finally {
+
+        button.disabled =
+          false;
+
+      }
+
     }
+
   </script>
 
 </body>
