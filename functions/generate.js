@@ -33,7 +33,7 @@ Include:
 - A clear call to action
 - 5 relevant hashtags
 
-Use natural British English.
+Use clear, natural British English.
 Do not invent prices, awards, contact details or claims.
 `;
 
