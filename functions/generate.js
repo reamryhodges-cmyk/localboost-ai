@@ -21,7 +21,7 @@ export async function onRequestPost(context) {
 
     // CREATE SOCIAL MEDIA POST
     const postPrompt = `
-Create ONE finished social media post for this local business.
+Write ONE finished social media post for this local business.
 
 Business name: ${businessName}
 Business type: ${businessType}
@@ -29,17 +29,16 @@ Location: ${location}
 Service or offer: ${service}
 Extra details: ${extraDetails}
 
-RULES:
+Rules:
 - Output ONLY the finished social media post.
-- Keep it concise.
-- Do not explain the post.
-- Do not provide a breakdown.
+- Do not explain your answer.
+- Do not give a breakdown.
 - Do not say "here is your post".
 - Use natural British English.
 - Include a strong opening line.
 - Include a clear call to action.
 - Include exactly 5 relevant hashtags.
-- Make it suitable for Facebook and Instagram.
+- Suitable for Facebook and Instagram.
 - Do not invent prices.
 - Do not invent phone numbers.
 - Do not invent awards or claims.
@@ -57,43 +56,53 @@ RULES:
       textResponse.result ||
       "";
 
-    // CREATE MATCHING PICTURE
+    // CREATE SIMPLE, SAFE IMAGE PROMPT
+    const safeBusinessType = businessType
+      .replace(/[^\w\s-]/g, "")
+      .slice(0, 80);
+
+    const safeService = service
+      .replace(/[^\w\s-]/g, "")
+      .slice(0, 100);
+
+    const safeLocation = location
+      .replace(/[^\w\s-]/g, "")
+      .slice(0, 60);
+
     const imagePrompt = `
-Create a realistic professional square social media advertising image.
+Professional commercial photograph for a ${safeBusinessType} business.
 
-Business name: ${businessName}
-Business type: ${businessType}
-Location: ${location}
-Service or offer: ${service}
-Extra details: ${extraDetails}
+Show the service: ${safeService}.
 
-IMAGE RULES:
-- Realistic professional photography.
-- Square social media composition.
-- High quality.
-- Modern commercial advertising style.
-- Make the image relevant to the business.
-- Make the image relevant to the service being advertised.
-- No written text.
-- No logos.
-- No phone numbers.
-- No prices.
-- No watermarks.
+Location style: ${safeLocation || "United Kingdom"}.
+
+Clean, realistic, professional advertising photography.
+Square composition for social media.
+No text.
+No logos.
+No prices.
+No phone numbers.
+No watermarks.
 `;
-
-    const imageResponse = await context.env.AI.run(
-      "@cf/black-forest-labs/flux-1-schnell",
-      {
-        prompt: imagePrompt,
-        steps: 4
-      }
-    );
 
     let image = "";
 
-    if (imageResponse && imageResponse.image) {
-      image =
-        `data:image/jpeg;charset=utf-8;base64,${imageResponse.image}`;
+    try {
+      const imageResponse = await context.env.AI.run(
+        "@cf/black-forest-labs/flux-1-schnell",
+        {
+          prompt: imagePrompt,
+          steps: 4
+        }
+      );
+
+      if (imageResponse && imageResponse.image) {
+        image =
+          `data:image/jpeg;charset=utf-8;base64,${imageResponse.image}`;
+      }
+
+    } catch (imageError) {
+      console.log("Image generation failed:", imageError.message);
     }
 
     return Response.json({
@@ -104,6 +113,8 @@ IMAGE RULES:
     });
 
   } catch (error) {
+    console.log("Generation error:", error.message);
+
     return Response.json(
       {
         error: "Something went wrong.",
