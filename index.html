@@ -4,18 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>LocalBoost AI - AI Marketing for Local Businesses</title>
+  <title>LocalBoost AI</title>
 
   <style>
-    :root {
-      --bg: #071218;
-      --card: #0d1c24;
-      --green: #36e39a;
-      --text: #ffffff;
-      --muted: #aab8c2;
-      --line: #20323c;
-    }
-
     * {
       box-sizing: border-box;
     }
@@ -23,264 +14,221 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
+      background: #f5f7fb;
+      color: #1f2937;
     }
 
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 20px 7%;
-      border-bottom: 1px solid var(--line);
-    }
-
-    .logo {
-      font-size: 23px;
-      font-weight: 800;
-    }
-
-    .logo span {
-      color: var(--green);
-    }
-
-    .hero {
+    header {
+      background: #111827;
+      color: white;
+      padding: 35px 20px;
       text-align: center;
-      padding: 70px 7%;
-      max-width: 1000px;
-      margin: auto;
     }
 
-    .eyebrow {
-      color: var(--green);
-      font-weight: bold;
+    header h1 {
+      margin: 0;
+      font-size: 36px;
     }
 
-    h1 {
-      font-size: clamp(40px, 7vw, 72px);
-      line-height: 1.05;
-      margin: 15px 0;
+    header p {
+      margin-top: 10px;
+      color: #d1d5db;
     }
 
-    h2 {
-      font-size: 32px;
-    }
-
-    .lead,
-    .hero p {
-      color: var(--muted);
-      font-size: 18px;
-    }
-
-    section {
-      padding: 50px 7%;
-      max-width: 1100px;
-      margin: auto;
-    }
-
-    .btn {
-      display: inline-block;
-      background: var(--green);
-      color: #06120d;
-      border: none;
-      padding: 15px 24px;
-      border-radius: 10px;
-      font-weight: bold;
-      font-size: 16px;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .btn:disabled {
-      opacity: 0.6;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 18px;
-      margin-top: 25px;
+    .container {
+      width: 92%;
+      max-width: 900px;
+      margin: 30px auto;
     }
 
     .card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 24px;
+      background: white;
+      padding: 25px;
+      border-radius: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      margin-bottom: 30px;
     }
 
-    .generator {
-      max-width: 750px;
+    h2 {
+      margin-top: 0;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 16px;
+      margin-bottom: 6px;
     }
 
     input,
     textarea {
       width: 100%;
-      background: #071218;
-      color: white;
-      border: 1px solid #304550;
-      border-radius: 9px;
-      padding: 14px;
-      margin-bottom: 12px;
+      padding: 13px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
       font-size: 16px;
     }
 
     textarea {
       min-height: 100px;
+      resize: vertical;
+    }
+
+    button {
+      width: 100%;
+      border: none;
+      padding: 14px;
+      margin-top: 18px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #2563eb;
+      color: white;
+    }
+
+    button:hover {
+      opacity: 0.92;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
     #aiStatus {
-      margin-top: 18px;
-      color: var(--green);
+      margin-top: 20px;
       font-weight: bold;
+      text-align: center;
     }
 
     #aiResult {
-      margin-top: 15px;
+      display: none;
       white-space: pre-wrap;
-      background: #071218;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
       border-radius: 10px;
       padding: 18px;
-      display: none;
+      margin-top: 20px;
+      line-height: 1.6;
     }
 
     #aiImage {
       display: none;
       width: 100%;
-      margin-top: 20px;
+      max-width: 600px;
+      margin: 20px auto 0;
       border-radius: 12px;
     }
 
+    #resultActions {
+      display: none;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    #resultActions button {
+      margin-top: 5px;
+    }
+
+    .secondaryButton {
+      background: #374151;
+    }
+
+    .successMessage {
+      color: #15803d;
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+
+    .pricing {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .priceCard {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 22px;
+      text-align: center;
+    }
+
     .price {
-      font-size: 34px;
+      font-size: 30px;
       font-weight: bold;
-      color: var(--green);
-    }
-
-    .popular {
-      border: 2px solid var(--green);
-    }
-
-    .badge {
-      color: var(--green);
-      font-weight: bold;
+      margin: 15px 0;
     }
 
     footer {
       text-align: center;
-      padding: 35px;
-      color: var(--muted);
-      border-top: 1px solid var(--line);
+      padding: 30px 20px;
+      color: #6b7280;
+    }
+
+    @media (max-width: 700px) {
+      .pricing {
+        grid-template-columns: 1fr;
+      }
+
+      header h1 {
+        font-size: 30px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <nav>
-    <div class="logo">
-      LocalBoost <span>AI</span>
-    </div>
-
-    <a class="btn" href="#ai-generator">
-      Try AI
-    </a>
-  </nav>
-
-  <header class="hero">
-
-    <div class="eyebrow">
-      AI-powered marketing for local businesses
-    </div>
-
-    <h1>
-      Create your social media content in seconds
-    </h1>
-
-    <p>
-      Generate a professional social media post
-      and matching AI picture for your business.
-    </p>
-
-    <a class="btn" href="#ai-generator">
-      Create My Content
-    </a>
-
+  <header>
+    <h1>LocalBoost AI</h1>
+    <p>Create professional social media posts and pictures for your business in seconds.</p>
   </header>
 
-  <section>
+  <main class="container">
 
-    <h2>What LocalBoost AI creates</h2>
+    <section class="card">
 
-    <div class="grid">
+      <h2>✨ Create Your Social Media Post</h2>
 
-      <div class="card">
-        <h3>📱 Social Posts</h3>
-        <p>Professional posts ready for your social media.</p>
-      </div>
-
-      <div class="card">
-        <h3>🖼️ AI Pictures</h3>
-        <p>Matching AI-generated pictures for your posts.</p>
-      </div>
-
-      <div class="card">
-        <h3>🎯 Promotions</h3>
-        <p>Promote your services, offers and events.</p>
-      </div>
-
-      <div class="card">
-        <h3>⏱️ Save Time</h3>
-        <p>Create your marketing content in seconds.</p>
-      </div>
-
-    </div>
-
-  </section>
-
-  <section id="ai-generator" class="generator">
-
-    <h2>✨ Try LocalBoost AI</h2>
-
-    <p class="lead">
-      Tell us about your business.
-    </p>
-
-    <div class="card">
-
+      <label for="businessName">Business name</label>
       <input
         id="businessName"
         type="text"
-        placeholder="Business name"
+        placeholder="Example: Gloucester Shine"
       >
 
+      <label for="businessType">Business type</label>
       <input
         id="businessType"
         type="text"
-        placeholder="Business type"
+        placeholder="Example: Mobile car valeting"
       >
 
+      <label for="location">Location</label>
       <input
         id="location"
         type="text"
-        placeholder="Location"
+        placeholder="Example: Gloucester"
       >
 
+      <label for="service">Service or offer</label>
       <input
         id="service"
         type="text"
-        placeholder="Service or offer"
+        placeholder="Example: Full interior and exterior car valet"
       >
 
+      <label for="extraDetails">Extra details</label>
       <textarea
         id="extraDetails"
-        placeholder="Anything else you want included?"
+        placeholder="Tell the AI anything else it should know about the business or promotion."
       ></textarea>
 
       <button
         id="generateButton"
-        class="btn"
+        type="button"
         onclick="generateContent()"
       >
         ✨ Generate Post & Picture
@@ -292,63 +240,76 @@
 
       <img
         id="aiImage"
-        alt="AI generated picture"
+        alt="AI generated social media picture"
       >
 
-    </div>
+      <div id="resultActions">
 
-  </section>
+        <button
+          type="button"
+          onclick="copyPost()"
+        >
+          📋 Copy Post
+        </button>
 
-  <section id="pricing">
+        <button
+          class="secondaryButton"
+          type="button"
+          onclick="downloadImage()"
+        >
+          ⬇️ Download Picture
+        </button>
 
-    <h2>Simple pricing</h2>
-
-    <div class="grid">
-
-      <div class="card">
-        <h3>Starter</h3>
-        <div class="price">£9.99</div>
-        <p>Perfect for getting started.</p>
       </div>
 
-      <div class="card popular">
-        <div class="badge">MOST POPULAR</div>
-        <h3>Business</h3>
-        <div class="price">£24.99</div>
-        <p>For businesses posting regularly.</p>
+      <div id="actionMessage" class="successMessage"></div>
+
+    </section>
+
+    <section class="card">
+
+      <h2>Choose Your Plan</h2>
+
+      <div class="pricing">
+
+        <div class="priceCard">
+          <h3>Starter</h3>
+          <div class="price">£9.99</div>
+          <p>Perfect for small businesses getting started.</p>
+        </div>
+
+        <div class="priceCard">
+          <h3>Business</h3>
+          <div class="price">£24.99</div>
+          <p>More content for growing local businesses.</p>
+        </div>
+
+        <div class="priceCard">
+          <h3>Pro</h3>
+          <div class="price">£49.99</div>
+          <p>For businesses that want regular AI-powered content.</p>
+        </div>
+
       </div>
 
-      <div class="card">
-        <h3>Pro</h3>
-        <div class="price">£49.99</div>
-        <p>For businesses needing regular content.</p>
-      </div>
+    </section>
 
-    </div>
-
-  </section>
+  </main>
 
   <footer>
-    <strong>LocalBoost AI</strong>
-    <br>
-    AI-powered marketing for local businesses.
+    LocalBoost AI
   </footer>
 
   <script>
 
     async function generateContent() {
 
-      const status =
-        document.getElementById("aiStatus");
-
-      const result =
-        document.getElementById("aiResult");
-
-      const image =
-        document.getElementById("aiImage");
-
-      const button =
-        document.getElementById("generateButton");
+      const status = document.getElementById("aiStatus");
+      const result = document.getElementById("aiResult");
+      const image = document.getElementById("aiImage");
+      const actions = document.getElementById("resultActions");
+      const actionMessage = document.getElementById("actionMessage");
+      const button = document.getElementById("generateButton");
 
       const businessName =
         document.getElementById("businessName").value.trim();
@@ -379,61 +340,53 @@
         "✨ Creating your post and picture...";
 
       result.textContent = "";
-
       result.style.display = "none";
 
       image.src = "";
-
       image.style.display = "none";
+
+      actions.style.display = "none";
+
+      actionMessage.textContent = "";
 
       button.disabled = true;
 
 
       try {
 
-        const response =
-          await fetch("/generate", {
+        const response = await fetch("/generate", {
 
-            method: "POST",
+          method: "POST",
 
-            headers: {
-              "Content-Type": "application/json"
-            },
+          headers: {
+            "Content-Type": "application/json"
+          },
 
-            body: JSON.stringify({
+          body: JSON.stringify({
 
-              businessName:
-                businessName,
+            businessName,
+            businessType,
+            location,
+            service,
+            extraDetails
 
-              businessType:
-                businessType,
+          })
 
-              location:
-                location,
-
-              service:
-                service,
-
-              extraDetails:
-                extraDetails
-
-            })
-
-          });
+        });
 
 
         let data;
 
+
         try {
 
-          data =
-            await response.json();
+          data = await response.json();
 
         } catch (jsonError) {
 
           throw new Error(
-            "Server returned an invalid response. HTTP status: "
-            + response.status
+            "Server returned an invalid response. HTTP status: " +
+            response.status
           );
 
         }
@@ -447,30 +400,23 @@
 
             if (typeof data.details === "string") {
 
-              message =
-                data.details;
+              message = data.details;
 
             } else {
 
-              message =
-                JSON.stringify(data.details);
+              message = JSON.stringify(data.details);
 
             }
 
-          }
+          } else if (data.error) {
 
-          else if (data.error) {
+            message = data.error;
 
-            message =
-              data.error;
-
-          }
-
-          else {
+          } else {
 
             message =
-              "AI request failed. HTTP status: "
-              + response.status;
+              "AI request failed. HTTP status: " +
+              response.status;
 
           }
 
@@ -481,22 +427,23 @@
 
         if (data.result) {
 
-          result.textContent =
-            data.result;
-
-          result.style.display =
-            "block";
+          result.textContent = data.result;
+          result.style.display = "block";
 
         }
 
 
         if (data.image) {
 
-          image.src =
-            data.image;
+          image.src = data.image;
+          image.style.display = "block";
 
-          image.style.display =
-            "block";
+        }
+
+
+        if (data.result || data.image) {
+
+          actions.style.display = "grid";
 
         }
 
@@ -506,46 +453,127 @@
           status.textContent =
             "✅ Your post and picture are ready!";
 
-        }
-
-        else if (data.result && !data.image) {
+        } else if (data.result && !data.image) {
 
           status.textContent =
-            "⚠️ Post created, but no picture was returned.";
+            "⚠️ Your post is ready, but the picture could not be generated.";
 
-          result.style.display =
-            "block";
-
-        }
-
-        else {
+        } else {
 
           status.textContent =
             "⚠️ No content was returned.";
 
         }
 
-      }
 
-      catch (error) {
+      } catch (error) {
 
         status.textContent =
           "❌ Something went wrong";
 
         result.textContent =
-          "ERROR DETAILS:\n\n" + error.message;
+          "ERROR DETAILS:\n\n" +
+          error.message;
 
         result.style.display =
           "block";
 
-      }
+      } finally {
 
-      finally {
-
-        button.disabled =
-          false;
+        button.disabled = false;
 
       }
+
+    }
+
+
+    async function copyPost() {
+
+      const result =
+        document.getElementById("aiResult");
+
+      const actionMessage =
+        document.getElementById("actionMessage");
+
+      const text =
+        result.textContent.trim();
+
+
+      if (!text) {
+
+        actionMessage.textContent =
+          "There is no post to copy.";
+
+        return;
+
+      }
+
+
+      try {
+
+        await navigator.clipboard.writeText(text);
+
+        actionMessage.textContent =
+          "✅ Post copied!";
+
+      } catch (error) {
+
+        const textArea =
+          document.createElement("textarea");
+
+        textArea.value = text;
+
+        document.body.appendChild(textArea);
+
+        textArea.select();
+
+        document.execCommand("copy");
+
+        document.body.removeChild(textArea);
+
+        actionMessage.textContent =
+          "✅ Post copied!";
+
+      }
+
+    }
+
+
+    function downloadImage() {
+
+      const image =
+        document.getElementById("aiImage");
+
+      const actionMessage =
+        document.getElementById("actionMessage");
+
+
+      if (!image.src) {
+
+        actionMessage.textContent =
+          "There is no picture to download.";
+
+        return;
+
+      }
+
+
+      const link =
+        document.createElement("a");
+
+      link.href = image.src;
+
+      link.download =
+        "localboost-ai-picture.jpg";
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+      actionMessage.textContent =
+        "✅ Picture download started.";
 
     }
 
