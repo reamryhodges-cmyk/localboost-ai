@@ -1,0 +1,64 @@
+export async function onRequestPost(context) {
+  try {
+    const body = await context.request.json();
+
+    const email = String(body.email || "")
+      .trim()
+      .toLowerCase();
+
+    const password = String(body.password || "");
+
+    if (!email || !password) {
+      return Response.json(
+        {
+          error: "Email and password are required."
+        },
+        {
+          status: 400
+        }
+      );
+    }
+
+    if (!context.env.DB) {
+      return Response.json(
+        {
+          error: "Database is not connected."
+        },
+        {
+          status: 500
+        }
+      );
+    }
+
+    const user = await context.env.DB
+      .prepare(`
+        SELECT
+          id,
+          email,
+          password_hash,
+          business_name,
+          plan,
+          generations_used
+        FROM users
+        WHERE email = ?
+      `)
+      .bind(email)
+      .first();
+
+    if (!user) {
+      return Response.json(
+        {
+          error: "Invalid email or password."
+        },
+        {
+          status: 401
+        }
+      );
+    }
+
+    const parts = String(user.password_hash).split(":");
+
+    if (parts.length !== 2) {
+      return Response.json(
+        {
+          error: "Account
