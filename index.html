@@ -31,7 +31,6 @@
     }
 
     header p {
-      margin-top: 10px;
       color: #d1d5db;
     }
 
@@ -47,10 +46,6 @@
       border-radius: 14px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.08);
       margin-bottom: 30px;
-    }
-
-    h2 {
-      margin-top: 0;
     }
 
     label {
@@ -71,7 +66,6 @@
 
     textarea {
       min-height: 100px;
-      resize: vertical;
     }
 
     button {
@@ -157,10 +151,6 @@
       .pricing {
         grid-template-columns: 1fr;
       }
-
-      header h1 {
-        font-size: 30px;
-      }
     }
   </style>
 </head>
@@ -169,60 +159,39 @@
 
 <header>
   <h1>LocalBoost AI</h1>
-  <p>
-    Create professional social media posts and pictures
-    for your business in seconds.
-  </p>
+  <p>Create professional social media content in seconds.</p>
 </header>
 
 <main class="container">
-
-  <!-- CREATE ACCOUNT -->
 
   <section class="card">
 
     <h2>👤 Create Your Account</h2>
 
-    <p>
-      Create your LocalBoost AI account to get started.
-    </p>
-
-    <label for="signupBusinessName">
-      Business name
-    </label>
-
+    <label>Business name</label>
     <input
       id="signupBusinessName"
       type="text"
       placeholder="Example: Gloucester Shine"
     >
 
-    <label for="signupEmail">
-      Email address
-    </label>
-
+    <label>Email address</label>
     <input
       id="signupEmail"
       type="email"
       placeholder="you@example.com"
-      autocomplete="email"
     >
 
-    <label for="signupPassword">
-      Password
-    </label>
-
+    <label>Password</label>
     <input
       id="signupPassword"
       type="password"
       placeholder="Minimum 8 characters"
-      autocomplete="new-password"
     >
 
     <button
       id="signupButton"
       type="button"
-      onclick="createAccount()"
     >
       Create Account
     </button>
@@ -232,56 +201,39 @@
   </section>
 
 
-  <!-- AI GENERATOR -->
-
   <section class="card">
 
     <h2>✨ Create Your Social Media Post</h2>
 
-    <label for="businessName">
-      Business name
-    </label>
-
+    <label>Business name</label>
     <input
       id="businessName"
       type="text"
       placeholder="Example: Gloucester Shine"
     >
 
-    <label for="businessType">
-      Business type
-    </label>
-
+    <label>Business type</label>
     <input
       id="businessType"
       type="text"
       placeholder="Example: Mobile car valeting"
     >
 
-    <label for="location">
-      Location
-    </label>
-
+    <label>Location</label>
     <input
       id="location"
       type="text"
       placeholder="Example: Gloucester"
     >
 
-    <label for="service">
-      Service or offer
-    </label>
-
+    <label>Service or offer</label>
     <input
       id="service"
       type="text"
       placeholder="Example: Full interior and exterior car valet"
     >
 
-    <label for="extraDetails">
-      Extra details
-    </label>
-
+    <label>Extra details</label>
     <textarea
       id="extraDetails"
       placeholder="Tell the AI anything else it should know."
@@ -290,7 +242,6 @@
     <button
       id="generateButton"
       type="button"
-      onclick="generateContent()"
     >
       ✨ Generate Post & Picture
     </button>
@@ -301,22 +252,22 @@
 
     <img
       id="aiImage"
-      alt="AI generated social media picture"
+      alt="AI generated picture"
     >
 
     <div id="resultActions">
 
       <button
+        id="copyButton"
         type="button"
-        onclick="copyPost()"
       >
         📋 Copy Post
       </button>
 
       <button
+        id="downloadButton"
         class="secondaryButton"
         type="button"
-        onclick="downloadImage()"
       >
         ⬇️ Download Picture
       </button>
@@ -328,8 +279,6 @@
   </section>
 
 
-  <!-- PRICING -->
-
   <section class="card">
 
     <h2>Choose Your Plan</h2>
@@ -339,25 +288,19 @@
       <div class="priceCard">
         <h3>Starter</h3>
         <div class="price">£9.99</div>
-        <p>
-          Perfect for small businesses getting started.
-        </p>
+        <p>Perfect for small businesses getting started.</p>
       </div>
 
       <div class="priceCard">
         <h3>Business</h3>
         <div class="price">£24.99</div>
-        <p>
-          More content for growing local businesses.
-        </p>
+        <p>More content for growing local businesses.</p>
       </div>
 
       <div class="priceCard">
         <h3>Pro</h3>
         <div class="price">£49.99</div>
-        <p>
-          For businesses that want regular AI-powered content.
-        </p>
+        <p>For businesses that want regular AI-powered content.</p>
       </div>
 
     </div>
@@ -373,43 +316,39 @@
 
 <script>
 
-  // -------------------------
-  // CREATE ACCOUNT
-  // -------------------------
+document.addEventListener("DOMContentLoaded", function () {
 
-  async function createAccount() {
+  const signupButton =
+    document.getElementById("signupButton");
+
+  const generateButton =
+    document.getElementById("generateButton");
+
+  const copyButton =
+    document.getElementById("copyButton");
+
+  const downloadButton =
+    document.getElementById("downloadButton");
+
+
+  signupButton.addEventListener("click", async function () {
 
     const businessName =
-      document.getElementById(
-        "signupBusinessName"
-      ).value.trim();
+      document.getElementById("signupBusinessName").value.trim();
 
     const email =
-      document.getElementById(
-        "signupEmail"
-      ).value.trim();
+      document.getElementById("signupEmail").value.trim();
 
     const password =
-      document.getElementById(
-        "signupPassword"
-      ).value;
+      document.getElementById("signupPassword").value;
 
     const status =
-      document.getElementById(
-        "signupStatus"
-      );
-
-    const button =
-      document.getElementById(
-        "signupButton"
-      );
+      document.getElementById("signupStatus");
 
 
     if (!email || !password) {
-
       status.textContent =
-        "Please enter your email and password.";
-
+        "❌ Please enter your email and password.";
       return;
     }
 
@@ -417,54 +356,46 @@
     status.textContent =
       "Creating your account...";
 
-    button.disabled = true;
+    signupButton.disabled = true;
 
 
     try {
 
-      const response = await fetch(
-        "/signup",
-        {
-          method: "POST",
+      const response = await fetch("/signup", {
+        method: "POST",
 
-          headers: {
-            "Content-Type": "application/json"
-          },
+        headers: {
+          "Content-Type": "application/json"
+        },
 
-          body: JSON.stringify({
-            businessName,
-            email,
-            password
-          })
-        }
-      );
+        body: JSON.stringify({
+          businessName: businessName,
+          email: email,
+          password: password
+        })
+      });
 
 
-      const data =
-        await response.json();
+      const data = await response.json();
 
 
       if (!response.ok) {
-
         throw new Error(
           data.error ||
           data.details ||
           "Account could not be created."
         );
-
       }
 
 
       status.textContent =
         "✅ Account created successfully!";
 
-      document.getElementById(
-        "businessName"
-      ).value = businessName;
+      document.getElementById("businessName").value =
+        businessName;
 
-      document.getElementById(
-        "signupPassword"
-      ).value = "";
+      document.getElementById("signupPassword").value =
+        "";
 
 
     } catch (error) {
@@ -474,18 +405,14 @@
 
     } finally {
 
-      button.disabled = false;
+      signupButton.disabled = false;
 
     }
 
-  }
+  });
 
 
-  // -------------------------
-  // GENERATE CONTENT
-  // -------------------------
-
-  async function generateContent() {
+  generateButton.addEventListener("click", async function () {
 
     const status =
       document.getElementById("aiStatus");
@@ -499,37 +426,20 @@
     const actions =
       document.getElementById("resultActions");
 
-    const actionMessage =
-      document.getElementById("actionMessage");
-
-    const button =
-      document.getElementById("generateButton");
-
-
     const businessName =
-      document.getElementById(
-        "businessName"
-      ).value.trim();
+      document.getElementById("businessName").value.trim();
 
     const businessType =
-      document.getElementById(
-        "businessType"
-      ).value.trim();
+      document.getElementById("businessType").value.trim();
 
     const location =
-      document.getElementById(
-        "location"
-      ).value.trim();
+      document.getElementById("location").value.trim();
 
     const service =
-      document.getElementById(
-        "service"
-      ).value.trim();
+      document.getElementById("service").value.trim();
 
     const extraDetails =
-      document.getElementById(
-        "extraDetails"
-      ).value.trim();
+      document.getElementById("extraDetails").value.trim();
 
 
     if (!businessName || !businessType) {
@@ -544,17 +454,167 @@
     status.textContent =
       "✨ Creating your post and picture...";
 
-    result.textContent = "";
     result.style.display = "none";
-
-    image.src = "";
     image.style.display = "none";
-
     actions.style.display = "none";
 
-    actionMessage.textContent = "";
-
-    button.disabled = true;
+    generateButton.disabled = true;
 
 
-    try
+    try {
+
+      const response = await fetch("/generate", {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          businessName,
+          businessType,
+          location,
+          service,
+          extraDetails
+        })
+
+      });
+
+
+      const data = await response.json();
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.details ||
+          data.error ||
+          "AI request failed."
+        );
+
+      }
+
+
+      if (data.result) {
+
+        result.textContent = data.result;
+        result.style.display = "block";
+
+      }
+
+
+      if (data.image) {
+
+        image.src = data.image;
+        image.style.display = "block";
+
+      }
+
+
+      if (data.result || data.image) {
+
+        actions.style.display = "grid";
+
+      }
+
+
+      status.textContent =
+        "✅ Your content is ready!";
+
+
+    } catch (error) {
+
+      status.textContent =
+        "❌ " + error.message;
+
+    } finally {
+
+      generateButton.disabled = false;
+
+    }
+
+  });
+
+
+  copyButton.addEventListener("click", async function () {
+
+    const text =
+      document.getElementById("aiResult")
+        .textContent
+        .trim();
+
+    const message =
+      document.getElementById("actionMessage");
+
+
+    if (!text) {
+
+      message.textContent =
+        "There is no post to copy.";
+
+      return;
+    }
+
+
+    try {
+
+      await navigator.clipboard.writeText(text);
+
+      message.textContent =
+        "✅ Post copied!";
+
+    } catch (error) {
+
+      message.textContent =
+        "❌ Could not copy the post.";
+
+    }
+
+  });
+
+
+  downloadButton.addEventListener("click", function () {
+
+    const image =
+      document.getElementById("aiImage");
+
+    const message =
+      document.getElementById("actionMessage");
+
+
+    if (!image.src) {
+
+      message.textContent =
+        "There is no picture to download.";
+
+      return;
+    }
+
+
+    const link =
+      document.createElement("a");
+
+    link.href = image.src;
+
+    link.download =
+      "localboost-ai-picture.jpg";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    document.body.removeChild(link);
+
+
+    message.textContent =
+      "✅ Picture download started.";
+
+  });
+
+});
+
+</script>
+
+</body>
+</html>
