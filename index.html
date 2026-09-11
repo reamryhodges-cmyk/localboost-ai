@@ -48,6 +48,10 @@
       margin-bottom: 30px;
     }
 
+    h2 {
+      margin-top: 0;
+    }
+
     label {
       display: block;
       font-weight: bold;
@@ -66,6 +70,7 @@
 
     textarea {
       min-height: 100px;
+      resize: vertical;
     }
 
     button {
@@ -90,11 +95,22 @@
     }
 
     #signupStatus,
+    #loginStatus,
     #aiStatus,
     #actionMessage {
       margin-top: 15px;
       font-weight: bold;
       text-align: center;
+    }
+
+    #accountInfo {
+      display: none;
+      margin-top: 18px;
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      padding: 15px;
+      border-radius: 10px;
+      line-height: 1.6;
     }
 
     #aiResult {
@@ -151,6 +167,10 @@
       .pricing {
         grid-template-columns: 1fr;
       }
+
+      header h1 {
+        font-size: 30px;
+      }
     }
   </style>
 </head>
@@ -164,11 +184,14 @@
 
 <main class="container">
 
+  <!-- CREATE ACCOUNT -->
+
   <section class="card">
 
     <h2>👤 Create Your Account</h2>
 
     <label>Business name</label>
+
     <input
       id="signupBusinessName"
       type="text"
@@ -176,17 +199,21 @@
     >
 
     <label>Email address</label>
+
     <input
       id="signupEmail"
       type="email"
       placeholder="you@example.com"
+      autocomplete="email"
     >
 
     <label>Password</label>
+
     <input
       id="signupPassword"
       type="password"
       placeholder="Minimum 8 characters"
+      autocomplete="new-password"
     >
 
     <button
@@ -201,11 +228,52 @@
   </section>
 
 
+  <!-- LOGIN -->
+
+  <section class="card">
+
+    <h2>🔐 Customer Login</h2>
+
+    <label>Email address</label>
+
+    <input
+      id="loginEmail"
+      type="email"
+      placeholder="you@example.com"
+      autocomplete="email"
+    >
+
+    <label>Password</label>
+
+    <input
+      id="loginPassword"
+      type="password"
+      placeholder="Enter your password"
+      autocomplete="current-password"
+    >
+
+    <button
+      id="loginButton"
+      type="button"
+    >
+      Login
+    </button>
+
+    <div id="loginStatus"></div>
+
+    <div id="accountInfo"></div>
+
+  </section>
+
+
+  <!-- AI GENERATOR -->
+
   <section class="card">
 
     <h2>✨ Create Your Social Media Post</h2>
 
     <label>Business name</label>
+
     <input
       id="businessName"
       type="text"
@@ -213,6 +281,7 @@
     >
 
     <label>Business type</label>
+
     <input
       id="businessType"
       type="text"
@@ -220,6 +289,7 @@
     >
 
     <label>Location</label>
+
     <input
       id="location"
       type="text"
@@ -227,6 +297,7 @@
     >
 
     <label>Service or offer</label>
+
     <input
       id="service"
       type="text"
@@ -234,6 +305,7 @@
     >
 
     <label>Extra details</label>
+
     <textarea
       id="extraDetails"
       placeholder="Tell the AI anything else it should know."
@@ -279,6 +351,8 @@
   </section>
 
 
+  <!-- PRICING -->
+
   <section class="card">
 
     <h2>Choose Your Plan</h2>
@@ -321,6 +395,9 @@ document.addEventListener("DOMContentLoaded", function () {
   const signupButton =
     document.getElementById("signupButton");
 
+  const loginButton =
+    document.getElementById("loginButton");
+
   const generateButton =
     document.getElementById("generateButton");
 
@@ -330,6 +407,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const downloadButton =
     document.getElementById("downloadButton");
 
+
+  // -------------------------
+  // CREATE ACCOUNT
+  // -------------------------
 
   signupButton.addEventListener("click", async function () {
 
@@ -347,8 +428,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     if (!email || !password) {
+
       status.textContent =
         "❌ Please enter your email and password.";
+
       return;
     }
 
@@ -362,6 +445,7 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
 
       const response = await fetch("/signup", {
+
         method: "POST",
 
         headers: {
@@ -369,22 +453,26 @@ document.addEventListener("DOMContentLoaded", function () {
         },
 
         body: JSON.stringify({
-          businessName: businessName,
-          email: email,
-          password: password
+          businessName,
+          email,
+          password
         })
+
       });
 
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
 
       if (!response.ok) {
+
         throw new Error(
           data.error ||
           data.details ||
           "Account could not be created."
         );
+
       }
 
 
@@ -393,6 +481,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       document.getElementById("businessName").value =
         businessName;
+
+      document.getElementById("loginEmail").value =
+        email;
 
       document.getElementById("signupPassword").value =
         "";
@@ -412,6 +503,129 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
 
+  // -------------------------
+  // LOGIN
+  // -------------------------
+
+  loginButton.addEventListener("click", async function () {
+
+    const email =
+      document.getElementById("loginEmail").value.trim();
+
+    const password =
+      document.getElementById("loginPassword").value;
+
+    const status =
+      document.getElementById("loginStatus");
+
+    const accountInfo =
+      document.getElementById("accountInfo");
+
+
+    accountInfo.style.display = "none";
+    accountInfo.textContent = "";
+
+
+    if (!email || !password) {
+
+      status.textContent =
+        "❌ Please enter your email and password.";
+
+      return;
+    }
+
+
+    status.textContent =
+      "Logging in...";
+
+    loginButton.disabled = true;
+
+
+    try {
+
+      const response = await fetch("/login", {
+
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          email,
+          password
+        })
+
+      });
+
+
+      const data =
+        await response.json();
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          data.error ||
+          data.details ||
+          "Login failed."
+        );
+
+      }
+
+
+      status.textContent =
+        "✅ Login successful!";
+
+
+      if (data.user) {
+
+        accountInfo.innerHTML =
+          "<strong>Welcome, " +
+          (data.user.businessName || data.user.email) +
+          "</strong><br>" +
+          "Plan: " +
+          (data.user.plan || "free") +
+          "<br>" +
+          "Generations used: " +
+          (data.user.generationsUsed || 0);
+
+        accountInfo.style.display =
+          "block";
+
+
+        if (data.user.businessName) {
+
+          document.getElementById("businessName").value =
+            data.user.businessName;
+
+        }
+
+      }
+
+
+      document.getElementById("loginPassword").value =
+        "";
+
+
+    } catch (error) {
+
+      status.textContent =
+        "❌ " + error.message;
+
+    } finally {
+
+      loginButton.disabled = false;
+
+    }
+
+  });
+
+
+  // -------------------------
+  // GENERATE CONTENT
+  // -------------------------
+
   generateButton.addEventListener("click", async function () {
 
     const status =
@@ -425,6 +639,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const actions =
       document.getElementById("resultActions");
+
+    const actionMessage =
+      document.getElementById("actionMessage");
+
 
     const businessName =
       document.getElementById("businessName").value.trim();
@@ -454,9 +672,15 @@ document.addEventListener("DOMContentLoaded", function () {
     status.textContent =
       "✨ Creating your post and picture...";
 
+    result.textContent = "";
     result.style.display = "none";
+
+    image.src = "";
     image.style.display = "none";
+
     actions.style.display = "none";
+
+    actionMessage.textContent = "";
 
     generateButton.disabled = true;
 
@@ -482,7 +706,8 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
 
       if (!response.ok) {
@@ -498,29 +723,50 @@ document.addEventListener("DOMContentLoaded", function () {
 
       if (data.result) {
 
-        result.textContent = data.result;
-        result.style.display = "block";
+        result.textContent =
+          data.result;
+
+        result.style.display =
+          "block";
 
       }
 
 
       if (data.image) {
 
-        image.src = data.image;
-        image.style.display = "block";
+        image.src =
+          data.image;
+
+        image.style.display =
+          "block";
 
       }
 
 
       if (data.result || data.image) {
 
-        actions.style.display = "grid";
+        actions.style.display =
+          "grid";
 
       }
 
 
-      status.textContent =
-        "✅ Your content is ready!";
+      if (data.result && data.image) {
+
+        status.textContent =
+          "✅ Your post and picture are ready!";
+
+      } else if (data.result) {
+
+        status.textContent =
+          "⚠️ Your post is ready, but the picture could not be generated.";
+
+      } else {
+
+        status.textContent =
+          "⚠️ No content was returned.";
+
+      }
 
 
     } catch (error) {
@@ -536,6 +782,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   });
 
+
+  // -------------------------
+  // COPY POST
+  // -------------------------
 
   copyButton.addEventListener("click", async function () {
 
@@ -554,6 +804,7 @@ document.addEventListener("DOMContentLoaded", function () {
         "There is no post to copy.";
 
       return;
+
     }
 
 
@@ -566,13 +817,30 @@ document.addEventListener("DOMContentLoaded", function () {
 
     } catch (error) {
 
+      const textArea =
+        document.createElement("textarea");
+
+      textArea.value = text;
+
+      document.body.appendChild(textArea);
+
+      textArea.select();
+
+      document.execCommand("copy");
+
+      document.body.removeChild(textArea);
+
       message.textContent =
-        "❌ Could not copy the post.";
+        "✅ Post copied!";
 
     }
 
   });
 
+
+  // -------------------------
+  // DOWNLOAD PICTURE
+  // -------------------------
 
   downloadButton.addEventListener("click", function () {
 
@@ -589,13 +857,15 @@ document.addEventListener("DOMContentLoaded", function () {
         "There is no picture to download.";
 
       return;
+
     }
 
 
     const link =
       document.createElement("a");
 
-    link.href = image.src;
+    link.href =
+      image.src;
 
     link.download =
       "localboost-ai-picture.jpg";
