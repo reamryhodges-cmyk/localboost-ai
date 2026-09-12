@@ -122,6 +122,40 @@ export async function onRequestPost(context) {
 
 
     // -----------------------------
+    // CHECK PAID PLAN
+    // -----------------------------
+
+    const allowedPlans = [
+      "starter",
+      "business",
+      "pro"
+    ];
+
+
+    const userPlan =
+      String(
+        session.plan || ""
+      )
+        .trim()
+        .toLowerCase();
+
+
+    if (!allowedPlans.includes(userPlan)) {
+      return Response.json(
+        {
+          error:
+            "You need an active paid plan to use the AI generator.",
+          paymentRequired: true,
+          plan: userPlan || "free"
+        },
+        {
+          status: 403
+        }
+      );
+    }
+
+
+    // -----------------------------
     // GET FORM DETAILS
     // -----------------------------
 
@@ -309,7 +343,6 @@ Return ONLY the finished social media post.
     }
 
 
-    // Remove strange repeated junk
     post =
       post.replace(
         /-1(?:-0){2,}.*$/s,
@@ -337,9 +370,7 @@ Return ONLY the finished social media post.
     const uniqueHashtags = [];
 
 
-    for (
-      const tag of hashtagMatches
-    ) {
+    for (const tag of hashtagMatches) {
       if (
         !uniqueHashtags.some(
           existing =>
@@ -349,7 +380,6 @@ Return ONLY the finished social media post.
       ) {
         uniqueHashtags.push(tag);
       }
-
 
       if (
         uniqueHashtags.length === 5
@@ -418,9 +448,7 @@ Return ONLY the finished social media post.
     ];
 
 
-    for (
-      const tag of backupHashtags
-    ) {
+    for (const tag of backupHashtags) {
       if (
         uniqueHashtags.length < 5 &&
         !uniqueHashtags.some(
@@ -532,10 +560,6 @@ No watermarks.
       );
     }
 
-
-    // -----------------------------
-    // SEND RESULTS
-    // -----------------------------
 
     return Response.json({
       success: true,
