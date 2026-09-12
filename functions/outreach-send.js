@@ -1,7 +1,11 @@
+
 const ADMIN_EMAIL = "samtest1109@example.com";
 
 const FROM_EMAIL =
   "LocalBoost AI <hello@localboost4u.co.uk>";
+
+const REPLY_TO_EMAIL =
+  "support@localboost4u.co.uk";
 
 const DAILY_LIMIT = 20;
 
@@ -129,7 +133,6 @@ export async function onRequestPost({ request, env }) {
       );
     }
 
-    // Prevent duplicate outreach
     const existing = await env.DB.prepare(`
       SELECT id
       FROM prospects
@@ -151,7 +154,6 @@ export async function onRequestPost({ request, env }) {
       );
     }
 
-    // Basic daily send limit
     const dailyCount = await env.DB.prepare(`
       SELECT COUNT(*) AS total
       FROM prospects
@@ -188,7 +190,7 @@ export async function onRequestPost({ request, env }) {
         method: "POST",
 
         headers: {
-          "Authorization":
+          Authorization:
             `Bearer ${env.RESEND_API_KEY}`,
 
           "Content-Type":
@@ -204,8 +206,7 @@ export async function onRequestPost({ request, env }) {
 
           html,
 
-          reply_to:
-            "localboost4u@gmail.com"
+          reply_to: REPLY_TO_EMAIL
         })
       }
     );
