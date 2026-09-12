@@ -4,306 +4,422 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>LocalBoost AI</title>
+
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#1f2937}
-header{background:#111827;color:#fff;padding:30px 20px;text-align:center}
-.container{width:92%;max-width:850px;margin:25px auto}
-.card{background:#fff;padding:22px;border-radius:14px;margin-bottom:24px;box-shadow:0 4px 18px rgba(0,0,0,.08)}
-input,textarea,button{width:100%;box-sizing:border-box;font-size:16px}
-input,textarea{padding:12px;margin:6px 0 12px;border:1px solid #d1d5db;border-radius:8px}
-textarea{min-height:90px}
-button{padding:13px;border:0;border-radius:8px;background:#2563eb;color:#fff;font-weight:bold;margin-top:8px}
-button:disabled{opacity:.6}
-#accountCard{display:none}
-#aiResult,#aiImage,#resultActions{display:none}
-#aiResult{white-space:pre-wrap;background:#f9fafb;padding:15px;border-radius:10px;margin-top:15px}
-#aiImage{width:100%;margin-top:15px;border-radius:10px}
-.pricing{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.priceCard{border:1px solid #ddd;border-radius:10px;padding:16px;text-align:center}
-.price{font-size:28px;font-weight:bold}
-.status{margin-top:12px;text-align:center;font-weight:bold}
-@media(max-width:700px){.pricing{grid-template-columns:1fr}}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f5f7fb;
+  color:#1f2937;
+}
+
+header{
+  background:#111827;
+  color:#fff;
+  padding:30px 20px;
+  text-align:center;
+}
+
+.container{
+  width:92%;
+  max-width:850px;
+  margin:25px auto;
+}
+
+.card{
+  background:#fff;
+  padding:22px;
+  border-radius:14px;
+  margin-bottom:24px;
+  box-shadow:0 4px 18px rgba(0,0,0,.08);
+}
+
+input,
+textarea,
+button{
+  width:100%;
+  box-sizing:border-box;
+  font-size:16px;
+}
+
+input,
+textarea{
+  padding:12px;
+  margin:6px 0 12px;
+  border:1px solid #d1d5db;
+  border-radius:8px;
+}
+
+textarea{
+  min-height:90px;
+}
+
+button{
+  padding:13px;
+  border:0;
+  border-radius:8px;
+  background:#2563eb;
+  color:#fff;
+  font-weight:bold;
+  margin-top:8px;
+  cursor:pointer;
+}
+
+button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+#accountCard{
+  display:none;
+}
+
+#aiResult,
+#aiImage,
+#resultActions{
+  display:none;
+}
+
+#aiResult{
+  white-space:pre-wrap;
+  background:#f9fafb;
+  padding:15px;
+  border-radius:10px;
+  margin-top:15px;
+}
+
+#aiImage{
+  width:100%;
+  margin-top:15px;
+  border-radius:10px;
+}
+
+.pricing{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.priceCard{
+  border:1px solid #ddd;
+  border-radius:10px;
+  padding:16px;
+  text-align:center;
+}
+
+.price{
+  font-size:28px;
+  font-weight:bold;
+}
+
+.status{
+  margin-top:12px;
+  text-align:center;
+  font-weight:bold;
+}
+
+@media(max-width:700px){
+  .pricing{
+    grid-template-columns:1fr;
+  }
+}
 </style>
 </head>
+
 <body>
 
 <header>
-<h1>LocalBoost AI</h1>
-<p>Create professional social media content in seconds.</p>
+  <h1>LocalBoost AI</h1>
+  <p>Create professional social media content in seconds.</p>
 </header>
 
 <main class="container">
 
 <section id="accountCard" class="card">
-<h2>Your Account</h2>
-<div id="accountInfo"></div>
-<button id="logoutButton">Logout</button>
-<div id="sessionStatus" class="status"></div>
+  <h2>Your Account</h2>
+
+  <div id="accountInfo"></div>
+
+  <button id="logoutButton">
+    Logout
+  </button>
+
+  <div id="sessionStatus" class="status"></div>
 </section>
+
 
 <section id="signupCard" class="card">
-<h2>Create Account</h2>
-<label>Business name</label>
-<input id="signupBusinessName">
-<label>Email</label>
-<input id="signupEmail" type="email">
-<label>Password</label>
-<input id="signupPassword" type="password">
-<button id="signupButton">Create Account</button>
-<div id="signupStatus" class="status"></div>
+  <h2>Create Account</h2>
+
+  <label>Business name</label>
+  <input id="signupBusinessName">
+
+  <label>Email</label>
+  <input id="signupEmail" type="email">
+
+  <label>Password</label>
+  <input id="signupPassword" type="password">
+
+  <button id="signupButton">
+    Create Account
+  </button>
+
+  <div id="signupStatus" class="status"></div>
 </section>
+
 
 <section id="loginCard" class="card">
-<h2>Customer Login</h2>
-<label>Email</label>
-<input id="loginEmail" type="email">
-<label>Password</label>
-<input id="loginPassword" type="password">
-<button id="loginButton">Login</button>
-<div id="loginStatus" class="status"></div>
+  <h2>Customer Login</h2>
+
+  <label>Email</label>
+  <input id="loginEmail" type="email">
+
+  <label>Password</label>
+  <input id="loginPassword" type="password">
+
+  <button id="loginButton">
+    Login
+  </button>
+
+  <div id="loginStatus" class="status"></div>
 </section>
 
+
 <section class="card">
-<h2>Create Your Social Media Post</h2>
+  <h2>Create Your Social Media Post</h2>
 
-<label>Business name</label>
-<input id="businessName">
+  <label>Business name</label>
+  <input id="businessName">
 
-<label>Business type</label>
-<input id="businessType">
+  <label>Business type</label>
+  <input id="businessType">
 
-<label>Location</label>
-<input id="location">
+  <label>Location</label>
+  <input id="location">
 
-<label>Service or offer</label>
-<input id="service">
+  <label>Service or offer</label>
+  <input id="service">
 
-<label>Extra details</label>
-<textarea id="extraDetails"></textarea>
+  <label>Extra details</label>
+  <textarea id="extraDetails"></textarea>
 
-<button id="generateButton">Generate Post & Picture</button>
+  <button id="generateButton">
+    Generate Post & Picture
+  </button>
 
-<div id="aiStatus" class="status"></div>
-<div id="aiResult"></div>
-<img id="aiImage" alt="AI generated image">
+  <div id="aiStatus" class="status"></div>
 
-<div id="resultActions">
-<button id="copyButton">Copy Post</button>
-<button id="downloadButton">Download Picture</button>
-</div>
+  <div id="aiResult"></div>
 
-<div id="actionMessage" class="status"></div>
+  <img
+    id="aiImage"
+    alt="AI generated image"
+  >
+
+  <div id="resultActions">
+    <button id="copyButton">
+      Copy Post
+    </button>
+
+    <button id="downloadButton">
+      Download Picture
+    </button>
+  </div>
+
+  <div id="actionMessage" class="status"></div>
 </section>
 
+
 <section class="card">
-<h2>Choose Your Plan</h2>
+  <h2>Choose Your Plan</h2>
 
-<div class="pricing">
+  <div class="pricing">
 
-<div class="priceCard">
-<h3>Starter</h3>
-<div class="price">£9.99</div>
-<p>per month</p>
-<button class="planButton" data-plan="starter">Choose Starter</button>
-</div>
+    <div class="priceCard">
+      <h3>Starter</h3>
 
-<div class="priceCard">
-<h3>Business</h3>
-<div class="price">£24.99</div>
-<p>per month</p>
-<button class="planButton" data-plan="growth">Choose Business</button>
-</div>
+      <div class="price">
+        £9.99
+      </div>
 
-<div class="priceCard">
-<h3>Pro</h3>
-<div class="price">£49.99</div>
-<p>per month</p>
-<button class="planButton" data-plan="pro">Choose Pro</button>
-</div>
+      <p>per month</p>
 
-</div>
+      <button
+        class="planButton"
+        data-plan="starter"
+      >
+        Choose Starter
+      </button>
+    </div>
 
-<div id="pricingStatus" class="status"></div>
+
+    <div class="priceCard">
+      <h3>Business</h3>
+
+      <div class="price">
+        £24.99
+      </div>
+
+      <p>per month</p>
+
+      <button
+        class="planButton"
+        data-plan="business"
+      >
+        Choose Business
+      </button>
+    </div>
+
+
+    <div class="priceCard">
+      <h3>Pro</h3>
+
+      <div class="price">
+        £49.99
+      </div>
+
+      <p>per month</p>
+
+      <button
+        class="planButton"
+        data-plan="pro"
+      >
+        Choose Pro
+      </button>
+    </div>
+
+  </div>
+
+  <div
+    id="pricingStatus"
+    class="status"
+  ></div>
 </section>
 
 </main>
 
+
 <script>
-const $=id=>document.getElementById(id);
+
+const $ = id =>
+  document.getElementById(id);
+
+let currentUser = null;
+
 
 function showUser(user){
-  $("signupCard").style.display="none";
-  $("loginCard").style.display="none";
-  $("accountCard").style.display="block";
-  $("accountInfo").innerHTML=
-    "<b>Welcome, "+(user.businessName||user.email)+"</b><br>"+
-    "Email: "+user.email+"<br>"+
-    "Plan: "+(user.plan||"free")+"<br>"+
-    "Generations used: "+(user.generationsUsed||0);
-  if(user.businessName)$("businessName").value=user.businessName;
+
+  currentUser = user;
+
+  $("signupCard").style.display =
+    "none";
+
+  $("loginCard").style.display =
+    "none";
+
+  $("accountCard").style.display =
+    "block";
+
+  $("accountInfo").innerHTML =
+    "<b>Welcome, " +
+    (user.businessName || user.email) +
+    "</b><br>" +
+    "Email: " +
+    user.email +
+    "<br>" +
+    "Plan: " +
+    (user.plan || "free") +
+    "<br>" +
+    "Generations used: " +
+    (user.generationsUsed || 0);
+
+  if(user.businessName){
+    $("businessName").value =
+      user.businessName;
+  }
 }
+
 
 function showLoggedOut(){
-  $("signupCard").style.display="block";
-  $("loginCard").style.display="block";
-  $("accountCard").style.display="none";
+
+  currentUser = null;
+
+  $("signupCard").style.display =
+    "block";
+
+  $("loginCard").style.display =
+    "block";
+
+  $("accountCard").style.display =
+    "none";
 }
+
 
 async function checkSession(){
+
   try{
-    const r=await fetch("/me",{credentials:"same-origin"});
-    const d=await r.json();
-    if(r.ok&&d.loggedIn&&d.user)showUser(d.user);
-    else showLoggedOut();
+
+    const r =
+      await fetch(
+        "/me",
+        {
+          credentials:"same-origin"
+        }
+      );
+
+    const d =
+      await r.json();
+
+    if(
+      r.ok &&
+      d.loggedIn &&
+      d.user
+    ){
+
+      showUser(d.user);
+
+    }else{
+
+      showLoggedOut();
+
+    }
+
   }catch(e){
+
     showLoggedOut();
+
   }
 }
 
-$("signupButton").onclick=async()=>{
-  const status=$("signupStatus");
-  status.textContent="Creating account...";
-  try{
-    const r=await fetch("/signup",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        businessName:$("signupBusinessName").value.trim(),
-        email:$("signupEmail").value.trim(),
-        password:$("signupPassword").value
-      })
-    });
-    const d=await r.json();
-    if(!r.ok)throw new Error(d.error||"Signup failed");
-    status.textContent="✅ Account created. You can now log in.";
-    $("loginEmail").value=$("signupEmail").value.trim();
-  }catch(e){
-    status.textContent="❌ "+e.message;
-  }
-};
 
-$("loginButton").onclick=async()=>{
-  const status=$("loginStatus");
-  status.textContent="Logging in...";
-  try{
-    const r=await fetch("/login",{
-      method:"POST",
-      credentials:"same-origin",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        email:$("loginEmail").value.trim(),
-        password:$("loginPassword").value
-      })
-    });
-    const d=await r.json();
-    if(!r.ok)throw new Error(d.error||"Login failed");
-    status.textContent="✅ Login successful";
-    showUser(d.user);
-  }catch(e){
-    status.textContent="❌ "+e.message;
-  }
-};
+$("signupButton").onclick =
+async()=>{
 
-$("logoutButton").onclick=async()=>{
-  try{
-    await fetch("/logout",{method:"POST",credentials:"same-origin"});
-    showLoggedOut();
-    $("loginStatus").textContent="✅ Logged out";
-  }catch(e){
-    $("sessionStatus").textContent="❌ Logout failed";
-  }
-};
+  const status =
+    $("signupStatus");
 
-$("generateButton").onclick=async()=>{
-  const status=$("aiStatus");
-  status.textContent="Creating...";
-  $("aiResult").style.display="none";
-  $("aiImage").style.display="none";
-  $("resultActions").style.display="none";
+  status.textContent =
+    "Creating account...";
 
   try{
-    const r=await fetch("/generate",{
-      method:"POST",
-      credentials:"same-origin",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        businessName:$("businessName").value.trim(),
-        businessType:$("businessType").value.trim(),
-        location:$("location").value.trim(),
-        service:$("service").value.trim(),
-        extraDetails:$("extraDetails").value.trim()
-      })
-    });
 
-    const d=await r.json();
+    const r =
+      await fetch(
+        "/signup",
+        {
+          method:"POST",
 
-    if(!r.ok)throw new Error(d.error||"Generation failed");
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
 
-    if(d.result){
-      $("aiResult").textContent=d.result;
-      $("aiResult").style.display="block";
-    }
+          body:JSON.stringify({
+            businessName:
+              $("signupBusinessName")
+                .value
+                .trim(),
 
-    if(d.image){
-      $("aiImage").src=d.image;
-      $("aiImage").style.display="block";
-    }
-
-    $("resultActions").style.display="block";
-    status.textContent="✅ Ready";
-  }catch(e){
-    status.textContent="❌ "+e.message;
-  }
-};
-
-$("copyButton").onclick=async()=>{
-  await navigator.clipboard.writeText($("aiResult").textContent);
-  $("actionMessage").textContent="✅ Post copied";
-};
-
-$("downloadButton").onclick=()=>{
-  const a=document.createElement("a");
-  a.href=$("aiImage").src;
-  a.download="localboost-ai-picture.jpg";
-  a.click();
-};
-
-document.querySelectorAll(".planButton").forEach(button=>{
-  button.onclick=async()=>{
-    const status=$("pricingStatus");
-    status.textContent="Opening secure checkout...";
-    try{
-      const r=await fetch("/create-checkout-session",{
-        method:"POST",
-        credentials:"same-origin",
-        headers:{"Content-Type":"application/json"},
-        body:JSON.stringify({plan:button.dataset.plan})
-      });
-
-      const d=await r.json();
-
-      if(!r.ok)throw new Error(d.error||"Checkout failed");
-
-      window.location.href=d.checkoutUrl;
-    }catch(e){
-      status.textContent="❌ "+e.message;
-    }
-  };
-});
-
-const payment=new URLSearchParams(location.search).get("payment");
-
-if(payment==="success"){
-  $("pricingStatus").textContent="✅ Payment completed.";
-}
-
-if(payment==="cancelled"){
-  $("pricingStatus").textContent="Payment cancelled.";
-}
-
-checkSession();
-</script>
-
-</body>
-</html>
+            email:
+              $("signup
 
