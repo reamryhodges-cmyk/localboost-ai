@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
@@ -84,6 +85,10 @@
       font-size: 28px;
     }
 
+    .card p {
+      line-height: 1.5;
+    }
+
     label {
       display: block;
       font-weight: bold;
@@ -161,8 +166,41 @@
       padding: 20px;
     }
 
+    .preview-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 16px;
+    }
+
+    .finder-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 18px;
+      margin-bottom: 16px;
+    }
+
+    .finder-summary div {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .finder-summary strong {
+      display: block;
+      font-size: 26px;
+      margin-top: 5px;
+    }
+
     @media (max-width: 800px) {
       .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .finder-summary {
         grid-template-columns: 1fr 1fr;
       }
 
@@ -181,7 +219,7 @@
 
 <header>
   <h1>LocalBoost AI Admin</h1>
-  <p>Customer and sales dashboard</p>
+  <p>Customer, sales and outreach dashboard</p>
 </header>
 
 <main class="container">
@@ -193,33 +231,184 @@
   <section class="grid">
 
     <div class="stat">
-      <div class="stat-title">Total Approached</div>
-      <div id="approached" class="number">0</div>
+      <div class="stat-title">
+        Total Approached
+      </div>
+
+      <div
+        id="approached"
+        class="number"
+      >
+        0
+      </div>
     </div>
 
     <div class="stat">
-      <div class="stat-title">Total Signups</div>
-      <div id="signups" class="number">0</div>
+      <div class="stat-title">
+        Total Signups
+      </div>
+
+      <div
+        id="signups"
+        class="number"
+      >
+        0
+      </div>
     </div>
 
     <div class="stat">
-      <div class="stat-title">Paid Customers</div>
-      <div id="paid" class="number">0</div>
+      <div class="stat-title">
+        Paid Customers
+      </div>
+
+      <div
+        id="paid"
+        class="number"
+      >
+        0
+      </div>
     </div>
 
     <div class="stat">
-      <div class="stat-title">Conversion Rate</div>
-      <div id="conversion" class="number">0%</div>
+      <div class="stat-title">
+        Conversion Rate
+      </div>
+
+      <div
+        id="conversion"
+        class="number"
+      >
+        0%
+      </div>
     </div>
 
     <div class="stat">
-      <div class="stat-title">Monthly Revenue</div>
-      <div id="revenue" class="number">£0.00</div>
+      <div class="stat-title">
+        Monthly Revenue
+      </div>
+
+      <div
+        id="revenue"
+        class="number"
+      >
+        £0.00
+      </div>
     </div>
 
   </section>
 
+
+  <!-- UK BUSINESS FINDER -->
+
   <section class="card">
+
+    <h2>Find UK Businesses</h2>
+
+    <p>
+      Search Hunter for businesses across the
+      United Kingdom.
+    </p>
+
+    <div class="preview-box">
+      <strong>
+        Preview mode
+      </strong>
+
+      <br><br>
+
+      This search does not send outreach
+      emails. It only finds potential
+      businesses for LocalBoost.
+    </div>
+
+    <label for="ukBusinessQuery">
+      What businesses should LocalBoost find?
+    </label>
+
+    <textarea
+      id="ukBusinessQuery"
+      placeholder="Example: Small and medium sized businesses based in the United Kingdom"
+    >Small and medium sized businesses based in the United Kingdom</textarea>
+
+    <button
+      id="findBusinessesButton"
+      type="button"
+    >
+      Find UK Businesses
+    </button>
+
+    <div
+      id="finderStatus"
+      class="status"
+      style="margin-top:16px;"
+    ></div>
+
+    <div
+      id="finderSummary"
+      class="finder-summary"
+      style="display:none;"
+    >
+
+      <div>
+        Businesses Found
+
+        <strong id="finderFound">
+          0
+        </strong>
+      </div>
+
+      <div>
+        Eligible Leads
+
+        <strong id="finderEligible">
+          0
+        </strong>
+      </div>
+
+    </div>
+
+    <div
+      id="finderResultsWrap"
+      class="table-wrap"
+      style="display:none;"
+    >
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Business</th>
+            <th>Website / Domain</th>
+            <th>Emails Available</th>
+            <th>Generic Emails</th>
+            <th>Personal Emails</th>
+          </tr>
+        </thead>
+
+        <tbody id="finderTable">
+
+          <tr>
+            <td
+              colspan="5"
+              class="empty-row"
+            >
+              No search has been run yet.
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+
+  <!-- MANUAL PROSPECT -->
+
+  <section class="card">
+
     <h2>Add Business Approached</h2>
 
     <label for="businessName">
@@ -257,13 +446,35 @@
     </label>
 
     <select id="contactMethod">
-      <option value="">Select contact method</option>
-      <option value="email">Email</option>
-      <option value="facebook">Facebook</option>
-      <option value="instagram">Instagram</option>
-      <option value="phone">Phone</option>
-      <option value="website">Website</option>
-      <option value="other">Other</option>
+
+      <option value="">
+        Select contact method
+      </option>
+
+      <option value="email">
+        Email
+      </option>
+
+      <option value="facebook">
+        Facebook
+      </option>
+
+      <option value="instagram">
+        Instagram
+      </option>
+
+      <option value="phone">
+        Phone
+      </option>
+
+      <option value="website">
+        Website
+      </option>
+
+      <option value="other">
+        Other
+      </option>
+
     </select>
 
     <label for="contactDetails">
@@ -287,35 +498,54 @@
       class="status"
       style="margin-top:16px;"
     ></div>
+
   </section>
 
+
+  <!-- PAID PLANS -->
+
   <section class="card">
+
     <h2>Paid Plans</h2>
 
     <div class="plan-row">
       Starter:
-      <strong id="starter">0</strong>
+      <strong id="starter">
+        0
+      </strong>
     </div>
 
     <div class="plan-row">
       Business:
-      <strong id="business">0</strong>
+      <strong id="business">
+        0
+      </strong>
     </div>
 
     <div class="plan-row">
       Pro:
-      <strong id="pro">0</strong>
+      <strong id="pro">
+        0
+      </strong>
     </div>
+
   </section>
 
+
+  <!-- RECENT PROSPECTS -->
+
   <section class="card">
-    <h2>Recent Businesses Approached</h2>
+
+    <h2>
+      Recent Businesses Approached
+    </h2>
 
     <div class="table-wrap">
 
       <table>
 
         <thead>
+
           <tr>
             <th>Business</th>
             <th>Type</th>
@@ -325,17 +555,20 @@
             <th>Status</th>
             <th>Date</th>
           </tr>
+
         </thead>
 
         <tbody id="prospectTable">
 
           <tr>
+
             <td
               colspan="7"
               class="empty-row"
             >
               Loading...
             </td>
+
           </tr>
 
         </tbody>
@@ -343,7 +576,9 @@
       </table>
 
     </div>
+
   </section>
+
 
   <section class="card">
 
@@ -358,12 +593,18 @@
 
 </main>
 
+
 <script>
 "use strict";
+
 
 const $ = (id) =>
   document.getElementById(id);
 
+
+/* =============================
+   LOAD DASHBOARD
+============================= */
 
 async function loadDashboard() {
 
@@ -383,13 +624,16 @@ async function loadDashboard() {
       );
 
     const contentType =
-      response.headers.get("content-type") || "";
+      response.headers.get(
+        "content-type"
+      ) || "";
 
     if (
       !contentType.includes(
         "application/json"
       )
     ) {
+
       throw new Error(
         "Admin statistics endpoint is not responding correctly."
       );
@@ -399,6 +643,7 @@ async function loadDashboard() {
       await response.json();
 
     if (!response.ok) {
+
       throw new Error(
         data.error ||
         "Could not load dashboard."
@@ -465,22 +710,269 @@ async function loadDashboard() {
 }
 
 
-function renderProspects(prospects) {
+/* =============================
+   FIND UK BUSINESSES
+============================= */
+
+$("findBusinessesButton")
+  .addEventListener(
+    "click",
+    findUKBusinesses
+  );
+
+
+async function findUKBusinesses() {
+
+  const button =
+    $("findBusinessesButton");
+
+  const status =
+    $("finderStatus");
+
+  const query =
+    $("ukBusinessQuery")
+      .value
+      .trim();
+
+  if (!query) {
+
+    status.textContent =
+      "❌ Enter what type of UK businesses you want to find.";
+
+    return;
+  }
+
+  button.disabled = true;
+
+  button.textContent =
+    "Searching UK businesses...";
+
+  status.textContent =
+    "Searching Hunter...";
+
+  $("finderSummary").style.display =
+    "none";
+
+  $("finderResultsWrap").style.display =
+    "none";
+
+  try {
+
+    const response =
+      await fetch(
+        "/find-uk-businesses",
+        {
+          method: "POST",
+
+          credentials:
+            "same-origin",
+
+          cache:
+            "no-store",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            query
+          })
+        }
+      );
+
+
+    const contentType =
+      response.headers.get(
+        "content-type"
+      ) || "";
+
+
+    if (
+      !contentType.includes(
+        "application/json"
+      )
+    ) {
+
+      throw new Error(
+        "UK business finder endpoint is not responding correctly."
+      );
+    }
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.error ||
+        "Could not search for UK businesses."
+      );
+    }
+
+
+    $("finderFound").textContent =
+      Number(
+        data.found || 0
+      );
+
+
+    $("finderEligible").textContent =
+      Number(
+        data.eligible || 0
+      );
+
+
+    $("finderSummary").style.display =
+      "grid";
+
+
+    $("finderResultsWrap").style.display =
+      "block";
+
+
+    renderFinderResults(
+      data.businesses || []
+    );
+
+
+    status.textContent =
+      "✅ UK business search complete. Preview only — no emails were sent.";
+
+
+  } catch (error) {
+
+    status.textContent =
+      "❌ " + error.message;
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "Find UK Businesses";
+
+  }
+}
+
+
+/* =============================
+   RENDER HUNTER RESULTS
+============================= */
+
+function renderFinderResults(
+  businesses
+) {
+
+  const table =
+    $("finderTable");
+
+  table.innerHTML = "";
+
+
+  if (!businesses.length) {
+
+    const row =
+      document.createElement(
+        "tr"
+      );
+
+    const cell =
+      document.createElement(
+        "td"
+      );
+
+    cell.colSpan = 5;
+
+    cell.className =
+      "empty-row";
+
+    cell.textContent =
+      "No eligible UK businesses were returned by this search.";
+
+    row.appendChild(cell);
+
+    table.appendChild(row);
+
+    return;
+  }
+
+
+  for (
+    const business of businesses
+  ) {
+
+    const row =
+      document.createElement(
+        "tr"
+      );
+
+
+    addCell(
+      row,
+      business.businessName
+    );
+
+
+    addCell(
+      row,
+      business.domain
+    );
+
+
+    addCell(
+      row,
+      business.emailsAvailable
+    );
+
+
+    addCell(
+      row,
+      business.genericEmails
+    );
+
+
+    addCell(
+      row,
+      business.personalEmails
+    );
+
+
+    table.appendChild(row);
+  }
+}
+
+
+/* =============================
+   RENDER PROSPECTS
+============================= */
+
+function renderProspects(
+  prospects
+) {
 
   const table =
     $("prospectTable");
 
   table.innerHTML = "";
 
+
   if (!prospects.length) {
 
     const row =
-      document.createElement("tr");
+      document.createElement(
+        "tr"
+      );
 
     const cell =
-      document.createElement("td");
+      document.createElement(
+        "td"
+      );
 
     cell.colSpan = 7;
+
     cell.className =
       "empty-row";
 
@@ -488,6 +980,7 @@ function renderProspects(prospects) {
       "No businesses have been added yet.";
 
     row.appendChild(cell);
+
     table.appendChild(row);
 
     return;
@@ -499,37 +992,46 @@ function renderProspects(prospects) {
   ) {
 
     const row =
-      document.createElement("tr");
+      document.createElement(
+        "tr"
+      );
+
 
     addCell(
       row,
       prospect.business_name
     );
 
+
     addCell(
       row,
       prospect.business_type
     );
+
 
     addCell(
       row,
       prospect.location
     );
 
+
     addCell(
       row,
       prospect.contact_method
     );
+
 
     addCell(
       row,
       prospect.contact_details
     );
 
+
     addCell(
       row,
       prospect.status
     );
+
 
     addCell(
       row,
@@ -538,10 +1040,15 @@ function renderProspects(prospects) {
       )
     );
 
+
     table.appendChild(row);
   }
 }
 
+
+/* =============================
+   ADD TABLE CELL
+============================= */
 
 function addCell(
   row,
@@ -549,14 +1056,20 @@ function addCell(
 ) {
 
   const cell =
-    document.createElement("td");
+    document.createElement(
+      "td"
+    );
 
   cell.textContent =
-    value || "";
+    value ?? "";
 
   row.appendChild(cell);
 }
 
+
+/* =============================
+   MANUAL ADD PROSPECT
+============================= */
 
 $("addProspectButton")
   .addEventListener(
@@ -573,25 +1086,30 @@ async function addProspect() {
   const status =
     $("prospectStatus");
 
+
   const businessName =
     $("businessName")
       .value
       .trim();
+
 
   const businessType =
     $("businessType")
       .value
       .trim();
 
+
   const location =
     $("location")
       .value
       .trim();
 
+
   const contactMethod =
     $("contactMethod")
       .value
       .trim();
+
 
   const contactDetails =
     $("contactDetails")
@@ -652,6 +1170,7 @@ async function addProspect() {
         "application/json"
       )
     ) {
+
       throw new Error(
         "Add prospect endpoint is not responding correctly."
       );
@@ -679,14 +1198,18 @@ async function addProspect() {
     $("businessName").value =
       "";
 
+
     $("businessType").value =
       "";
+
 
     $("location").value =
       "";
 
+
     $("contactMethod").value =
       "";
+
 
     $("contactDetails").value =
       "";
@@ -700,6 +1223,7 @@ async function addProspect() {
     status.textContent =
       "❌ " + error.message;
 
+
   } finally {
 
     button.disabled = false;
@@ -708,10 +1232,16 @@ async function addProspect() {
 }
 
 
+/* =============================
+   FORMAT DATE
+============================= */
+
 function formatDate(value) {
 
   if (!value) {
+
     return "";
+
   }
 
 
@@ -734,7 +1264,9 @@ function formatDate(value) {
 
 
   const date =
-    new Date(parsedValue);
+    new Date(
+      parsedValue
+    );
 
 
   if (
@@ -742,7 +1274,9 @@ function formatDate(value) {
       date.getTime()
     )
   ) {
+
     return value;
+
   }
 
 
@@ -756,10 +1290,13 @@ function formatDate(value) {
 }
 
 
+/* =============================
+   START
+============================= */
+
 loadDashboard();
+
 </script>
 
 </body>
 </html>
-
-     
