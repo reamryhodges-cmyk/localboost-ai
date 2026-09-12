@@ -1,5 +1,3 @@
-const SIGNATURE_TOLERANCE_SECONDS = 300;
-
 const SUPPRESSION_EVENTS = new Set([
   "email.bounced",
   "email.complained",
@@ -7,205 +5,398 @@ const SUPPRESSION_EVENTS = new Set([
   "email.suppressed"
 ]);
 
-export async function onRequestPost({ request, env }) {
-  try {
-    if (!env.RESEND_WEBHOOK_SECRET) {
-      console.error("RESEND_WEBHOOK_SECRET is missing.");
+const SIGNATURE_TOLERANCE_SECONDS = 300;
 
-      return text(
-        "Webhook secret not configured.",
-        500
+export async function onRequestPost({ request, env }) {
+  let stage = "start";
+
+  try {
+    stage = "checking bindings";
+
+    if (!env.DB) {
+      throw new Error("DB binding is missing");
+    }
+
+    if (!env.RESEND_WEBHOOK_SECRET) {
+      throw new Error(
+        "RESEND_WEBHOOK_SECRET is missing"
       );
     }
 
-    const svixId = request.headers.get("svix-id");
-    const svixTimestamp = request.headers.get("svix-timestamp");
-    const svixSignature = request.headers.get("svix-signature");
+    stage = "reading webhook headers";
 
-    if (!svixId || !svixTimestamp || !svixSignature) {
-      return text(
-        "Missing webhook signature headers.",
+    const webhookId =
+      request.headers.get("svix-id");
+
+    const timestamp =
+      request.headers.get("svix-timestamp");
+
+    const signature =
+      request.headers.get("svix-signature");
+
+    if (
+      !webhookId ||
+      !timestamp ||
+      !signature
+    ) {
+      return json(
+        {
+          success: false,
+          error: "Missing webhook signature headers"
+        },
         400
       );
     }
+
+    stage = "reading request body";
 
     const rawBody = await request.text();
 
-    const valid = await verifySvixSignature({
-      payload: rawBody,
-      svixId,
-      svixTimestamp,
-      svixSignature,
-      secret: env.RESEND_WEBHOOK_SECRET
-    });
+    stage = "verifying signature";
 
-    if (!valid) {
-      return text(
-        "Invalid webhook signature.",
+    let verified = false;
+
+    try {
+      verified =
+        await verifyWebhook({
+          rawBody,
+          webhookId,
+          timestamp,
+          signature,
+          secret:
+            env.RESEND_WEBHOOK_SECRET
+        });
+    } catch (error) {
+      console.error(
+        "Webhook verification error:",
+        error
+      );
+
+      return json(
+        {
+          success: false,
+          error: "Webhook verification failed"
+        },
         400
       );
     }
 
-    const alreadyProcessed = await env.DB.prepare(`
-      SELECT id
-      FROM email_events
-      WHERE svix_id = ?
-      LIMIT 1
-    `)
-      .bind(svixId)
-      .first();
-
-    if (alreadyProcessed) {
-      return json({
-        success: true,
-        duplicate: true
-      });
+    if (!verified) {
+      return json(
+        {
+          success: false,
+          error: "Invalid webhook signature"
+        },
+        400
+      );
     }
+
+    stage = "parsing event";
 
     let event;
 
     try {
       event = JSON.parse(rawBody);
     } catch {
-      return text(
-        "Invalid JSON payload.",
+      return json(
+        {
+          success: false,
+          error: "Invalid JSON"
+        },
         400
       );
     }
 
-    const eventType = clean(
-      event?.type,
-      100
-    );
+    const eventType =
+      clean(event?.type, 100) ||
+      "unknown";
 
-    const emailId = clean(
-      event?.data?.email_id,
-      200
-    );
-
-    const businessName = clean(
-      event?.data?.tags?.business_name,
-      200
-    );
-
-    const recipients = getRecipients(event);
-    const primaryEmail = recipients[0] || "";
-
-    const details = buildEventDetails(event);
-
-    try {
-      await env.DB.prepare(`
-        INSERT INTO email_events (
-          resend_email_id,
-          email,
-          event_type,
-          business_name,
-          details,
-          svix_id
-        )
-        VALUES (?, ?, ?, ?, ?, ?)
-      `)
-        .bind(
-          emailId || null,
-          primaryEmail || null,
-          eventType || "unknown",
-          businessName || null,
-          details,
-          svixId
-        )
-        .run();
-
-    } catch (error) {
-      const message = String(
-        error?.message || error
+    const resendEmailId =
+      clean(
+        event?.data?.email_id ||
+        event?.data?.id,
+        200
       );
 
-      if (
-        message
-          .toLowerCase()
-          .includes("unique")
-      ) {
-        return json({
-          success: true,
-          duplicate: true
-        });
-      }
+    const recipients =
+      getRecipients(event);
 
-      throw error;
+    const email =
+      recipients[0] || null;
+
+    const details =
+      JSON.stringify({
+        created_at:
+          event?.created_at || null,
+
+        subject:
+          event?.data?.subject || null,
+
+        bounce:
+          event?.data?.bounce || null,
+
+        failed:
+          event?.data?.failed || null,
+
+        suppressed:
+          event?.data?.suppressed || null
+      }).slice(0, 5000);
+
+    stage = "recording event";
+
+    /*
+      INSERT OR IGNORE means Resend can safely
+      retry the same webhook without creating
+      duplicate rows.
+    */
+
+    await env.DB.prepare(`
+      INSERT OR IGNORE INTO email_events (
+        resend_email_id,
+        email,
+        event_type,
+        business_name,
+        details,
+        svix_id
+      )
+      VALUES (?, ?, ?, ?, ?, ?)
+    `)
+      .bind(
+        resendEmailId || null,
+        email,
+        eventType,
+        null,
+        details,
+        webhookId
+      )
+      .run();
+
+    stage = "adding suppression";
+
+    if (
+      SUPPRESSION_EVENTS.has(eventType)
+    ) {
+      for (const recipient of recipients) {
+        await env.DB.prepare(`
+          INSERT INTO suppression_list (
+            email,
+            reason,
+            source
+          )
+          VALUES (?, ?, ?)
+
+          ON CONFLICT(email)
+          DO UPDATE SET
+            reason = excluded.reason,
+            source = excluded.source
+        `)
+          .bind(
+            recipient,
+            getSuppressionReason(
+              eventType
+            ),
+            resendEmailId
+              ? `resend:${resendEmailId}`
+              : "resend"
+          )
+          .run();
+      }
     }
 
-    if (SUPPRESSION_EVENTS.has(eventType)) {
-      for (const email of recipients) {
-        await addSuppression(
-          env,
-          email,
-          eventType,
-          emailId
-        );
-      }
-    }
+    stage = "complete";
 
     return json({
       success: true,
       eventType,
-      recipientsProcessed: recipients.length
+      recipients,
+      suppressed:
+        SUPPRESSION_EVENTS.has(
+          eventType
+        )
     });
 
   } catch (error) {
     console.error(
-      "Resend webhook error:",
+      `Resend webhook failed at stage: ${stage}`,
       error
     );
 
-    return text(
-      "Webhook processing failed.",
+    return json(
+      {
+        success: false,
+        error:
+          "Webhook processing failed",
+        stage
+      },
       500
     );
   }
 }
 
 
-async function addSuppression(
-  env,
-  email,
-  eventType,
-  emailId
-) {
-  const normalizedEmail = normalizeEmail(email);
+async function verifyWebhook({
+  rawBody,
+  webhookId,
+  timestamp,
+  signature,
+  secret
+}) {
+  const timestampNumber =
+    Number(timestamp);
 
-  if (!normalizedEmail) {
-    return;
+  if (
+    !Number.isFinite(
+      timestampNumber
+    )
+  ) {
+    return false;
   }
 
-  const reason = suppressionReason(eventType);
+  const currentTime =
+    Math.floor(Date.now() / 1000);
 
-  const source = emailId
-    ? `resend:${emailId}`
-    : "resend";
+  if (
+    Math.abs(
+      currentTime -
+      timestampNumber
+    ) >
+    SIGNATURE_TOLERANCE_SECONDS
+  ) {
+    return false;
+  }
 
-  await env.DB.prepare(`
-    INSERT INTO suppression_list (
-      email,
-      reason,
-      source
+  let secretValue =
+    String(secret || "").trim();
+
+  if (
+    secretValue.startsWith(
+      "whsec_"
     )
-    VALUES (?, ?, ?)
+  ) {
+    secretValue =
+      secretValue.substring(6);
+  }
 
-    ON CONFLICT(email)
-    DO UPDATE SET
-      reason = excluded.reason,
-      source = excluded.source
-  `)
-    .bind(
-      normalizedEmail,
-      reason,
-      source
-    )
-    .run();
+  if (!secretValue) {
+    return false;
+  }
+
+  const keyBytes =
+    decodeBase64(secretValue);
+
+  const signingKey =
+    await crypto.subtle.importKey(
+      "raw",
+      keyBytes,
+      {
+        name: "HMAC",
+        hash: "SHA-256"
+      },
+      false,
+      ["sign"]
+    );
+
+  const signedPayload =
+    `${webhookId}.${timestamp}.${rawBody}`;
+
+  const calculated =
+    await crypto.subtle.sign(
+      "HMAC",
+      signingKey,
+      new TextEncoder().encode(
+        signedPayload
+      )
+    );
+
+  const calculatedSignature =
+    encodeBase64(
+      new Uint8Array(calculated)
+    );
+
+  const supplied =
+    String(signature)
+      .split(/\s+/)
+      .filter(Boolean);
+
+  for (const item of supplied) {
+    const separator =
+      item.indexOf(",");
+
+    if (separator === -1) {
+      continue;
+    }
+
+    const version =
+      item.substring(
+        0,
+        separator
+      );
+
+    const value =
+      item.substring(
+        separator + 1
+      );
+
+    if (
+      version === "v1" &&
+      safeCompare(
+        value,
+        calculatedSignature
+      )
+    ) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 
-function suppressionReason(eventType) {
+function getRecipients(event) {
+  let values =
+    event?.data?.to;
+
+  if (!values) {
+    values =
+      event?.data?.email;
+  }
+
+  if (!Array.isArray(values)) {
+    values = values
+      ? [values]
+      : [];
+  }
+
+  return [
+    ...new Set(
+      values
+        .map(normalizeEmail)
+        .filter(Boolean)
+    )
+  ];
+}
+
+
+function normalizeEmail(value) {
+  const email =
+    String(value || "")
+      .trim()
+      .toLowerCase();
+
+  if (
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      .test(email)
+  ) {
+    return "";
+  }
+
+  return email.slice(0, 320);
+}
+
+
+function getSuppressionReason(
+  eventType
+) {
   switch (eventType) {
     case "email.bounced":
       return "bounce";
@@ -225,238 +416,116 @@ function suppressionReason(eventType) {
 }
 
 
-function getRecipients(event) {
-  const to = event?.data?.to;
+function decodeBase64(value) {
+  let base64 =
+    String(value)
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
 
-  if (Array.isArray(to)) {
-    return [
-      ...new Set(
-        to
-          .map(normalizeEmail)
-          .filter(Boolean)
-      )
-    ];
-  }
-
-  const single = normalizeEmail(to);
-
-  return single ? [single] : [];
-}
-
-
-function buildEventDetails(event) {
-  try {
-    const details = {
-      subject: event?.data?.subject || null,
-      bounce: event?.data?.bounce || null,
-      failed: event?.data?.failed || null,
-      suppressed: event?.data?.suppressed || null,
-      created_at:
-        event?.created_at ||
-        event?.data?.created_at ||
-        null
-    };
-
-    return JSON.stringify(details).slice(0, 5000);
-
-  } catch {
-    return "";
-  }
-}
-
-
-async function verifySvixSignature({
-  payload,
-  svixId,
-  svixTimestamp,
-  svixSignature,
-  secret
-}) {
-  const timestamp = Number(svixTimestamp);
-
-  if (!Number.isFinite(timestamp)) {
-    return false;
-  }
-
-  const now = Math.floor(Date.now() / 1000);
-
-  if (
-    Math.abs(now - timestamp) >
-    SIGNATURE_TOLERANCE_SECONDS
+  while (
+    base64.length % 4 !== 0
   ) {
-    return false;
+    base64 += "=";
   }
 
-  let secretBase64 = String(secret || "").trim();
+  const decoded =
+    atob(base64);
 
-  if (!secretBase64) {
-    return false;
-  }
-
-  if (secretBase64.startsWith("whsec_")) {
-    secretBase64 = secretBase64.slice(6);
-  }
-
-  let secretBytes;
-
-  try {
-    secretBytes = base64ToBytes(secretBase64);
-  } catch {
-    return false;
-  }
-
-  const signedContent =
-    `${svixId}.${svixTimestamp}.${payload}`;
-
-  const key = await crypto.subtle.importKey(
-    "raw",
-    secretBytes,
-    {
-      name: "HMAC",
-      hash: "SHA-256"
-    },
-    false,
-    ["sign"]
-  );
-
-  const calculatedBuffer =
-    await crypto.subtle.sign(
-      "HMAC",
-      key,
-      new TextEncoder().encode(signedContent)
+  const bytes =
+    new Uint8Array(
+      decoded.length
     );
 
-  const calculatedSignature = bytesToBase64(
-    new Uint8Array(calculatedBuffer)
-  );
-
-  const suppliedSignatures = String(svixSignature)
-    .split(" ")
-    .map(value => value.trim())
-    .filter(Boolean);
-
-  for (const signature of suppliedSignatures) {
-    const parts = signature.split(",");
-
-    if (
-      parts.length !== 2 ||
-      parts[0] !== "v1"
-    ) {
-      continue;
-    }
-
-    if (
-      constantTimeEqual(
-        parts[1],
-        calculatedSignature
-      )
-    ) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-
-function constantTimeEqual(left, right) {
-  const a = new TextEncoder().encode(
-    String(left)
-  );
-
-  const b = new TextEncoder().encode(
-    String(right)
-  );
-
-  if (a.length !== b.length) {
-    return false;
-  }
-
-  let difference = 0;
-
-  for (let i = 0; i < a.length; i++) {
-    difference |= a[i] ^ b[i];
-  }
-
-  return difference === 0;
-}
-
-
-function base64ToBytes(value) {
-  const binary = atob(value);
-
-  const bytes = new Uint8Array(
-    binary.length
-  );
-
-  for (let i = 0; i < binary.length; i++) {
-    bytes[i] = binary.charCodeAt(i);
+  for (
+    let i = 0;
+    i < decoded.length;
+    i++
+  ) {
+    bytes[i] =
+      decoded.charCodeAt(i);
   }
 
   return bytes;
 }
 
 
-function bytesToBase64(bytes) {
-  let binary = "";
+function encodeBase64(bytes) {
+  let value = "";
 
-  for (let i = 0; i < bytes.length; i++) {
-    binary += String.fromCharCode(
-      bytes[i]
-    );
+  for (
+    let i = 0;
+    i < bytes.length;
+    i++
+  ) {
+    value +=
+      String.fromCharCode(
+        bytes[i]
+      );
   }
 
-  return btoa(binary);
+  return btoa(value);
 }
 
 
-function normalizeEmail(value) {
-  const email = String(value || "")
-    .trim()
-    .toLowerCase();
+function safeCompare(a, b) {
+  const left =
+    new TextEncoder().encode(
+      String(a)
+    );
+
+  const right =
+    new TextEncoder().encode(
+      String(b)
+    );
 
   if (
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    left.length !==
+    right.length
   ) {
-    return "";
+    return false;
   }
 
-  return email.slice(0, 320);
+  let difference = 0;
+
+  for (
+    let i = 0;
+    i < left.length;
+    i++
+  ) {
+    difference |=
+      left[i] ^ right[i];
+  }
+
+  return difference === 0;
 }
 
 
-function clean(value, maxLength) {
+function clean(
+  value,
+  maxLength
+) {
   return String(value || "")
     .trim()
     .slice(0, maxLength);
 }
 
 
-function json(data, status = 200) {
+function json(
+  data,
+  status = 200
+) {
   return new Response(
     JSON.stringify(data),
     {
       status,
+
       headers: {
         "Content-Type":
           "application/json; charset=UTF-8",
-        "Cache-Control": "no-store"
+
+        "Cache-Control":
+          "no-store"
       }
     }
   );
 }
-
-
-function text(message, status = 200) {
-  return new Response(
-    message,
-    {
-      status,
-      headers: {
-        "Content-Type":
-          "text/plain; charset=UTF-8",
-        "Cache-Control": "no-store"
-      }
-    }
-  );
-    }
