@@ -118,17 +118,71 @@ export async function onRequestPost(context) {
       );
     }
 
-    return Response.json({
-      success: true,
-      message: "Login successful.",
-      user: {
-        id: user.id,
-        email: user.email,
-        businessName: user.business_name,
-        plan: user.plan,
-        generationsUsed: user.generations_used
+    // Remove old sessions for this user
+    await context.env.DB
+      .prepare(
+        "DELETE FROM sessions WHERE user_id = ?"
+      )
+      .bind(user.id)
+      .run();
+
+    // Create a secure random session token
+    const tokenBytes =
+      crypto.getRandomValues(
+        new Uint8Array(32)
+      );
+
+    const token =
+      Array.from(tokenBytes)
+        .map(byte =>
+          byte.toString(16).padStart(2, "0")
+        )
+        .join("");
+
+    // Session lasts 7 days
+    const expiresAt =
+      new Date(
+        Date.now() + 7 * 24 * 60 * 60 * 1000
+      ).toISOString();
+
+    await context.env.DB
+      .prepare(`
+        INSERT INTO sessions
+        (
+          user_id,
+          token,
+          expires_at
+        )
+        VALUES (?, ?, ?)
+      `)
+      .bind(
+        user.id,
+        token,
+        expiresAt
+      )
+      .run();
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: "Login successful.",
+        user: {
+          id: user.id,
+          email: user.email,
+          businessName: user.business_name,
+          plan: user.plan,
+          generationsUsed: user.generations_used
+        }
+      }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          "Set-Cookie":
+            `localboost_session=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=604800`
+        }
       }
-    });
+    );
 
   } catch (error) {
     console.log(
@@ -147,3 +201,4 @@ export async function onRequestPost(context) {
     );
   }
 }
+
