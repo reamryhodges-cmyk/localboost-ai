@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -138,6 +138,10 @@
       background: #374151;
     }
 
+    .success-button {
+      background: #059669;
+    }
+
     .quick-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
@@ -267,10 +271,7 @@
         Total Approached
       </div>
 
-      <div
-        id="approached"
-        class="number"
-      >
+      <div id="approached" class="number">
         0
       </div>
     </div>
@@ -280,10 +281,7 @@
         Total Signups
       </div>
 
-      <div
-        id="signups"
-        class="number"
-      >
+      <div id="signups" class="number">
         0
       </div>
     </div>
@@ -293,10 +291,7 @@
         Paid Customers
       </div>
 
-      <div
-        id="paid"
-        class="number"
-      >
+      <div id="paid" class="number">
         0
       </div>
     </div>
@@ -306,10 +301,7 @@
         Conversion Rate
       </div>
 
-      <div
-        id="conversion"
-        class="number"
-      >
+      <div id="conversion" class="number">
         0%
       </div>
     </div>
@@ -319,18 +311,13 @@
         Monthly Revenue
       </div>
 
-      <div
-        id="revenue"
-        class="number"
-      >
+      <div id="revenue" class="number">
         £0.00
       </div>
     </div>
 
   </section>
 
-
-  <!-- UK BUSINESS FINDER -->
 
   <section class="card">
 
@@ -342,9 +329,7 @@
     </p>
 
     <div class="preview-box">
-      <strong>
-        Preview mode
-      </strong>
+      <strong>Preview mode</strong>
 
       <br><br>
 
@@ -353,10 +338,7 @@
     </div>
 
     <div class="target-box">
-
-      <strong>
-        LocalBoost target customers
-      </strong>
+      <strong>LocalBoost target customers</strong>
 
       <br><br>
 
@@ -375,7 +357,6 @@
       Large corporations, universities, banks,
       charities, government organisations and
       national chains should be excluded.
-
     </div>
 
     <label>
@@ -487,7 +468,6 @@
     >
 
       <table>
-
         <thead>
           <tr>
             <th>Business</th>
@@ -510,6 +490,91 @@
           </tr>
 
         </tbody>
+      </table>
+
+    </div>
+
+    <button
+      id="prepareOutreachButton"
+      type="button"
+      class="success-button"
+      style="display:none;"
+    >
+      Prepare First 10 Emails
+    </button>
+
+    <div
+      id="prepareStatus"
+      class="status"
+      style="margin-top:16px;"
+    ></div>
+
+  </section>
+
+
+  <section
+    id="outreachPreviewCard"
+    class="card"
+    style="display:none;"
+  >
+
+    <h2>Outreach Email Preview</h2>
+
+    <div class="preview-box">
+      <strong>No emails are being sent yet.</strong>
+
+      <br><br>
+
+      These are the business email addresses LocalBoost
+      found after checking Hunter and your suppression list.
+    </div>
+
+    <div class="finder-summary">
+
+      <div>
+        Businesses Checked
+
+        <strong id="outreachChecked">
+          0
+        </strong>
+      </div>
+
+      <div>
+        Ready to Contact
+
+        <strong id="outreachReady">
+          0
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Business</th>
+            <th>Domain</th>
+            <th>Email</th>
+            <th>Confidence</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody id="outreachPreviewTable">
+
+          <tr>
+            <td
+              colspan="5"
+              class="empty-row"
+            >
+              No outreach preview prepared yet.
+            </td>
+          </tr>
+
+        </tbody>
 
       </table>
 
@@ -517,8 +582,6 @@
 
   </section>
 
-
-  <!-- MANUAL PROSPECT -->
 
   <section class="card">
 
@@ -615,8 +678,6 @@
   </section>
 
 
-  <!-- PAID PLANS -->
-
   <section class="card">
 
     <h2>Paid Plans</h2>
@@ -645,8 +706,6 @@
   </section>
 
 
-  <!-- RECENT PROSPECTS -->
-
   <section class="card">
 
     <h2>
@@ -658,7 +717,6 @@
       <table>
 
         <thead>
-
           <tr>
             <th>Business</th>
             <th>Type</th>
@@ -668,20 +726,17 @@
             <th>Status</th>
             <th>Date</th>
           </tr>
-
         </thead>
 
         <tbody id="prospectTable">
 
           <tr>
-
             <td
               colspan="7"
               class="empty-row"
             >
               Loading...
             </td>
-
           </tr>
 
         </tbody>
@@ -711,9 +766,10 @@
 <script>
 "use strict";
 
-
 const $ = (id) =>
   document.getElementById(id);
+
+let latestBusinesses = [];
 
 
 /* =============================
@@ -786,23 +842,19 @@ async function loadDashboard() {
         "application/json"
       )
     ) {
-
       throw new Error(
         "Admin statistics endpoint is not responding correctly."
       );
-
     }
 
     const data =
       await response.json();
 
     if (!response.ok) {
-
       throw new Error(
         data.error ||
         "Could not load dashboard."
       );
-
     }
 
     const stats =
@@ -896,7 +948,6 @@ async function findUKBusinesses() {
       "❌ Enter what type of UK businesses you want to find.";
 
     return;
-
   }
 
   button.disabled = true;
@@ -912,6 +963,14 @@ async function findUKBusinesses() {
 
   $("finderResultsWrap").style.display =
     "none";
+
+  $("prepareOutreachButton").style.display =
+    "none";
+
+  $("prepareStatus").textContent =
+    "";
+
+  latestBusinesses = [];
 
   try {
 
@@ -938,68 +997,67 @@ async function findUKBusinesses() {
         }
       );
 
-
     const contentType =
       response.headers.get(
         "content-type"
       ) || "";
-
 
     if (
       !contentType.includes(
         "application/json"
       )
     ) {
-
       throw new Error(
         "UK business finder endpoint is not responding correctly."
       );
-
     }
-
 
     const data =
       await response.json();
 
-
     if (!response.ok) {
-
       throw new Error(
         data.error ||
         "Could not search for UK businesses."
       );
-
     }
 
+    latestBusinesses =
+      Array.isArray(
+        data.businesses
+      )
+        ? data.businesses
+        : [];
 
     $("finderFound").textContent =
       Number(
         data.found || 0
       );
 
-
     $("finderEligible").textContent =
       Number(
         data.eligible || 0
       );
 
-
     $("finderSummary").style.display =
       "grid";
-
 
     $("finderResultsWrap").style.display =
       "block";
 
-
     renderFinderResults(
-      data.businesses || []
+      latestBusinesses
     );
 
+    if (
+      latestBusinesses.length
+    ) {
+      $("prepareOutreachButton").style.display =
+        "block";
+    }
 
     status.textContent =
       "✅ Search complete. Review these businesses before outreach. No emails were sent.";
-
 
   } catch (error) {
 
@@ -1019,6 +1077,219 @@ async function findUKBusinesses() {
 
 
 /* =============================
+   PREPARE OUTREACH
+============================= */
+
+$("prepareOutreachButton")
+  .addEventListener(
+    "click",
+    prepareOutreach
+  );
+
+
+async function prepareOutreach() {
+
+  const button =
+    $("prepareOutreachButton");
+
+  const status =
+    $("prepareStatus");
+
+  if (!latestBusinesses.length) {
+
+    status.textContent =
+      "❌ Run a business search first.";
+
+    return;
+  }
+
+  button.disabled = true;
+
+  button.textContent =
+    "Finding business emails...";
+
+  status.textContent =
+    "Checking the first 10 businesses with Hunter...";
+
+  try {
+
+    const response =
+      await fetch(
+        "/prepare-outreach",
+        {
+          method: "POST",
+
+          credentials:
+            "same-origin",
+
+          cache:
+            "no-store",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            businesses:
+              latestBusinesses.slice(
+                0,
+                10
+              )
+          })
+        }
+      );
+
+    const contentType =
+      response.headers.get(
+        "content-type"
+      ) || "";
+
+    if (
+      !contentType.includes(
+        "application/json"
+      )
+    ) {
+      throw new Error(
+        "Outreach preparation endpoint is not responding correctly."
+      );
+    }
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "Could not prepare outreach."
+      );
+    }
+
+    $("outreachChecked").textContent =
+      Number(
+        data.checked || 0
+      );
+
+    $("outreachReady").textContent =
+      Number(
+        data.ready || 0
+      );
+
+    renderOutreachPreview(
+      data.businesses || []
+    );
+
+    $("outreachPreviewCard").style.display =
+      "block";
+
+    status.textContent =
+      "✅ Outreach preview prepared. No emails were sent.";
+
+    $("outreachPreviewCard")
+      .scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+  } catch (error) {
+
+    status.textContent =
+      "❌ " + error.message;
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "Prepare First 10 Emails";
+
+  }
+
+}
+
+
+/* =============================
+   RENDER OUTREACH PREVIEW
+============================= */
+
+function renderOutreachPreview(
+  businesses
+) {
+
+  const table =
+    $("outreachPreviewTable");
+
+  table.innerHTML = "";
+
+  if (!businesses.length) {
+
+    const row =
+      document.createElement(
+        "tr"
+      );
+
+    const cell =
+      document.createElement(
+        "td"
+      );
+
+    cell.colSpan = 5;
+
+    cell.className =
+      "empty-row";
+
+    cell.textContent =
+      "No suitable business email addresses were found in this batch.";
+
+    row.appendChild(cell);
+
+    table.appendChild(row);
+
+    return;
+  }
+
+  for (
+    const business of businesses
+  ) {
+
+    const row =
+      document.createElement(
+        "tr"
+      );
+
+    addCell(
+      row,
+      business.businessName
+    );
+
+    addCell(
+      row,
+      business.domain
+    );
+
+    addCell(
+      row,
+      business.email
+    );
+
+    addCell(
+      row,
+      business.confidence
+    );
+
+    addCell(
+      row,
+      business.status
+    );
+
+    table.appendChild(row);
+
+  }
+
+}
+
+
+/* =============================
    RENDER HUNTER RESULTS
 ============================= */
 
@@ -1030,7 +1301,6 @@ function renderFinderResults(
     $("finderTable");
 
   table.innerHTML = "";
-
 
   if (!businesses.length) {
 
@@ -1057,9 +1327,7 @@ function renderFinderResults(
     table.appendChild(row);
 
     return;
-
   }
-
 
   for (
     const business of businesses
@@ -1070,36 +1338,30 @@ function renderFinderResults(
         "tr"
       );
 
-
     addCell(
       row,
       business.businessName
     );
-
 
     addCell(
       row,
       business.domain
     );
 
-
     addCell(
       row,
       business.emailsAvailable
     );
-
 
     addCell(
       row,
       business.genericEmails
     );
 
-
     addCell(
       row,
       business.personalEmails
     );
-
 
     table.appendChild(row);
 
@@ -1120,7 +1382,6 @@ function renderProspects(
     $("prospectTable");
 
   table.innerHTML = "";
-
 
   if (!prospects.length) {
 
@@ -1147,9 +1408,7 @@ function renderProspects(
     table.appendChild(row);
 
     return;
-
   }
-
 
   for (
     const prospect of prospects
@@ -1160,42 +1419,35 @@ function renderProspects(
         "tr"
       );
 
-
     addCell(
       row,
       prospect.business_name
     );
-
 
     addCell(
       row,
       prospect.business_type
     );
 
-
     addCell(
       row,
       prospect.location
     );
-
 
     addCell(
       row,
       prospect.contact_method
     );
 
-
     addCell(
       row,
       prospect.contact_details
     );
 
-
     addCell(
       row,
       prospect.status
     );
-
 
     addCell(
       row,
@@ -1203,7 +1455,6 @@ function renderProspects(
         prospect.approached_at
       )
     );
-
 
     table.appendChild(row);
 
@@ -1213,7 +1464,7 @@ function renderProspects(
 
 
 /* =============================
-   ADD TABLE CELL
+   TABLE CELL
 ============================= */
 
 function addCell(
@@ -1235,7 +1486,7 @@ function addCell(
 
 
 /* =============================
-   MANUAL ADD PROSPECT
+   MANUAL PROSPECT
 ============================= */
 
 $("addProspectButton")
@@ -1253,36 +1504,30 @@ async function addProspect() {
   const status =
     $("prospectStatus");
 
-
   const businessName =
     $("businessName")
       .value
       .trim();
-
 
   const businessType =
     $("businessType")
       .value
       .trim();
 
-
   const location =
     $("location")
       .value
       .trim();
-
 
   const contactMethod =
     $("contactMethod")
       .value
       .trim();
 
-
   const contactDetails =
     $("contactDetails")
       .value
       .trim();
-
 
   if (!businessName) {
 
@@ -1290,15 +1535,12 @@ async function addProspect() {
       "❌ Enter the business name.";
 
     return;
-
   }
-
 
   button.disabled = true;
 
   status.textContent =
     "Saving business...";
-
 
   try {
 
@@ -1326,72 +1568,46 @@ async function addProspect() {
         }
       );
 
-
     const contentType =
       response.headers.get(
         "content-type"
       ) || "";
-
 
     if (
       !contentType.includes(
         "application/json"
       )
     ) {
-
       throw new Error(
         "Add prospect endpoint is not responding correctly."
       );
-
     }
-
 
     const data =
       await response.json();
 
-
     if (!response.ok) {
-
       throw new Error(
         data.error ||
         "Could not record business."
       );
-
     }
-
 
     status.textContent =
       "✅ Business recorded as approached.";
 
-
-    $("businessName").value =
-      "";
-
-
-    $("businessType").value =
-      "";
-
-
-    $("location").value =
-      "";
-
-
-    $("contactMethod").value =
-      "";
-
-
-    $("contactDetails").value =
-      "";
-
+    $("businessName").value = "";
+    $("businessType").value = "";
+    $("location").value = "";
+    $("contactMethod").value = "";
+    $("contactDetails").value = "";
 
     await loadDashboard();
-
 
   } catch (error) {
 
     status.textContent =
       "❌ " + error.message;
-
 
   } finally {
 
@@ -1403,52 +1619,1718 @@ async function addProspect() {
 
 
 /* =============================
-   FORMAT DATE
+   DATE
 ============================= */
 
 function formatDate(value) {
 
   if (!value) {
-
     return "";
-
   }
-
 
   let parsedValue =
     value;
-
 
   if (
     typeof value === "string" &&
     !value.includes("T")
   ) {
-
     parsedValue =
       value.replace(
         " ",
         "T"
       ) + "Z";
-
   }
-
 
   const date =
     new Date(
       parsedValue
     );
 
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return value;
+  }
+
+  return date.toLocaleString(
+    "en-GB",
+    {
+      dateStyle: "short",
+      timeStyle: "short"
+    }
+  );
+
+}
+
+
+/* =============================
+   START
+============================= */
+
+loadDashboard();
+
+</script>
+
+</body>
+</html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>LocalBoost AI Admin</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 30px 18px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 12px;
+      font-size: 34px;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .container {
+      width: 92%;
+      max-width: 1000px;
+      margin: 24px auto;
+    }
+
+    .status {
+      font-weight: bold;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      margin-bottom: 24px;
+    }
+
+    .stat {
+      background: white;
+      padding: 20px 14px;
+      border-radius: 18px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,.08);
+    }
+
+    .stat-title {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
+    .number {
+      font-size: 34px;
+      font-weight: bold;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 18px;
+      margin-bottom: 22px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.08);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      font-size: 28px;
+    }
+
+    .card p {
+      line-height: 1.5;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 14px;
+      margin-bottom: 6px;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+
+    input,
+    select,
+    textarea {
+      padding: 13px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+    }
+
+    textarea {
+      min-height: 150px;
+      resize: vertical;
+    }
+
+    button {
+      border: 0;
+      background: #2563eb;
+      color: white;
+      padding: 14px;
+      border-radius: 10px;
+      font-weight: bold;
+      margin-top: 16px;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: default;
+    }
+
+    .secondary-button {
+      background: #374151;
+    }
+
+    .success-button {
+      background: #059669;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .quick-button {
+      margin-top: 0;
+      padding: 11px 8px;
+      font-size: 14px;
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    .plan-row {
+      font-size: 19px;
+      margin: 18px 0;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    th,
+    td {
+      padding: 12px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      font-size: 15px;
+    }
+
+    th {
+      font-weight: bold;
+    }
+
+    .empty-row {
+      text-align: center;
+      padding: 20px;
+    }
+
+    .preview-box {
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 16px;
+    }
+
+    .target-box {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 12px;
+      padding: 14px;
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+
+    .finder-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 18px;
+      margin-bottom: 16px;
+    }
+
+    .finder-summary div {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .finder-summary strong {
+      display: block;
+      font-size: 26px;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 800px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .finder-summary {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .quick-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      header h1 {
+        font-size: 30px;
+      }
+
+      .card h2 {
+        font-size: 24px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>LocalBoost AI Admin</h1>
+  <p>Customer, sales and outreach dashboard</p>
+</header>
+
+<main class="container">
+
+  <div id="status" class="status">
+    Loading dashboard...
+  </div>
+
+  <section class="grid">
+
+    <div class="stat">
+      <div class="stat-title">
+        Total Approached
+      </div>
+
+      <div id="approached" class="number">
+        0
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-title">
+        Total Signups
+      </div>
+
+      <div id="signups" class="number">
+        0
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-title">
+        Paid Customers
+      </div>
+
+      <div id="paid" class="number">
+        0
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-title">
+        Conversion Rate
+      </div>
+
+      <div id="conversion" class="number">
+        0%
+      </div>
+    </div>
+
+    <div class="stat">
+      <div class="stat-title">
+        Monthly Revenue
+      </div>
+
+      <div id="revenue" class="number">
+        £0.00
+      </div>
+    </div>
+
+  </section>
+
+
+  <section class="card">
+
+    <h2>Find UK Businesses</h2>
+
+    <p>
+      Find independent and small UK businesses
+      that are suitable prospects for LocalBoost AI.
+    </p>
+
+    <div class="preview-box">
+      <strong>Preview mode</strong>
+
+      <br><br>
+
+      This search does not send any outreach
+      emails. It only finds potential businesses.
+    </div>
+
+    <div class="target-box">
+      <strong>LocalBoost target customers</strong>
+
+      <br><br>
+
+      Independent local businesses that could benefit
+      from regular social media content.
+
+      <br><br>
+
+      Examples include car valeters, cleaners,
+      barbers, salons, dog groomers, trades,
+      landscapers, cafés, restaurants, takeaways,
+      gyms and photographers.
+
+      <br><br>
+
+      Large corporations, universities, banks,
+      charities, government organisations and
+      national chains should be excluded.
+    </div>
+
+    <label>
+      Quick business searches
+    </label>
+
+    <div class="quick-grid">
+
+      <button
+        type="button"
+        class="quick-button"
+        onclick="setSearch('car')"
+      >
+        Car Valeting
+      </button>
+
+      <button
+        type="button"
+        class="quick-button"
+        onclick="setSearch('beauty')"
+      >
+        Hair & Beauty
+      </button>
+
+      <button
+        type="button"
+        class="quick-button"
+        onclick="setSearch('cleaning')"
+      >
+        Cleaners
+      </button>
+
+      <button
+        type="button"
+        class="quick-button"
+        onclick="setSearch('trades')"
+      >
+        Trades
+      </button>
+
+      <button
+        type="button"
+        class="quick-button"
+        onclick="setSearch('food')"
+      >
+        Food Businesses
+      </button>
+
+      <button
+        type="button"
+        class="quick-button"
+        onclick="setSearch('fitness')"
+      >
+        Fitness
+      </button>
+
+    </div>
+
+    <label for="ukBusinessQuery">
+      Hunter search
+    </label>
+
+    <textarea
+      id="ukBusinessQuery"
+      placeholder="Describe the businesses LocalBoost should find"
+    >Small independent local businesses based in the United Kingdom that sell services or products directly to consumers and would benefit from social media marketing. Focus on businesses such as mobile car valeting and detailing companies, cleaners, barbers, hair salons, beauty salons, dog groomers, landscapers, gardeners, plumbers, electricians, builders, cafés, restaurants, takeaways, gyms, fitness studios and photographers. Prefer independent businesses and small companies. Exclude universities, schools, charities, banks, financial institutions, software companies, large corporations, government organisations, national organisations and national chains.</textarea>
+
+    <button
+      id="findBusinessesButton"
+      type="button"
+    >
+      Find Suitable UK Businesses
+    </button>
+
+    <div
+      id="finderStatus"
+      class="status"
+      style="margin-top:16px;"
+    ></div>
+
+    <div
+      id="finderSummary"
+      class="finder-summary"
+      style="display:none;"
+    >
+
+      <div>
+        Businesses Found
+
+        <strong id="finderFound">
+          0
+        </strong>
+      </div>
+
+      <div>
+        Eligible Leads
+
+        <strong id="finderEligible">
+          0
+        </strong>
+      </div>
+
+    </div>
+
+    <div
+      id="finderResultsWrap"
+      class="table-wrap"
+      style="display:none;"
+    >
+
+      <table>
+        <thead>
+          <tr>
+            <th>Business</th>
+            <th>Website / Domain</th>
+            <th>Emails Available</th>
+            <th>Generic Emails</th>
+            <th>Personal Emails</th>
+          </tr>
+        </thead>
+
+        <tbody id="finderTable">
+
+          <tr>
+            <td
+              colspan="5"
+              class="empty-row"
+            >
+              No search has been run yet.
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+
+    </div>
+
+    <button
+      id="prepareOutreachButton"
+      type="button"
+      class="success-button"
+      style="display:none;"
+    >
+      Prepare First 10 Emails
+    </button>
+
+    <div
+      id="prepareStatus"
+      class="status"
+      style="margin-top:16px;"
+    ></div>
+
+  </section>
+
+
+  <section
+    id="outreachPreviewCard"
+    class="card"
+    style="display:none;"
+  >
+
+    <h2>Outreach Email Preview</h2>
+
+    <div class="preview-box">
+      <strong>No emails are being sent yet.</strong>
+
+      <br><br>
+
+      These are the business email addresses LocalBoost
+      found after checking Hunter and your suppression list.
+    </div>
+
+    <div class="finder-summary">
+
+      <div>
+        Businesses Checked
+
+        <strong id="outreachChecked">
+          0
+        </strong>
+      </div>
+
+      <div>
+        Ready to Contact
+
+        <strong id="outreachReady">
+          0
+        </strong>
+      </div>
+
+    </div>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Business</th>
+            <th>Domain</th>
+            <th>Email</th>
+            <th>Confidence</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody id="outreachPreviewTable">
+
+          <tr>
+            <td
+              colspan="5"
+              class="empty-row"
+            >
+              No outreach preview prepared yet.
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+
+  <section class="card">
+
+    <h2>Add Business Approached</h2>
+
+    <label for="businessName">
+      Business name
+    </label>
+
+    <input
+      id="businessName"
+      type="text"
+      placeholder="Example: Gloucester Shine"
+    >
+
+    <label for="businessType">
+      Business type
+    </label>
+
+    <input
+      id="businessType"
+      type="text"
+      placeholder="Example: Mobile car valeting"
+    >
+
+    <label for="location">
+      Location
+    </label>
+
+    <input
+      id="location"
+      type="text"
+      placeholder="Example: Gloucester"
+    >
+
+    <label for="contactMethod">
+      Contact method
+    </label>
+
+    <select id="contactMethod">
+
+      <option value="">
+        Select contact method
+      </option>
+
+      <option value="email">
+        Email
+      </option>
+
+      <option value="facebook">
+        Facebook
+      </option>
+
+      <option value="instagram">
+        Instagram
+      </option>
+
+      <option value="phone">
+        Phone
+      </option>
+
+      <option value="website">
+        Website
+      </option>
+
+      <option value="other">
+        Other
+      </option>
+
+    </select>
+
+    <label for="contactDetails">
+      Contact details / notes
+    </label>
+
+    <textarea
+      id="contactDetails"
+      placeholder="Email address, phone number, page name or notes"
+    ></textarea>
+
+    <button
+      id="addProspectButton"
+      type="button"
+    >
+      Record as Approached
+    </button>
+
+    <div
+      id="prospectStatus"
+      class="status"
+      style="margin-top:16px;"
+    ></div>
+
+  </section>
+
+
+  <section class="card">
+
+    <h2>Paid Plans</h2>
+
+    <div class="plan-row">
+      Starter:
+      <strong id="starter">
+        0
+      </strong>
+    </div>
+
+    <div class="plan-row">
+      Business:
+      <strong id="business">
+        0
+      </strong>
+    </div>
+
+    <div class="plan-row">
+      Pro:
+      <strong id="pro">
+        0
+      </strong>
+    </div>
+
+  </section>
+
+
+  <section class="card">
+
+    <h2>
+      Recent Businesses Approached
+    </h2>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Business</th>
+            <th>Type</th>
+            <th>Location</th>
+            <th>Method</th>
+            <th>Details</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+
+        <tbody id="prospectTable">
+
+          <tr>
+            <td
+              colspan="7"
+              class="empty-row"
+            >
+              Loading...
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+
+  <section class="card">
+
+    <button
+      type="button"
+      class="secondary-button"
+      onclick="window.location.href='/'"
+    >
+      Back to LocalBoost
+    </button>
+
+  </section>
+
+</main>
+
+
+<script>
+"use strict";
+
+const $ = (id) =>
+  document.getElementById(id);
+
+let latestBusinesses = [];
+
+
+/* =============================
+   SEARCH PRESETS
+============================= */
+
+const SEARCHES = {
+
+  car:
+    "Independent mobile car valeting, car detailing and vehicle cleaning businesses based in the United Kingdom. Focus on small local businesses selling directly to consumers. Exclude large companies, national chains, manufacturers and corporate organisations.",
+
+  beauty:
+    "Independent barbers, hair salons, beauty salons, nail salons, aesthetics businesses and similar local beauty businesses based in the United Kingdom. Focus on small local consumer businesses. Exclude large national chains, colleges and training organisations.",
+
+  cleaning:
+    "Independent domestic cleaners, carpet cleaners, window cleaners, pressure washing businesses and local cleaning companies based in the United Kingdom. Focus on small businesses serving local customers. Exclude national cleaning corporations and large facilities management companies.",
+
+  trades:
+    "Independent plumbers, electricians, builders, decorators, roofers, landscapers, gardeners, handymen and other local trades businesses based in the United Kingdom. Prefer small businesses serving residential customers. Exclude large construction companies and national chains.",
+
+  food:
+    "Independent cafés, restaurants, takeaways, bakeries, food businesses and local hospitality businesses based in the United Kingdom. Prefer independent local businesses. Exclude national chains, universities, hotels groups and large corporations.",
+
+  fitness:
+    "Independent gyms, personal trainers, fitness studios, yoga studios, martial arts clubs and local fitness businesses based in the United Kingdom. Prefer small independent businesses. Exclude national gym chains, universities and large organisations."
+
+};
+
+
+function setSearch(type) {
+
+  if (!SEARCHES[type]) {
+    return;
+  }
+
+  $("ukBusinessQuery").value =
+    SEARCHES[type];
+
+}
+
+
+/* =============================
+   LOAD DASHBOARD
+============================= */
+
+async function loadDashboard() {
+
+  const status =
+    $("status");
+
+  try {
+
+    const response =
+      await fetch(
+        "/admin-stats",
+        {
+          method: "GET",
+          credentials: "same-origin",
+          cache: "no-store"
+        }
+      );
+
+    const contentType =
+      response.headers.get(
+        "content-type"
+      ) || "";
+
+    if (
+      !contentType.includes(
+        "application/json"
+      )
+    ) {
+      throw new Error(
+        "Admin statistics endpoint is not responding correctly."
+      );
+    }
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "Could not load dashboard."
+      );
+    }
+
+    const stats =
+      data.stats || {};
+
+    $("approached").textContent =
+      Number(
+        stats.approached || 0
+      );
+
+    $("signups").textContent =
+      Number(
+        stats.signups || 0
+      );
+
+    $("paid").textContent =
+      Number(
+        stats.paid || 0
+      );
+
+    $("conversion").textContent =
+      Number(
+        stats.conversionRate || 0
+      ) + "%";
+
+    $("revenue").textContent =
+      "£" +
+      Number(
+        stats.monthlyRevenue || 0
+      ).toFixed(2);
+
+    $("starter").textContent =
+      Number(
+        stats.starter || 0
+      );
+
+    $("business").textContent =
+      Number(
+        stats.business || 0
+      );
+
+    $("pro").textContent =
+      Number(
+        stats.pro || 0
+      );
+
+    renderProspects(
+      data.prospects || []
+    );
+
+    status.textContent =
+      "✅ Dashboard loaded";
+
+  } catch (error) {
+
+    status.textContent =
+      "❌ " + error.message;
+
+  }
+
+}
+
+
+/* =============================
+   FIND UK BUSINESSES
+============================= */
+
+$("findBusinessesButton")
+  .addEventListener(
+    "click",
+    findUKBusinesses
+  );
+
+
+async function findUKBusinesses() {
+
+  const button =
+    $("findBusinessesButton");
+
+  const status =
+    $("finderStatus");
+
+  const query =
+    $("ukBusinessQuery")
+      .value
+      .trim();
+
+  if (!query) {
+
+    status.textContent =
+      "❌ Enter what type of UK businesses you want to find.";
+
+    return;
+  }
+
+  button.disabled = true;
+
+  button.textContent =
+    "Searching UK businesses...";
+
+  status.textContent =
+    "Searching Hunter for suitable local businesses...";
+
+  $("finderSummary").style.display =
+    "none";
+
+  $("finderResultsWrap").style.display =
+    "none";
+
+  $("prepareOutreachButton").style.display =
+    "none";
+
+  $("prepareStatus").textContent =
+    "";
+
+  latestBusinesses = [];
+
+  try {
+
+    const response =
+      await fetch(
+        "/find-uk-businesses",
+        {
+          method: "POST",
+
+          credentials:
+            "same-origin",
+
+          cache:
+            "no-store",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            query
+          })
+        }
+      );
+
+    const contentType =
+      response.headers.get(
+        "content-type"
+      ) || "";
+
+    if (
+      !contentType.includes(
+        "application/json"
+      )
+    ) {
+      throw new Error(
+        "UK business finder endpoint is not responding correctly."
+      );
+    }
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "Could not search for UK businesses."
+      );
+    }
+
+    latestBusinesses =
+      Array.isArray(
+        data.businesses
+      )
+        ? data.businesses
+        : [];
+
+    $("finderFound").textContent =
+      Number(
+        data.found || 0
+      );
+
+    $("finderEligible").textContent =
+      Number(
+        data.eligible || 0
+      );
+
+    $("finderSummary").style.display =
+      "grid";
+
+    $("finderResultsWrap").style.display =
+      "block";
+
+    renderFinderResults(
+      latestBusinesses
+    );
+
+    if (
+      latestBusinesses.length
+    ) {
+      $("prepareOutreachButton").style.display =
+        "block";
+    }
+
+    status.textContent =
+      "✅ Search complete. Review these businesses before outreach. No emails were sent.";
+
+  } catch (error) {
+
+    status.textContent =
+      "❌ " + error.message;
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "Find Suitable UK Businesses";
+
+  }
+
+}
+
+
+/* =============================
+   PREPARE OUTREACH
+============================= */
+
+$("prepareOutreachButton")
+  .addEventListener(
+    "click",
+    prepareOutreach
+  );
+
+
+async function prepareOutreach() {
+
+  const button =
+    $("prepareOutreachButton");
+
+  const status =
+    $("prepareStatus");
+
+  if (!latestBusinesses.length) {
+
+    status.textContent =
+      "❌ Run a business search first.";
+
+    return;
+  }
+
+  button.disabled = true;
+
+  button.textContent =
+    "Finding business emails...";
+
+  status.textContent =
+    "Checking the first 10 businesses with Hunter...";
+
+  try {
+
+    const response =
+      await fetch(
+        "/prepare-outreach",
+        {
+          method: "POST",
+
+          credentials:
+            "same-origin",
+
+          cache:
+            "no-store",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            businesses:
+              latestBusinesses.slice(
+                0,
+                10
+              )
+          })
+        }
+      );
+
+    const contentType =
+      response.headers.get(
+        "content-type"
+      ) || "";
+
+    if (
+      !contentType.includes(
+        "application/json"
+      )
+    ) {
+      throw new Error(
+        "Outreach preparation endpoint is not responding correctly."
+      );
+    }
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "Could not prepare outreach."
+      );
+    }
+
+    $("outreachChecked").textContent =
+      Number(
+        data.checked || 0
+      );
+
+    $("outreachReady").textContent =
+      Number(
+        data.ready || 0
+      );
+
+    renderOutreachPreview(
+      data.businesses || []
+    );
+
+    $("outreachPreviewCard").style.display =
+      "block";
+
+    status.textContent =
+      "✅ Outreach preview prepared. No emails were sent.";
+
+    $("outreachPreviewCard")
+      .scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+  } catch (error) {
+
+    status.textContent =
+      "❌ " + error.message;
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "Prepare First 10 Emails";
+
+  }
+
+}
+
+
+/* =============================
+   RENDER OUTREACH PREVIEW
+============================= */
+
+function renderOutreachPreview(
+  businesses
+) {
+
+  const table =
+    $("outreachPreviewTable");
+
+  table.innerHTML = "";
+
+  if (!businesses.length) {
+
+    const row =
+      document.createElement(
+        "tr"
+      );
+
+    const cell =
+      document.createElement(
+        "td"
+      );
+
+    cell.colSpan = 5;
+
+    cell.className =
+      "empty-row";
+
+    cell.textContent =
+      "No suitable business email addresses were found in this batch.";
+
+    row.appendChild(cell);
+
+    table.appendChild(row);
+
+    return;
+  }
+
+  for (
+    const business of businesses
+  ) {
+
+    const row =
+      document.createElement(
+        "tr"
+      );
+
+    addCell(
+      row,
+      business.businessName
+    );
+
+    addCell(
+      row,
+      business.domain
+    );
+
+    addCell(
+      row,
+      business.email
+    );
+
+    addCell(
+      row,
+      business.confidence
+    );
+
+    addCell(
+      row,
+      business.status
+    );
+
+    table.appendChild(row);
+
+  }
+
+}
+
+
+/* =============================
+   RENDER HUNTER RESULTS
+============================= */
+
+function renderFinderResults(
+  businesses
+) {
+
+  const table =
+    $("finderTable");
+
+  table.innerHTML = "";
+
+  if (!businesses.length) {
+
+    const row =
+      document.createElement(
+        "tr"
+      );
+
+    const cell =
+      document.createElement(
+        "td"
+      );
+
+    cell.colSpan = 5;
+
+    cell.className =
+      "empty-row";
+
+    cell.textContent =
+      "No suitable UK businesses were returned by this search.";
+
+    row.appendChild(cell);
+
+    table.appendChild(row);
+
+    return;
+  }
+
+  for (
+    const business of businesses
+  ) {
+
+    const row =
+      document.createElement(
+        "tr"
+      );
+
+    addCell(
+      row,
+      business.businessName
+    );
+
+    addCell(
+      row,
+      business.domain
+    );
+
+    addCell(
+      row,
+      business.emailsAvailable
+    );
+
+    addCell(
+      row,
+      business.genericEmails
+    );
+
+    addCell(
+      row,
+      business.personalEmails
+    );
+
+    table.appendChild(row);
+
+  }
+
+}
+
+
+/* =============================
+   RENDER PROSPECTS
+============================= */
+
+function renderProspects(
+  prospects
+) {
+
+  const table =
+    $("prospectTable");
+
+  table.innerHTML = "";
+
+  if (!prospects.length) {
+
+    const row =
+      document.createElement(
+        "tr"
+      );
+
+    const cell =
+      document.createElement(
+        "td"
+      );
+
+    cell.colSpan = 7;
+
+    cell.className =
+      "empty-row";
+
+    cell.textContent =
+      "No businesses have been added yet.";
+
+    row.appendChild(cell);
+
+    table.appendChild(row);
+
+    return;
+  }
+
+  for (
+    const prospect of prospects
+  ) {
+
+    const row =
+      document.createElement(
+        "tr"
+      );
+
+    addCell(
+      row,
+      prospect.business_name
+    );
+
+    addCell(
+      row,
+      prospect.business_type
+    );
+
+    addCell(
+      row,
+      prospect.location
+    );
+
+    addCell(
+      row,
+      prospect.contact_method
+    );
+
+    addCell(
+      row,
+      prospect.contact_details
+    );
+
+    addCell(
+      row,
+      prospect.status
+    );
+
+    addCell(
+      row,
+      formatDate(
+        prospect.approached_at
+      )
+    );
+
+    table.appendChild(row);
+
+  }
+
+}
+
+
+/* =============================
+   TABLE CELL
+============================= */
+
+function addCell(
+  row,
+  value
+) {
+
+  const cell =
+    document.createElement(
+      "td"
+    );
+
+  cell.textContent =
+    value ?? "";
+
+  row.appendChild(cell);
+
+}
+
+
+/* =============================
+   MANUAL PROSPECT
+============================= */
+
+$("addProspectButton")
+  .addEventListener(
+    "click",
+    addProspect
+  );
+
+
+async function addProspect() {
+
+  const button =
+    $("addProspectButton");
+
+  const status =
+    $("prospectStatus");
+
+  const businessName =
+    $("businessName")
+      .value
+      .trim();
+
+  const businessType =
+    $("businessType")
+      .value
+      .trim();
+
+  const location =
+    $("location")
+      .value
+      .trim();
+
+  const contactMethod =
+    $("contactMethod")
+      .value
+      .trim();
+
+  const contactDetails =
+    $("contactDetails")
+      .value
+      .trim();
+
+  if (!businessName) {
+
+    status.textContent =
+      "❌ Enter the business name.";
+
+    return;
+  }
+
+  button.disabled = true;
+
+  status.textContent =
+    "Saving business...";
+
+  try {
+
+    const response =
+      await fetch(
+        "/add-prospect",
+        {
+          method: "POST",
+
+          credentials:
+            "same-origin",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            businessName,
+            businessType,
+            location,
+            contactMethod,
+            contactDetails
+          })
+        }
+      );
+
+    const contentType =
+      response.headers.get(
+        "content-type"
+      ) || "";
+
+    if (
+      !contentType.includes(
+        "application/json"
+      )
+    ) {
+      throw new Error(
+        "Add prospect endpoint is not responding correctly."
+      );
+    }
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "Could not record business."
+      );
+    }
+
+    status.textContent =
+      "✅ Business recorded as approached.";
+
+    $("businessName").value = "";
+    $("businessType").value = "";
+    $("location").value = "";
+    $("contactMethod").value = "";
+    $("contactDetails").value = "";
+
+    await loadDashboard();
+
+  } catch (error) {
+
+    status.textContent =
+      "❌ " + error.message;
+
+  } finally {
+
+    button.disabled = false;
+
+  }
+
+}
+
+
+/* =============================
+   DATE
+============================= */
+
+function formatDate(value) {
+
+  if (!value) {
+    return "";
+  }
+
+  let parsedValue =
+    value;
+
+  if (
+    typeof value === "string" &&
+    !value.includes("T")
+  ) {
+    parsedValue =
+      value.replace(
+        " ",
+        "T"
+      ) + "Z";
+  }
+
+  const date =
+    new Date(
+      parsedValue
+    );
 
   if (
     Number.isNaN(
       date.getTime()
     )
   ) {
-
     return value;
-
   }
-
 
   return date.toLocaleString(
     "en-GB",
