@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>LocalBoost AI Admin</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #1f2937;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 28px 18px;
+      text-align: center;
+    }
+
+    .container {
+      width: 92%;
+      max-width: 1000px;
+      margin: 24px auto;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    .stat {
+      background: white;
+      padding: 18px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 3px 12px rgba(0,0,0,.08);
+    }
+
+    .number {
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 22px;
+      box-shadow: 0 3px 12px rgba(0,0,0,.08);
+    }
+
+    .status {
+      font-weight: bold;
+      margin-bottom: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      background: #2563eb;
+      color: white;
+      padding: 13px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    @media (max-width: 800px) {
+      .grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .tableWrap {
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>LocalBoost AI Admin</h1>
+  <p>Customer and sales dashboard</p>
+</header>
+
+<main class="container">
+
+  <div id="status" class="status">
+    Loading dashboard...
+  </div>
+
+  <section class="grid">
+
+    <div class="stat">
+      <div>Total Approached</div>
+      <div id="approached" class="number">0</div>
+    </div>
+
+    <div class="stat">
+      <div>Total Signups</div>
+      <div id="signups" class="number">0</div>
+    </div>
+
+    <div class="stat">
+      <div>Paid Customers</div>
+      <div id="paid" class="number">0</div>
+    </div>
+
+    <div class="stat">
+      <div>Conversion Rate</div>
+      <div id="conversion" class="number">0%</div>
+    </div>
+
+    <div class="stat">
+      <div>Monthly Revenue</div>
+      <div id="revenue" class="number">£0.00</div>
+    </div>
+
+  </section>
+
+  <section class="card">
+    <h2>Paid Plans</h2>
+
+    <p>
+      Starter:
+      <strong id="starter">0</strong>
+    </p>
+
+    <p>
+      Business:
+      <strong id="business">0</strong>
+    </p>
+
+    <p>
+      Pro:
+      <strong id="pro">0</strong>
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Recent Businesses Approached</h2>
+
+    <div class="tableWrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Business</th>
+            <th>Contact</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Plan</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+
+        <tbody id="leadTable"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <button
+      type="button"
+      onclick="window.location.href='/'"
+    >
+      Back to LocalBoost
+    </button>
+  </section>
+
+</main>
+
+<script>
+"use strict";
+
+async function loadDashboard() {
+  const status =
+    document.getElementById("status");
+
+  try {
+    const response =
+      await fetch(
+        "/admin-stats",
+        {
+          credentials: "same-origin",
+          cache: "no-store"
+        }
+      );
+
+    const contentType =
+      response.headers.get("content-type") || "";
+
+    if (!contentType.includes("application/json")) {
+      throw new Error(
+        "Admin statistics endpoint is not responding correctly."
+      );
+    }
+
+    const data =
+      await response.json();
+
+    if (!response.ok) {
+      throw new Error(
+        data.error ||
+        "Could not load dashboard."
+      );
+    }
+
+    const stats =
+      data.stats || {};
+
+    document.getElementById(
+      "approached"
+    ).textContent =
+      stats.approached || 0;
+
+    document.getElementById(
+      "signups"
+    ).textContent =
+      stats.signups || 0;
+
+    document.getElementById(
+      "paid"
+    ).textContent =
+      stats.paid || 0;
+
+    document.getElementById(
+      "conversion"
+    ).textContent =
+      (stats.conversionRate || 0) + "%";
+
+    document.getElementById(
+      "revenue"
+    ).textContent =
+      "£" +
+      Number(
+        stats.monthlyRevenue || 0
+      ).toFixed(2);
+
+    document.getElementById(
+      "starter"
+    ).textContent =
+      stats.starter || 0;
+
+    document.getElementById(
+      "business"
+    ).textContent =
+      stats.business || 0;
+
+    document.getElementById(
+      "pro"
+    ).textContent =
+      stats.pro || 0;
+
+    renderLeads(
+      data.leads || []
+    );
+
+    status.textContent =
+      "✅ Dashboard loaded";
+
+  } catch (error) {
+    status.textContent =
+      "❌ " + error.message;
+  }
+}
+
+
+function renderLeads(leads) {
+  const table =
+    document.getElementById("leadTable");
+
+  table.innerHTML = "";
+
+  if (!leads.length) {
+    table.innerHTML = `
+      <tr>
+        <td colspan="6">
+          No businesses have been added yet.
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+  for (const lead of leads) {
+    const row =
+      document.createElement("tr");
+
+    row.innerHTML = `
+      <td>${escapeHtml(
+        lead.business_name || ""
+      )}</td>
+
+      <td>${escapeHtml(
+        lead.contact_name || ""
+      )}</td>
+
+      <td>${escapeHtml(
+        lead.email || ""
+      )}</td>
+
+      <td>${escapeHtml(
+        lead.status || ""
+      )}</td>
+
+      <td>${escapeHtml(
+        lead.plan || "-"
+      )}</td>
+
+      <td>${escapeHtml(
+        formatDate(
+          lead.approached_at
+        )
+      )}</td>
+    `;
+
+    table.appendChild(row);
+  }
+}
+
+
+function formatDate(value) {
+  if (!value) {
+    return "";
+  }
+
+  const date =
+    new Date(value);
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return value;
+  }
+
+  return date.toLocaleDateString("en-GB");
+}
+
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+
+loadDashboard();
+</script>
+
+</body>
+</html>
