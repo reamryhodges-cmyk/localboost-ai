@@ -88,18 +88,10 @@ export async function onRequestPost({ request, env }) {
     const query =
       String(
         body.query ||
-        "small and medium businesses based in the United Kingdom"
+        "Small and medium sized businesses based in the United Kingdom"
       )
         .trim()
         .slice(0, 500);
-
-    const limit = Math.min(
-      Math.max(
-        Number(body.limit) || 10,
-        1
-      ),
-      25
-    );
 
     const hunterUrl =
       `https://api.hunter.io/v2/discover?api_key=${
@@ -117,8 +109,7 @@ export async function onRequestPost({ request, env }) {
         },
 
         body: JSON.stringify({
-          query,
-          limit
+          query
         })
       }
     );
@@ -166,7 +157,7 @@ export async function onRequestPost({ request, env }) {
           domain
         ).trim();
 
-      if (!domain) {
+      if (!domain || !businessName) {
         continue;
       }
 
@@ -174,13 +165,13 @@ export async function onRequestPost({ request, env }) {
         await env.DB.prepare(`
           SELECT id
           FROM prospects
-          WHERE LOWER(contact_details) = LOWER(?)
-             OR LOWER(business_name) = LOWER(?)
+          WHERE LOWER(business_name) = LOWER(?)
+             OR LOWER(contact_details) LIKE LOWER(?)
           LIMIT 1
         `)
           .bind(
-            domain,
-            businessName
+            businessName,
+            `%${domain}%`
           )
           .first();
 
@@ -188,17 +179,27 @@ export async function onRequestPost({ request, env }) {
         continue;
       }
 
+      const totalEmails =
+        Number(
+          company?.emails_count?.total || 0
+        );
+
+      if (totalEmails < 1) {
+        continue;
+      }
+
       results.push({
         businessName,
         domain,
+
         emailsAvailable:
-          Number(
-            company?.emails_count?.total || 0
-          ),
+          totalEmails,
+
         genericEmails:
           Number(
             company?.emails_count?.generic || 0
           ),
+
         personalEmails:
           Number(
             company?.emails_count?.personal || 0
@@ -210,6 +211,9 @@ export async function onRequestPost({ request, env }) {
       success: true,
 
       mode: "preview",
+
+      country:
+        "United Kingdom",
 
       query,
 
@@ -223,7 +227,7 @@ export async function onRequestPost({ request, env }) {
         results,
 
       message:
-        "Preview only. No emails have been sent."
+        "UK business search complete. Preview only — no outreach emails have been sent."
     });
 
   } catch (error) {
