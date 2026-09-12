@@ -1,19 +1,59 @@
 const PRICES = {
   starter: "price_1UEoIZDimtpKMVhGrJ5HCNy5",
   growth: "price_1UEoKpDimtpKMVhGFwStptK4",
-  pro: "price_1UEoLJDimtpKMVhGfUHQcaRk",
+  pro: "price_1UEoLJDimtpKMVhGfUHQcaRk"
 };
 
-function getCookie(cookieHeader, name) {
-  if (!cookieHeader) return null;
+function json(data, status = 200) {
+  return new Response(
+    JSON.stringify(data),
+    {
+      status,
+      headers: {
+        "Content-Type": "application/json"
+      }
+    }
+  );
+}
 
-  const cookies = cookieHeader.split(";");
+function getCookie(cookieHeader, name) {
+  if (!cookieHeader) {
+    return null;
+  }
+
+  const cookies =
+    cookieHeader.split(";");
 
   for (const cookie of cookies) {
-    const [key, ...valueParts] = cookie.trim().split("=");
+    const parts =
+      cookie.trim().split("=");
+
+    const key =
+      parts.shift();
+
+    const value =
+      parts.join("=");
 
     if (key === name) {
-      return decodeURIComponent(valueParts.join("="));
+      return decodeURIComponent(value);
+    }
+  }
+
+  return null;
+}
+
+function getStripeSecret(env) {
+  const possibleKeys = [
+    env.STRIPE_SECRET_KEY,
+    env.STRIPE_SECRET_KEY1
+  ];
+
+  for (const key of possibleKeys) {
+    if (
+      typeof key === "string" &&
+      key.trim().startsWith("sk_")
+    ) {
+      return key.trim();
     }
   }
 
@@ -25,163 +65,265 @@ export async function onRequestPost(context) {
     const { request, env } = context;
 
     if (!env.DB) {
-      return Response.json(
-        { error: "Database is not configured." },
-        { status: 500 }
+      return json(
+        {
+          error:
+            "Database is not configured."
+        },
+        500
       );
     }
 
-    if (!env.STRIPE_SECRET_KEY) {
-      return Response.json(
-        { error: "Stripe is not configured." },
-        { status: 500 }
+    const stripeSecretKey =
+      getStripeSecret(env);
+
+    if (!stripeSecretKey) {
+      return json(
+        {
+          error:
+            "Stripe secret key is missing or invalid."
+        },
+        500
       );
     }
 
-    const sessionToken = getCookie(
-      request.headers.get("Cookie"),
-      "localboost_session"
-    );
+    const sessionToken =
+      getCookie(
+        request.headers.get("Cookie"),
+        "localboost_session"
+      );
 
     if (!sessionToken) {
-      return Response.json(
-        { error: "Please log in first." },
-        { status: 401 }
+      return json(
+        {
+          error:
+            "Please log in before choosing a plan."
+        },
+        401
       );
     }
 
-    const user = await env.DB.prepare(`
-      SELECT
-        users.id,
-        users.email,
-        users.business_name,
-        users.plan,
-        sessions.expires_at
-      FROM sessions
-      JOIN users ON users.id = sessions.user_id
-      WHERE sessions.token = ?
-      LIMIT 1
-    `)
+    const user =
+      await env.DB.prepare(`
+        SELECT
+          users.id,
+          users.email,
+          users.business_name,
+          users.plan,
+          sessions.expires_at
+        FROM sessions
+        JOIN users
+          ON users.id = sessions.user_id
+        WHERE sessions.token = ?
+        LIMIT 1
+      `)
       .bind(sessionToken)
       .first();
 
     if (!user) {
-      return Response.json(
-        { error: "Your login session is invalid." },
-        { status: 401 }
+      return json(
+        {
+          error:
+            "Your login session is invalid. Please log in again."
+        },
+        401
       );
     }
 
-    if (new Date(user.expires_at).getTime() <= Date.now()) {
+    if (
+      !user.expires_at ||
+      new Date(user.expires_at).getTime()
+        <= Date.now()
+    ) {
       await env.DB.prepare(`
         DELETE FROM sessions
         WHERE token = ?
       `)
-        .bind(sessionToken)
-        .run();
+      .bind(sessionToken)
+      .run();
 
-      return Response.json(
-        { error: "Your login session has expired. Please log in again." },
-        { status: 401 }
+      return json(
+        {
+          error:
+            "Your login session has expired. Please log in again."
+        },
+        401
       );
     }
 
-    const body = await request.json();
-    const plan = String(body.plan || "").toLowerCase();
+    let body;
 
-    if (!PRICES[plan]) {
-      return Response.json(
-        { error: "Invalid plan selected." },
-        { status: 400 }
+    try {
+      body =
+        await request.json();
+    } catch {
+      return json(
+        {
+          error:
+            "Invalid checkout request."
+        },
+        400
       );
     }
 
-    const url = new URL(request.url);
-    const siteOrigin = url.origin;
+    const plan =
+      String(
+        body.plan || ""
+      ).toLowerCase();
 
-    const stripeBody = new URLSearchParams();
+    const priceId =
+      PRICES[plan];
 
-    stripeBody.append("mode", "subscription");
-    stripeBody.append("line_items[0][price]", PRICES[plan]);
-    stripeBody.append("line_items[0][quantity]", "1");
+    if (!priceId) {
+      return json(
+        {
+          error:
+            "Invalid plan selected."
+        },
+        400
+      );
+    }
 
-    stripeBody.append(
-      "success_url",
-      `${siteOrigin}/?payment=success`
+    const origin =
+      new URL(request.url).origin;
+
+    const stripeBody =
+      new URLSearchParams();
+
+    stripeBody.set(
+      "mode",
+      "subscription"
     );
 
-    stripeBody.append(
-      "cancel_url",
-      `${siteOrigin}/?payment=cancelled`
+    stripeBody.set(
+      "line_items[0][price]",
+      priceId
     );
 
-    stripeBody.append(
-      "client_reference_id",
-      String(user.id)
+    stripeBody.set(
+      "line_items[0][quantity]",
+      "1"
     );
 
-    stripeBody.append(
+    stripeBody.set(
       "customer_email",
       user.email
     );
 
-    stripeBody.append(
+    stripeBody.set(
+      "client_reference_id",
+      String(user.id)
+    );
+
+    stripeBody.set(
       "metadata[user_id]",
       String(user.id)
     );
 
-    stripeBody.append(
+    stripeBody.set(
       "metadata[plan]",
       plan
     );
 
-    stripeBody.append(
+    stripeBody.set(
       "subscription_data[metadata][user_id]",
       String(user.id)
     );
 
-    stripeBody.append(
+    stripeBody.set(
       "subscription_data[metadata][plan]",
       plan
     );
 
-    const stripeResponse = await fetch(
-      "https://api.stripe.com/v1/checkout/sessions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${env.STRIPE_SECRET_KEY}`,
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: stripeBody.toString(),
-      }
+    stripeBody.set(
+      "success_url",
+      origin +
+      "/?payment=success"
     );
 
-    const stripeSession = await stripeResponse.json();
+    stripeBody.set(
+      "cancel_url",
+      origin +
+      "/?payment=cancelled"
+    );
 
-    if (!stripeResponse.ok) {
-      console.error("Stripe error:", stripeSession);
+    const stripeResponse =
+      await fetch(
+        "https://api.stripe.com/v1/checkout/sessions",
+        {
+          method: "POST",
 
-      return Response.json(
+          headers: {
+            "Authorization":
+              "Bearer " +
+              stripeSecretKey,
+
+            "Content-Type":
+              "application/x-www-form-urlencoded"
+          },
+
+          body:
+            stripeBody.toString()
+        }
+      );
+
+    const stripeText =
+      await stripeResponse.text();
+
+    let stripeData = {};
+
+    try {
+      stripeData =
+        JSON.parse(stripeText);
+    } catch {
+      return json(
         {
           error:
-            stripeSession?.error?.message ||
-            "Stripe could not create the checkout session.",
+            "Stripe returned an invalid response."
         },
-        { status: 500 }
+        500
       );
     }
 
-    return Response.json({
-      success: true,
-      checkoutUrl: stripeSession.url,
-    });
-  } catch (error) {
-    console.error("Checkout error:", error);
+    if (!stripeResponse.ok) {
+      return json(
+        {
+          error:
+            stripeData?.error?.message ||
+            "Stripe could not create checkout."
+        },
+        stripeResponse.status || 500
+      );
+    }
 
-    return Response.json(
-      { error: "Something went wrong creating checkout." },
-      { status: 500 }
+    if (!stripeData.url) {
+      return json(
+        {
+          error:
+            "Stripe did not return a checkout URL."
+        },
+        500
+      );
+    }
+
+    return json({
+      success: true,
+      checkoutUrl:
+        stripeData.url
+    });
+
+  } catch (error) {
+    console.error(
+      "Checkout error:",
+      error
+    );
+
+    return json(
+      {
+        error:
+          "Something went wrong creating checkout."
+      },
+      500
     );
   }
 }
