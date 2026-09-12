@@ -2,125 +2,126 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>LocalBoost AI</title>
 
 <style>
-body{
-  margin:0;
-  font-family:Arial,sans-serif;
-  background:#f5f7fb;
-  color:#1f2937;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f7fb;
+  color: #1f2937;
 }
 
-header{
-  background:#111827;
-  color:#fff;
-  padding:30px 20px;
-  text-align:center;
+header {
+  background: #111827;
+  color: white;
+  padding: 30px 20px;
+  text-align: center;
 }
 
-.container{
-  width:92%;
-  max-width:850px;
-  margin:25px auto;
+.container {
+  width: 92%;
+  max-width: 850px;
+  margin: 25px auto;
 }
 
-.card{
-  background:#fff;
-  padding:22px;
-  border-radius:14px;
-  margin-bottom:24px;
-  box-shadow:0 4px 18px rgba(0,0,0,.08);
+.card {
+  background: white;
+  padding: 22px;
+  border-radius: 14px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 18px rgba(0,0,0,.08);
 }
 
 input,
 textarea,
-button{
-  width:100%;
-  box-sizing:border-box;
-  font-size:16px;
+button {
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 16px;
 }
 
 input,
-textarea{
-  padding:12px;
-  margin:6px 0 12px;
-  border:1px solid #d1d5db;
-  border-radius:8px;
+textarea {
+  padding: 12px;
+  margin: 6px 0 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
 }
 
-textarea{
-  min-height:90px;
+textarea {
+  min-height: 90px;
 }
 
-button{
-  padding:13px;
-  border:0;
-  border-radius:8px;
-  background:#2563eb;
-  color:#fff;
-  font-weight:bold;
-  margin-top:8px;
-  cursor:pointer;
+button {
+  padding: 13px;
+  border: 0;
+  border-radius: 8px;
+  background: #2563eb;
+  color: white;
+  font-weight: bold;
+  margin-top: 8px;
+  cursor: pointer;
 }
 
-button:disabled{
-  opacity:.6;
-  cursor:not-allowed;
+button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
 }
 
-#accountCard{
-  display:none;
+#accountCard {
+  display: none;
 }
 
 #aiResult,
 #aiImage,
-#resultActions{
-  display:none;
+#resultActions {
+  display: none;
 }
 
-#aiResult{
-  white-space:pre-wrap;
-  background:#f9fafb;
-  padding:15px;
-  border-radius:10px;
-  margin-top:15px;
+#aiResult {
+  white-space: pre-wrap;
+  background: #f9fafb;
+  padding: 15px;
+  border-radius: 10px;
+  margin-top: 15px;
 }
 
-#aiImage{
-  width:100%;
-  margin-top:15px;
-  border-radius:10px;
+#aiImage {
+  width: 100%;
+  margin-top: 15px;
+  border-radius: 10px;
 }
 
-.pricing{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
+.pricing {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
 }
 
-.priceCard{
-  border:1px solid #ddd;
-  border-radius:10px;
-  padding:16px;
-  text-align:center;
+.priceCard {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
 }
 
-.price{
-  font-size:28px;
-  font-weight:bold;
+.price {
+  font-size: 28px;
+  font-weight: bold;
 }
 
-.status{
-  margin-top:12px;
-  text-align:center;
-  font-weight:bold;
+.status {
+  margin-top: 12px;
+  text-align: center;
+  font-weight: bold;
 }
 
-@media(max-width:700px){
-  .pricing{
-    grid-template-columns:1fr;
+@media (max-width: 700px) {
+  .pricing {
+    grid-template-columns: 1fr;
   }
 }
 </style>
@@ -140,7 +141,7 @@ button:disabled{
 
   <div id="accountInfo"></div>
 
-  <button id="logoutButton">
+  <button id="logoutButton" type="button">
     Logout
   </button>
 
@@ -151,16 +152,16 @@ button:disabled{
 <section id="signupCard" class="card">
   <h2>Create Account</h2>
 
-  <label>Business name</label>
-  <input id="signupBusinessName">
+  <label for="signupBusinessName">Business name</label>
+  <input id="signupBusinessName" type="text">
 
-  <label>Email</label>
+  <label for="signupEmail">Email</label>
   <input id="signupEmail" type="email">
 
-  <label>Password</label>
+  <label for="signupPassword">Password</label>
   <input id="signupPassword" type="password">
 
-  <button id="signupButton">
+  <button id="signupButton" type="button">
     Create Account
   </button>
 
@@ -171,13 +172,13 @@ button:disabled{
 <section id="loginCard" class="card">
   <h2>Customer Login</h2>
 
-  <label>Email</label>
+  <label for="loginEmail">Email</label>
   <input id="loginEmail" type="email">
 
-  <label>Password</label>
+  <label for="loginPassword">Password</label>
   <input id="loginPassword" type="password">
 
-  <button id="loginButton">
+  <button id="loginButton" type="button">
     Login
   </button>
 
@@ -188,22 +189,22 @@ button:disabled{
 <section class="card">
   <h2>Create Your Social Media Post</h2>
 
-  <label>Business name</label>
-  <input id="businessName">
+  <label for="businessName">Business name</label>
+  <input id="businessName" type="text">
 
-  <label>Business type</label>
-  <input id="businessType">
+  <label for="businessType">Business type</label>
+  <input id="businessType" type="text">
 
-  <label>Location</label>
-  <input id="location">
+  <label for="location">Location</label>
+  <input id="location" type="text">
 
-  <label>Service or offer</label>
-  <input id="service">
+  <label for="service">Service or offer</label>
+  <input id="service" type="text">
 
-  <label>Extra details</label>
+  <label for="extraDetails">Extra details</label>
   <textarea id="extraDetails"></textarea>
 
-  <button id="generateButton">
+  <button id="generateButton" type="button">
     Generate Post & Picture
   </button>
 
@@ -211,17 +212,14 @@ button:disabled{
 
   <div id="aiResult"></div>
 
-  <img
-    id="aiImage"
-    alt="AI generated image"
-  >
+  <img id="aiImage" alt="AI generated image">
 
   <div id="resultActions">
-    <button id="copyButton">
+    <button id="copyButton" type="button">
       Copy Post
     </button>
 
-    <button id="downloadButton">
+    <button id="downloadButton" type="button">
       Download Picture
     </button>
   </div>
@@ -238,15 +236,14 @@ button:disabled{
     <div class="priceCard">
       <h3>Starter</h3>
 
-      <div class="price">
-        £9.99
-      </div>
+      <div class="price">£9.99</div>
 
       <p>per month</p>
 
       <button
         class="planButton"
         data-plan="starter"
+        type="button"
       >
         Choose Starter
       </button>
@@ -256,15 +253,14 @@ button:disabled{
     <div class="priceCard">
       <h3>Business</h3>
 
-      <div class="price">
-        £24.99
-      </div>
+      <div class="price">£24.99</div>
 
       <p>per month</p>
 
       <button
         class="planButton"
         data-plan="business"
+        type="button"
       >
         Choose Business
       </button>
@@ -274,15 +270,14 @@ button:disabled{
     <div class="priceCard">
       <h3>Pro</h3>
 
-      <div class="price">
-        £49.99
-      </div>
+      <div class="price">£49.99</div>
 
       <p>per month</p>
 
       <button
         class="planButton"
         data-plan="pro"
+        type="button"
       >
         Choose Pro
       </button>
@@ -290,136 +285,696 @@ button:disabled{
 
   </div>
 
-  <div
-    id="pricingStatus"
-    class="status"
-  ></div>
+  <div id="pricingStatus" class="status"></div>
 </section>
 
 </main>
 
 
 <script>
+"use strict";
 
-const $ = id =>
-  document.getElementById(id);
+const $ = (id) => document.getElementById(id);
 
 let currentUser = null;
 
 
-function showUser(user){
+function normaliseUser(data) {
+  if (!data) {
+    return null;
+  }
 
+  if (data.user) {
+    return data.user;
+  }
+
+  if (data.email) {
+    return data;
+  }
+
+  return null;
+}
+
+
+function getBusinessName(user) {
+  return (
+    user.businessName ||
+    user.business_name ||
+    user.email ||
+    "Customer"
+  );
+}
+
+
+function getGenerationsUsed(user) {
+  if (user.generationsUsed !== undefined) {
+    return user.generationsUsed;
+  }
+
+  if (user.generations_used !== undefined) {
+    return user.generations_used;
+  }
+
+  return 0;
+}
+
+
+function showUser(user) {
   currentUser = user;
 
-  $("signupCard").style.display =
-    "none";
-
-  $("loginCard").style.display =
-    "none";
-
-  $("accountCard").style.display =
-    "block";
+  $("signupCard").style.display = "none";
+  $("loginCard").style.display = "none";
+  $("accountCard").style.display = "block";
 
   $("accountInfo").innerHTML =
     "<b>Welcome, " +
-    (user.businessName || user.email) +
+    escapeHtml(getBusinessName(user)) +
     "</b><br>" +
     "Email: " +
-    user.email +
+    escapeHtml(user.email || "") +
     "<br>" +
     "Plan: " +
-    (user.plan || "free") +
+    escapeHtml(user.plan || "free") +
     "<br>" +
     "Generations used: " +
-    (user.generationsUsed || 0);
+    escapeHtml(String(getGenerationsUsed(user)));
 
-  if(user.businessName){
-    $("businessName").value =
-      user.businessName;
+  const businessName =
+    user.businessName ||
+    user.business_name;
+
+  if (businessName) {
+    $("businessName").value = businessName;
   }
 }
 
 
-function showLoggedOut(){
-
+function showLoggedOut() {
   currentUser = null;
 
-  $("signupCard").style.display =
-    "block";
-
-  $("loginCard").style.display =
-    "block";
-
-  $("accountCard").style.display =
-    "none";
+  $("signupCard").style.display = "block";
+  $("loginCard").style.display = "block";
+  $("accountCard").style.display = "none";
 }
 
 
-async function checkSession(){
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 
-  try{
 
-    const r =
-      await fetch(
-        "/me",
-        {
-          credentials:"same-origin"
-        }
-      );
+async function checkSession() {
+  try {
+    const response = await fetch(
+      "/me",
+      {
+        method: "GET",
+        credentials: "same-origin",
+        cache: "no-store"
+      }
+    );
 
-    const d =
-      await r.json();
+    const data = await response.json();
 
-    if(
-      r.ok &&
-      d.loggedIn &&
-      d.user
-    ){
+    const user = normaliseUser(data);
 
-      showUser(d.user);
-
-    }else{
-
-      showLoggedOut();
-
+    if (
+      response.ok &&
+      (
+        data.loggedIn === true ||
+        user
+      ) &&
+      user
+    ) {
+      showUser(user);
+      return;
     }
-
-  }catch(e){
 
     showLoggedOut();
 
+  } catch (error) {
+    console.error("Session check failed:", error);
+    showLoggedOut();
   }
 }
 
 
-$("signupButton").onclick =
-async()=>{
+$("signupButton").addEventListener(
+  "click",
+  async function () {
 
-  const status =
-    $("signupStatus");
+    const status = $("signupStatus");
 
-  status.textContent =
-    "Creating account...";
+    status.textContent =
+      "Creating account...";
 
-  try{
-
-    const r =
-      await fetch(
+    try {
+      const response = await fetch(
         "/signup",
         {
-          method:"POST",
+          method: "POST",
 
-          headers:{
+          headers: {
             "Content-Type":
               "application/json"
           },
 
-          body:JSON.stringify({
+          body: JSON.stringify({
             businessName:
               $("signupBusinessName")
                 .value
                 .trim(),
 
             email:
-              $("signup
+              $("signupEmail")
+                .value
+                .trim(),
 
+            password:
+              $("signupPassword")
+                .value
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          data.message ||
+          "Signup failed."
+        );
+      }
+
+      status.textContent =
+        "✅ Account created. You can now log in.";
+
+      $("loginEmail").value =
+        $("signupEmail")
+          .value
+          .trim();
+
+    } catch (error) {
+      status.textContent =
+        "❌ " + error.message;
+    }
+  }
+);
+
+
+$("loginButton").addEventListener(
+  "click",
+  async function () {
+
+    const status = $("loginStatus");
+    const button = $("loginButton");
+
+    status.textContent =
+      "Logging in...";
+
+    button.disabled = true;
+
+    try {
+      const response = await fetch(
+        "/login",
+        {
+          method: "POST",
+
+          credentials: "same-origin",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            email:
+              $("loginEmail")
+                .value
+                .trim(),
+
+            password:
+              $("loginPassword")
+                .value
+          })
+        }
+      );
+
+      let data = {};
+
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error(
+          "The server returned an invalid login response."
+        );
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          data.message ||
+          "Login failed."
+        );
+      }
+
+      let user = normaliseUser(data);
+
+      /*
+        Some login versions may return only
+        success. If so, read the account from /me.
+      */
+      if (!user) {
+        const meResponse = await fetch(
+          "/me",
+          {
+            credentials: "same-origin",
+            cache: "no-store"
+          }
+        );
+
+        const meData =
+          await meResponse.json();
+
+        user =
+          normaliseUser(meData);
+      }
+
+      if (!user) {
+        throw new Error(
+          "Login succeeded but account information could not be loaded."
+        );
+      }
+
+      status.textContent =
+        "✅ Login successful";
+
+      showUser(user);
+
+    } catch (error) {
+      console.error("Login error:", error);
+
+      status.textContent =
+        "❌ " + error.message;
+
+    } finally {
+      button.disabled = false;
+    }
+  }
+);
+
+
+$("logoutButton").addEventListener(
+  "click",
+  async function () {
+
+    const status =
+      $("sessionStatus");
+
+    status.textContent =
+      "Logging out...";
+
+    try {
+      await fetch(
+        "/logout",
+        {
+          method: "POST",
+          credentials: "same-origin"
+        }
+      );
+
+      showLoggedOut();
+
+      $("loginStatus").textContent =
+        "✅ Logged out";
+
+      status.textContent = "";
+
+    } catch (error) {
+      status.textContent =
+        "❌ Logout failed";
+    }
+  }
+);
+
+
+$("generateButton").addEventListener(
+  "click",
+  async function () {
+
+    const status =
+      $("aiStatus");
+
+    const button =
+      $("generateButton");
+
+    status.textContent =
+      "Creating...";
+
+    button.disabled = true;
+
+    $("aiResult").style.display =
+      "none";
+
+    $("aiImage").style.display =
+      "none";
+
+    $("resultActions").style.display =
+      "none";
+
+    $("actionMessage").textContent =
+      "";
+
+    try {
+      const response = await fetch(
+        "/generate",
+        {
+          method: "POST",
+
+          credentials:
+            "same-origin",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            businessName:
+              $("businessName")
+                .value
+                .trim(),
+
+            businessType:
+              $("businessType")
+                .value
+                .trim(),
+
+            location:
+              $("location")
+                .value
+                .trim(),
+
+            service:
+              $("service")
+                .value
+                .trim(),
+
+            extraDetails:
+              $("extraDetails")
+                .value
+                .trim()
+          })
+        }
+      );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          data.message ||
+          "Generation failed."
+        );
+      }
+
+      const postText =
+        data.result ||
+        data.post ||
+        data.text ||
+        "";
+
+      const image =
+        data.image ||
+        data.imageUrl ||
+        data.image_url ||
+        "";
+
+      if (postText) {
+        $("aiResult").textContent =
+          postText;
+
+        $("aiResult").style.display =
+          "block";
+      }
+
+      if (image) {
+        $("aiImage").src =
+          image;
+
+        $("aiImage").style.display =
+          "block";
+      }
+
+      if (postText || image) {
+        $("resultActions").style.display =
+          "block";
+      }
+
+      status.textContent =
+        "✅ Ready";
+
+    } catch (error) {
+      console.error(
+        "Generation error:",
+        error
+      );
+
+      status.textContent =
+        "❌ " + error.message;
+
+    } finally {
+      button.disabled = false;
+    }
+  }
+);
+
+
+$("copyButton").addEventListener(
+  "click",
+  async function () {
+
+    const text =
+      $("aiResult").textContent;
+
+    if (!text) {
+      $("actionMessage").textContent =
+        "❌ There is no post to copy.";
+      return;
+    }
+
+    try {
+      await navigator.clipboard.writeText(
+        text
+      );
+
+      $("actionMessage").textContent =
+        "✅ Post copied";
+
+    } catch {
+      $("actionMessage").textContent =
+        "❌ Could not copy the post.";
+    }
+  }
+);
+
+
+$("downloadButton").addEventListener(
+  "click",
+  function () {
+
+    const image =
+      $("aiImage").src;
+
+    if (!image) {
+      $("actionMessage").textContent =
+        "❌ There is no picture to download.";
+      return;
+    }
+
+    const link =
+      document.createElement("a");
+
+    link.href = image;
+
+    link.download =
+      "localboost-ai-picture.jpg";
+
+    document.body.appendChild(link);
+
+    link.click();
+
+    link.remove();
+  }
+);
+
+
+document
+  .querySelectorAll(".planButton")
+  .forEach(function (button) {
+
+    button.addEventListener(
+      "click",
+      async function () {
+
+        const status =
+          $("pricingStatus");
+
+        status.textContent =
+          "Opening secure checkout...";
+
+        button.disabled = true;
+
+        try {
+          /*
+            Always check /me immediately
+            before creating checkout.
+          */
+          const meResponse =
+            await fetch(
+              "/me",
+              {
+                method: "GET",
+                credentials:
+                  "same-origin",
+                cache: "no-store"
+              }
+            );
+
+          const meData =
+            await meResponse.json();
+
+          const user =
+            normaliseUser(meData);
+
+          if (
+            !meResponse.ok ||
+            !user
+          ) {
+            throw new Error(
+              "Please log in before choosing a plan."
+            );
+          }
+
+          currentUser = user;
+
+          /*
+            ONLY this dedicated LocalBoost
+            test account is allowed to use
+            Stripe Sandbox.
+
+            All other customers use live
+            Stripe checkout.
+          */
+          const isSandboxTestAccount =
+            String(
+              currentUser.email || ""
+            )
+              .trim()
+              .toLowerCase() ===
+            "samtest1109@example.com";
+
+          const response =
+            await fetch(
+              "/create-checkout-session",
+              {
+                method: "POST",
+
+                credentials:
+                  "same-origin",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body: JSON.stringify({
+                  plan:
+                    button.dataset.plan,
+
+                  mode:
+                    isSandboxTestAccount
+                      ? "sandbox"
+                      : "live"
+                })
+              }
+            );
+
+          const data =
+            await response.json();
+
+          if (!response.ok) {
+            throw new Error(
+              data.error ||
+              data.message ||
+              "Checkout failed."
+            );
+          }
+
+          if (!data.url) {
+            throw new Error(
+              "Stripe checkout URL was not returned."
+            );
+          }
+
+          window.location.assign(
+            data.url
+          );
+
+        } catch (error) {
+          console.error(
+            "Checkout error:",
+            error
+          );
+
+          status.textContent =
+            "❌ " + error.message;
+
+          button.disabled = false;
+        }
+      }
+    );
+  });
+
+
+const checkoutStatus =
+  new URLSearchParams(
+    window.location.search
+  ).get("checkout");
+
+
+if (checkoutStatus === "success") {
+  $("pricingStatus").textContent =
+    "✅ Payment completed. Updating your account...";
+
+  setTimeout(
+    async function () {
+      await checkSession();
+
+      $("pricingStatus").textContent =
+        "✅ Subscription activated.";
+    },
+    2000
+  );
+}
+
+
+if (checkoutStatus === "cancelled") {
+  $("pricingStatus").textContent =
+    "Payment cancelled.";
+}
+
+
+checkSession();
+
+</script>
+
+</body>
+</html>
