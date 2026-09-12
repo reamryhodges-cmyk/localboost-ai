@@ -1,3 +1,4 @@
+
 export async function onRequestGet(context) {
   const { request, env } = context;
 
@@ -89,16 +90,23 @@ export async function onRequestGet(context) {
       );
     }
 
+    // --------------------------------
+    // BUSINESSES APPROACHED
+    // --------------------------------
+
     const approachedRow = await env.DB
       .prepare(`
         SELECT COUNT(*) AS total
-        FROM leads
+        FROM prospects
       `)
       .first();
 
-    const approached = Number(
-      approachedRow?.total || 0
-    );
+    const approached =
+      Number(approachedRow?.total || 0);
+
+    // --------------------------------
+    // TOTAL SIGNUPS
+    // --------------------------------
 
     const signupRow = await env.DB
       .prepare(`
@@ -107,9 +115,12 @@ export async function onRequestGet(context) {
       `)
       .first();
 
-    const signups = Number(
-      signupRow?.total || 0
-    );
+    const signups =
+      Number(signupRow?.total || 0);
+
+    // --------------------------------
+    // PLAN COUNTS
+    // --------------------------------
 
     const starterRow = await env.DB
       .prepare(`
@@ -119,21 +130,22 @@ export async function onRequestGet(context) {
       `)
       .first();
 
-    const starter = Number(
-      starterRow?.total || 0
-    );
+    const starter =
+      Number(starterRow?.total || 0);
 
     const businessRow = await env.DB
       .prepare(`
         SELECT COUNT(*) AS total
         FROM users
-        WHERE LOWER(plan) IN ('business', 'growth')
+        WHERE LOWER(plan) IN (
+          'business',
+          'growth'
+        )
       `)
       .first();
 
-    const business = Number(
-      businessRow?.total || 0
-    );
+    const business =
+      Number(businessRow?.total || 0);
 
     const proRow = await env.DB
       .prepare(`
@@ -143,89 +155,5 @@ export async function onRequestGet(context) {
       `)
       .first();
 
-    const pro = Number(
-      proRow?.total || 0
-    );
-
-    const paid = starter + business + pro;
-
-    const conversionRate =
-      approached > 0
-        ? Number(
-            ((paid / approached) * 100).toFixed(1)
-          )
-        : 0;
-
-    const monthlyRevenue = Number(
-      (
-        starter * 9.99 +
-        business * 24.99 +
-        pro * 49.99
-      ).toFixed(2)
-    );
-
-    const leadsResult = await env.DB
-      .prepare(`
-        SELECT
-          id,
-          business_name,
-          contact_name,
-          email,
-          phone,
-          status,
-          plan,
-          approached_at,
-          signed_up_at,
-          paid_at
-        FROM leads
-        ORDER BY id DESC
-        LIMIT 50
-      `)
-      .all();
-
-    return jsonResponse(
-      {
-        success: true,
-
-        stats: {
-          approached,
-          signups,
-          paid,
-          starter,
-          business,
-          pro,
-          conversionRate,
-          monthlyRevenue
-        },
-
-        leads: leadsResult?.results || []
-      },
-      200
-    );
-
-  } catch (error) {
-    console.error("Admin stats error:", error);
-
-    return jsonResponse(
-      {
-        success: false,
-        error: "Could not load admin statistics."
-      },
-      500
-    );
-  }
-}
-
-
-function jsonResponse(data, status = 200) {
-  return new Response(
-    JSON.stringify(data),
-    {
-      status,
-      headers: {
-        "Content-Type": "application/json; charset=UTF-8",
-        "Cache-Control": "no-store"
-      }
-    }
-  );
-}
+    const pro =
+      Number(proRow?.total || 0);
