@@ -1,4 +1,3 @@
-
 export async function onRequestGet(context) {
   const { request, env } = context;
 
@@ -90,10 +89,6 @@ export async function onRequestGet(context) {
       );
     }
 
-    // --------------------------------
-    // BUSINESSES APPROACHED
-    // --------------------------------
-
     const approachedRow = await env.DB
       .prepare(`
         SELECT COUNT(*) AS total
@@ -104,10 +99,6 @@ export async function onRequestGet(context) {
     const approached =
       Number(approachedRow?.total || 0);
 
-    // --------------------------------
-    // TOTAL SIGNUPS
-    // --------------------------------
-
     const signupRow = await env.DB
       .prepare(`
         SELECT COUNT(*) AS total
@@ -117,10 +108,6 @@ export async function onRequestGet(context) {
 
     const signups =
       Number(signupRow?.total || 0);
-
-    // --------------------------------
-    // PLAN COUNTS
-    // --------------------------------
 
     const starterRow = await env.DB
       .prepare(`
@@ -136,24 +123,4 @@ export async function onRequestGet(context) {
     const businessRow = await env.DB
       .prepare(`
         SELECT COUNT(*) AS total
-        FROM users
-        WHERE LOWER(plan) IN (
-          'business',
-          'growth'
-        )
-      `)
-      .first();
-
-    const business =
-      Number(businessRow?.total || 0);
-
-    const proRow = await env.DB
-      .prepare(`
-        SELECT COUNT(*) AS total
-        FROM users
-        WHERE LOWER(plan) = 'pro'
-      `)
-      .first();
-
-    const pro =
-      Number(proRow?.total || 0);
+       
