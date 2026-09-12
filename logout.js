@@ -1,48 +1,41 @@
 export async function onRequestPost(context) {
   try {
-    if (!context.env.DB) {
-      return Response.json(
-        {
-          error: "Database is not connected."
-        },
-        {
-          status: 500
-        }
-      );
-    }
-
     const cookieHeader =
       context.request.headers.get("Cookie") || "";
 
-    const cookies = Object.fromEntries(
-      cookieHeader
-        .split(";")
-        .map(cookie => cookie.trim())
-        .filter(Boolean)
-        .map(cookie => {
-          const equalsIndex = cookie.indexOf("=");
+    let token = "";
 
-          if (equalsIndex === -1) {
-            return [cookie, ""];
-          }
+    for (const part of cookieHeader.split(";")) {
+      const cookie = part.trim();
 
-          return [
-            cookie.slice(0, equalsIndex),
-            cookie.slice(equalsIndex + 1)
-          ];
-        })
-    );
-
-    const token =
-      cookies.localboost_session || "";
-
-    if (token) {
-      await context.env.DB
-        .prepare(
-          "DELETE FROM sessions WHERE token = ?"
+      if (
+        cookie.startsWith(
+          "localboost_session="
         )
-        .bind(token)
-        .run();
+      ) {
+        token =
+          cookie.substring(
+            "localboost_session=".length
+          );
+
+        break;
+      }
+    }
+
+    if (context.env.DB && token) {
+      try {
+        await context.env.DB
+          .prepare(
+            "DELETE FROM sessions WHERE token = ?"
+          )
+          .bind(token)
+          .run();
+      } catch (databaseError) {
+        console.log(
+          "Logout database error:",
+          databaseError.message
+        );
+      }
     }
 
     return new Response(
@@ -61,17 +54,23 @@ export async function onRequestPost(context) {
     );
 
   } catch (error) {
+
     console.log(
       "Logout error:",
       error.message
     );
 
-    return Response.json(
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: "Logout failed.",
+        details: error.message
+      }),
       {
-        error: "Something went wrong logging out."
-      },
-      {
-        status: 500
+        status: 500,
+        headers: {
+          "Content-Type": "application/json"
+        }
       }
     );
   }
