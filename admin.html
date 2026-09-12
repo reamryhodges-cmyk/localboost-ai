@@ -1,288 +1,266 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>LocalBoost AI Admin</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f7fb;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f6f8;
       color: #1f2937;
     }
 
     header {
       background: #111827;
       color: white;
-      padding: 30px 18px;
-      text-align: center;
+      padding: 18px 16px;
     }
 
-    header h1 {
-      margin: 0 0 12px;
-      font-size: 34px;
+    .header-inner {
+      max-width: 1200px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
     }
 
-    header p {
+    h1 {
       margin: 0;
-      font-size: 18px;
+      font-size: 22px;
     }
 
     .container {
-      width: 92%;
-      max-width: 1000px;
-      margin: 24px auto;
+      max-width: 1200px;
+      margin: auto;
+      padding: 20px 14px 50px;
     }
 
-    .status {
-      font-weight: bold;
-      margin-bottom: 20px;
-      font-size: 18px;
+    .section {
+      background: white;
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
     }
 
-    .grid {
+    .section h2 {
+      margin-top: 0;
+      font-size: 20px;
+    }
+
+    .section h3 {
+      margin-top: 0;
+    }
+
+    .stats-grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 14px;
-      margin-bottom: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      gap: 12px;
     }
 
     .stat {
-      background: white;
-      padding: 20px 14px;
-      border-radius: 18px;
-      text-align: center;
-      box-shadow: 0 3px 12px rgba(0,0,0,.08);
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 15px;
     }
 
-    .stat-title {
-      font-size: 18px;
-      margin-bottom: 10px;
+    .stat-label {
+      font-size: 13px;
+      color: #6b7280;
+      margin-bottom: 7px;
     }
 
-    .number {
-      font-size: 34px;
+    .stat-value {
+      font-size: 24px;
       font-weight: bold;
     }
 
-    .card {
-      background: white;
-      padding: 22px;
-      border-radius: 18px;
-      margin-bottom: 22px;
-      box-shadow: 0 3px 12px rgba(0,0,0,.08);
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 12px 0;
     }
 
-    .card h2 {
-      margin-top: 0;
-      font-size: 28px;
-    }
-
-    .card p {
-      line-height: 1.5;
-    }
-
-    label {
-      display: block;
+    button {
+      border: none;
+      border-radius: 9px;
+      padding: 11px 15px;
+      font-size: 15px;
       font-weight: bold;
-      margin-top: 14px;
-      margin-bottom: 6px;
-    }
-
-    input,
-    select,
-    textarea,
-    button {
-      width: 100%;
-      box-sizing: border-box;
-      font-size: 16px;
-    }
-
-    input,
-    select,
-    textarea {
-      padding: 13px;
-      border: 1px solid #d1d5db;
-      border-radius: 10px;
-    }
-
-    textarea {
-      min-height: 150px;
-      resize: vertical;
-    }
-
-    button {
-      border: 0;
+      cursor: pointer;
       background: #2563eb;
       color: white;
-      padding: 14px;
-      border-radius: 10px;
-      font-weight: bold;
-      margin-top: 16px;
-      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.92;
     }
 
     button:disabled {
-      opacity: .6;
-      cursor: default;
+      opacity: 0.55;
+      cursor: not-allowed;
     }
 
-    .secondary-button {
+    .secondary {
       background: #374151;
     }
 
-    .success-button {
-      background: #059669;
+    .success {
+      background: #15803d;
     }
 
-    .send-button {
+    .danger {
       background: #dc2626;
     }
 
-    .quick-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 10px;
+    .warning-button {
+      background: #d97706;
     }
 
-    .quick-button {
-      margin-top: 0;
-      padding: 11px 8px;
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 11px;
+      margin-top: 6px;
+      margin-bottom: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 9px;
+      font-size: 15px;
+      background: white;
+    }
+
+    label {
+      font-weight: bold;
       font-size: 14px;
-      background: #e5e7eb;
-      color: #111827;
     }
 
-    .plan-row {
-      font-size: 19px;
-      margin: 18px 0;
+    .message {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 9px;
+      display: none;
+      white-space: pre-wrap;
+    }
+
+    .message.success-message {
+      display: block;
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #86efac;
+    }
+
+    .message.error-message {
+      display: block;
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .message.info-message {
+      display: block;
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #93c5fd;
+    }
+
+    .warning-box {
+      background: #fff7ed;
+      border: 1px solid #fdba74;
+      color: #9a3412;
+      border-radius: 10px;
+      padding: 12px;
+      margin: 12px 0;
     }
 
     .table-wrap {
       overflow-x: auto;
+      margin-top: 14px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 700px;
+      min-width: 650px;
     }
 
     th,
     td {
-      padding: 12px 10px;
-      border-bottom: 1px solid #e5e7eb;
       text-align: left;
-      font-size: 15px;
+      padding: 10px;
+      border-bottom: 1px solid #e5e7eb;
+      vertical-align: top;
     }
 
     th {
+      background: #f9fafb;
+      font-size: 13px;
+    }
+
+    td {
+      font-size: 14px;
+    }
+
+    .small {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .status-pill {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 12px;
+      background: #e5e7eb;
+    }
+
+    .plan-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+    }
+
+    .plan-card {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 14px;
+    }
+
+    .plan-price {
+      font-size: 22px;
       font-weight: bold;
+      margin-top: 6px;
     }
 
-    .empty-row {
-      text-align: center;
-      padding: 20px;
-    }
-
-    .preview-box {
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      border-radius: 12px;
-      padding: 14px;
-      margin-top: 16px;
-    }
-
-    .target-box {
-      background: #f0fdf4;
-      border: 1px solid #bbf7d0;
-      border-radius: 12px;
-      padding: 14px;
-      margin-top: 14px;
-      line-height: 1.5;
-    }
-
-    .warning-box {
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      border-radius: 12px;
-      padding: 14px;
-      margin-top: 16px;
-      line-height: 1.5;
-    }
-
-    .finder-summary {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 18px;
-      margin-bottom: 16px;
-    }
-
-    .finder-summary div {
-      background: #f9fafb;
-      border-radius: 12px;
-      padding: 14px;
-      text-align: center;
-    }
-
-    .finder-summary strong {
-      display: block;
-      font-size: 26px;
-      margin-top: 5px;
-    }
-
-    .send-summary {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-top: 18px;
-    }
-
-    .send-summary div {
-      background: #f9fafb;
-      border-radius: 12px;
-      padding: 14px;
-      text-align: center;
-    }
-
-    .send-summary strong {
-      display: block;
-      font-size: 26px;
-      margin-top: 5px;
-    }
-
-    @media (max-width: 800px) {
-      .grid {
-        grid-template-columns: 1fr 1fr;
+    @media (max-width: 650px) {
+      .header-inner {
+        align-items: flex-start;
+        flex-direction: column;
       }
 
-      .finder-summary {
-        grid-template-columns: 1fr 1fr;
+      button {
+        width: 100%;
       }
 
-      .send-summary {
+      .button-row {
+        display: grid;
         grid-template-columns: 1fr;
-      }
-
-      .quick-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      header h1 {
-        font-size: 30px;
-      }
-
-      .card h2 {
-        font-size: 24px;
       }
     }
   </style>
@@ -291,395 +269,468 @@
 <body>
 
 <header>
-  <h1>LocalBoost AI Admin</h1>
-  <p>Customer, sales and outreach dashboard</p>
+  <div class="header-inner">
+    <div>
+      <h1>LocalBoost AI Admin</h1>
+      <div class="small" style="color:#d1d5db;">
+        Customer & outreach control centre
+      </div>
+    </div>
+
+    <button class="secondary" onclick="logout()">
+      Logout
+    </button>
+  </div>
 </header>
 
-<main class="container">
+<div class="container">
 
-  <div id="status" class="status">
-    Loading dashboard...
-  </div>
+  <!-- ADMIN STATUS -->
+  <div id="adminStatus" class="message"></div>
 
-  <section class="grid">
+  <!-- STATS -->
+  <section class="section">
+    <h2>Business Overview</h2>
 
-    <div class="stat">
-      <div class="stat-title">Total Approached</div>
-      <div id="approached" class="number">0</div>
+    <div class="stats-grid">
+
+      <div class="stat">
+        <div class="stat-label">Total Approached</div>
+        <div class="stat-value" id="totalApproached">—</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Total Signups</div>
+        <div class="stat-value" id="totalSignups">—</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Paid Customers</div>
+        <div class="stat-value" id="paidCustomers">—</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Conversion Rate</div>
+        <div class="stat-value" id="conversionRate">—</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Estimated MRR</div>
+        <div class="stat-value" id="estimatedMRR">—</div>
+      </div>
+
     </div>
-
-    <div class="stat">
-      <div class="stat-title">Total Signups</div>
-      <div id="signups" class="number">0</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-title">Paid Customers</div>
-      <div id="paid" class="number">0</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-title">Conversion Rate</div>
-      <div id="conversion" class="number">0%</div>
-    </div>
-
-    <div class="stat">
-      <div class="stat-title">Monthly Revenue</div>
-      <div id="revenue" class="number">£0.00</div>
-    </div>
-
   </section>
 
+  <!-- PLANS -->
+  <section class="section">
+    <h2>Paid Plans</h2>
 
-  <section class="card">
+    <div class="plan-grid">
+
+      <div class="plan-card">
+        <strong>Starter</strong>
+        <div class="plan-price">£9.99</div>
+        <div class="small">per month</div>
+        <p>
+          Customers:
+          <strong id="starterCustomers">—</strong>
+        </p>
+      </div>
+
+      <div class="plan-card">
+        <strong>Business</strong>
+        <div class="plan-price">£24.99</div>
+        <div class="small">per month</div>
+        <p>
+          Customers:
+          <strong id="businessCustomers">—</strong>
+        </p>
+      </div>
+
+      <div class="plan-card">
+        <strong>Pro</strong>
+        <div class="plan-price">£49.99</div>
+        <div class="small">per month</div>
+        <p>
+          Customers:
+          <strong id="proCustomers">—</strong>
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- BUSINESS FINDER -->
+  <section class="section">
 
     <h2>Find UK Businesses</h2>
 
-    <p>
-      Find independent and small UK businesses
-      that are suitable prospects for LocalBoost AI.
+    <p class="small">
+      Find suitable UK small businesses before preparing outreach emails.
     </p>
 
-    <div class="preview-box">
-      <strong>Preview mode</strong>
+    <div class="button-row">
 
-      <br><br>
-
-      Searching does not send any outreach emails.
-      It only finds suitable businesses.
-    </div>
-
-    <div class="target-box">
-      <strong>LocalBoost target customers</strong>
-
-      <br><br>
-
-      Independent local businesses that could benefit
-      from regular social media content.
-
-      <br><br>
-
-      Examples include car valeters, cleaners,
-      barbers, salons, dog groomers, trades,
-      landscapers, cafés, restaurants, takeaways,
-      gyms and photographers.
-
-      <br><br>
-
-      Large corporations, universities, banks,
-      charities, government organisations and
-      national chains should be excluded.
-    </div>
-
-    <label>Quick business searches</label>
-
-    <div class="quick-grid">
-
-      <button
-        type="button"
-        class="quick-button"
-        onclick="setSearch('car')"
-      >
+      <button onclick="quickSearch('Car Valeting')">
         Car Valeting
       </button>
 
-      <button
-        type="button"
-        class="quick-button"
-        onclick="setSearch('beauty')"
-      >
-        Hair & Beauty
+      <button onclick="quickSearch('Plumber')">
+        Plumbers
       </button>
 
-      <button
-        type="button"
-        class="quick-button"
-        onclick="setSearch('cleaning')"
-      >
-        Cleaners
+      <button onclick="quickSearch('Electrician')">
+        Electricians
       </button>
 
-      <button
-        type="button"
-        class="quick-button"
-        onclick="setSearch('trades')"
-      >
-        Trades
+      <button onclick="quickSearch('Hair Salon')">
+        Hair Salons
       </button>
 
-      <button
-        type="button"
-        class="quick-button"
-        onclick="setSearch('food')"
-      >
-        Food Businesses
+      <button onclick="quickSearch('Beauty Salon')">
+        Beauty Salons
       </button>
 
-      <button
-        type="button"
-        class="quick-button"
-        onclick="setSearch('fitness')"
-      >
-        Fitness
+      <button onclick="quickSearch('Landscaping')">
+        Landscaping
       </button>
 
     </div>
 
-    <label for="ukBusinessQuery">
-      Hunter search
-    </label>
-
-    <textarea id="ukBusinessQuery">Small independent local businesses based in the United Kingdom that sell services or products directly to consumers and would benefit from social media marketing. Focus on businesses such as mobile car valeting and detailing companies, cleaners, barbers, hair salons, beauty salons, dog groomers, landscapers, gardeners, plumbers, electricians, builders, cafés, restaurants, takeaways, gyms, fitness studios and photographers. Prefer independent businesses and small companies. Exclude universities, schools, charities, banks, financial institutions, software companies, large corporations, government organisations, national organisations and national chains.</textarea>
-
-    <button
-      id="findBusinessesButton"
-      type="button"
-    >
-      Find Suitable UK Businesses
-    </button>
-
-    <div
-      id="finderStatus"
-      class="status"
-      style="margin-top:16px;"
-    ></div>
-
-    <div
-      id="finderSummary"
-      class="finder-summary"
-      style="display:none;"
-    >
-
-      <div>
-        Businesses Found
-        <strong id="finderFound">0</strong>
-      </div>
-
-      <div>
-        Eligible Leads
-        <strong id="finderEligible">0</strong>
-      </div>
-
-    </div>
-
-    <div
-      id="finderResultsWrap"
-      class="table-wrap"
-      style="display:none;"
-    >
-
-      <table>
-        <thead>
-          <tr>
-            <th>Business</th>
-            <th>Website / Domain</th>
-            <th>Emails Available</th>
-            <th>Generic Emails</th>
-            <th>Personal Emails</th>
-          </tr>
-        </thead>
-
-        <tbody id="finderTable">
-          <tr>
-            <td colspan="5" class="empty-row">
-              No search has been run yet.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-    </div>
-
-    <button
-      id="prepareOutreachButton"
-      type="button"
-      class="success-button"
-      style="display:none;"
-    >
-      Prepare First 10 Emails
-    </button>
-
-    <div
-      id="prepareStatus"
-      class="status"
-      style="margin-top:16px;"
-    ></div>
-
-  </section>
-
-
-  <section
-    id="outreachPreviewCard"
-    class="card"
-    style="display:none;"
-  >
-
-    <h2>Outreach Email Preview</h2>
-
-    <div class="preview-box">
-      <strong>Prepared business addresses</strong>
-
-      <br><br>
-
-      These addresses have been checked against Hunter,
-      previous outreach and your suppression list.
-    </div>
-
-    <div class="finder-summary">
-
-      <div>
-        Businesses Checked
-        <strong id="outreachChecked">0</strong>
-      </div>
-
-      <div>
-        Ready to Contact
-        <strong id="outreachReady">0</strong>
-      </div>
-
-    </div>
-
-    <div class="table-wrap">
-
-      <table>
-        <thead>
-          <tr>
-            <th>Business</th>
-            <th>Domain</th>
-            <th>Email</th>
-            <th>Confidence</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-
-        <tbody id="outreachPreviewTable">
-          <tr>
-            <td colspan="5" class="empty-row">
-              No outreach preview prepared yet.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-    </div>
-
-    <div
-      id="sendControls"
-      style="display:none;"
-    >
-
-      <div class="warning-box">
-        <strong>Live email sending</strong>
-
-        <br><br>
-
-        Pressing the button below will send real outreach
-        emails through Resend to the prepared business
-        addresses.
-
-        <br><br>
-
-        LocalBoost will check suppression and duplicate
-        protection again before each message is sent.
-      </div>
-
-      <button
-        id="sendOutreachButton"
-        type="button"
-        class="send-button"
-      >
-        Send These Emails
-      </button>
-
-      <div
-        id="sendStatus"
-        class="status"
-        style="margin-top:16px;"
-      ></div>
-
-    </div>
-
-  </section>
-
-
-  <section
-    id="sendResultsCard"
-    class="card"
-    style="display:none;"
-  >
-
-    <h2>Outreach Send Results</h2>
-
-    <div class="send-summary">
-
-      <div>
-        Sent
-        <strong id="sentCount">0</strong>
-      </div>
-
-      <div>
-        Skipped
-        <strong id="skippedCount">0</strong>
-      </div>
-
-      <div>
-        Failed
-        <strong id="failedCount">0</strong>
-      </div>
-
-    </div>
-
-    <div
-      id="sendDetails"
-      style="margin-top:20px;"
-    ></div>
-
-  </section>
-
-
-  <section class="card">
-
-    <h2>Add Business Approached</h2>
-
-    <label for="businessName">
-      Business name
-    </label>
-
-    <input
-      id="businessName"
-      type="text"
-      placeholder="Example: Gloucester Shine"
-    >
-
-    <label for="businessType">
+    <label for="businessQuery">
       Business type
     </label>
 
     <input
-      id="businessType"
+      id="businessQuery"
       type="text"
-      placeholder="Example: Mobile car valeting"
+      placeholder="Example: Car Valeting"
+      value="Car Valeting"
+    />
+
+    <button
+      id="findBusinessesButton"
+      onclick="findBusinesses()"
+    >
+      Find Suitable UK Businesses
+    </button>
+
+    <div id="finderMessage" class="message"></div>
+
+    <div
+      id="finderResultsContainer"
+      class="table-wrap hidden"
     >
 
-    <label for="location">
+      <table>
+        <thead>
+          <tr>
+            <th>Business</th>
+            <th>Type</th>
+            <th>Location</th>
+            <th>Domain</th>
+          </tr>
+        </thead>
+
+        <tbody id="finderResults"></tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+  <!-- PREPARE OUTREACH -->
+  <section class="section">
+
+    <h2>Prepare Outreach</h2>
+
+    <div class="warning-box">
+      Preparing emails does not send anything.
+      You can review the businesses before live outreach.
+    </div>
+
+    <button
+      id="prepareButton"
+      onclick="prepareOutreach()"
+      disabled
+    >
+      Prepare First 10 Emails
+    </button>
+
+    <div id="prepareMessage" class="message"></div>
+
+    <div
+      id="previewContainer"
+      class="hidden"
+    >
+
+      <h3>Outreach Email Preview</h3>
+
+      <div class="stats-grid">
+
+        <div class="stat">
+          <div class="stat-label">Businesses Checked</div>
+          <div
+            class="stat-value"
+            id="businessesChecked"
+          >
+            0
+          </div>
+        </div>
+
+        <div class="stat">
+          <div class="stat-label">Ready to Contact</div>
+          <div
+            class="stat-value"
+            id="businessesReady"
+          >
+            0
+          </div>
+        </div>
+
+      </div>
+
+      <div class="table-wrap">
+
+        <table>
+
+          <thead>
+            <tr>
+              <th>Business</th>
+              <th>Domain</th>
+              <th>Email</th>
+              <th>Confidence</th>
+            </tr>
+          </thead>
+
+          <tbody id="previewResults"></tbody>
+
+        </table>
+
+      </div>
+
+      <div
+        id="sendWarning"
+        class="warning-box hidden"
+      >
+        ⚠️ The button below sends real emails to these businesses.
+        For the first live test, send no more than this prepared batch.
+      </div>
+
+      <button
+        id="sendEmailsButton"
+        class="danger hidden"
+        onclick="sendPreparedEmails()"
+      >
+        Send These Emails
+      </button>
+
+      <div id="sendMessage" class="message"></div>
+
+    </div>
+
+  </section>
+
+  <!-- MANUAL PROSPECT -->
+  <section class="section">
+
+    <h2>Add Business Manually</h2>
+
+    <p class="small">
+      Record a business as approached manually.
+    </p>
+
+    <label for="manualBusinessName">
+      Business name
+    </label>
+
+    <input
+      id="manualBusinessName"
+      type="text"
+      placeholder="Business name"
+    />
+
+    <label for="manualBusinessType">
+      Business type
+    </label>
+
+    <input
+      id="manualBusinessType"
+      type="text"
+      placeholder="Example: Mobile car valeting"
+    />
+
+    <label for="manualLocation">
       Location
     </label>
 
     <input
-      id="location"
+      id="manualLocation"
       type="text"
       placeholder="Example: Gloucester"
-    >
+    />
 
-    <label for="contactMethod">
+    <label for="manualContactMethod">
       Contact method
     </label>
 
-    <select id="contactMethod">
-      <option value="">
-        Select contact method
-      </option>
+    <select id="manualContactMethod">
+      <option value="email">Email</option>
+      <option value="phone">Phone</option>
+      <option value="website">Website</option>
+      <option value="other">Other</option>
+    </select>
 
-      <option value="email">
-        Email
-      </option
+    <label for="manualContactDetails">
+      Contact details
+    </label>
+
+    <input
+      id="manualContactDetails"
+      type="text"
+      placeholder="Email, phone or website"
+    />
+
+    <button onclick="addManualProspect()">
+      Add Business Approached
+    </button>
+
+    <div id="manualMessage" class="message"></div>
+
+  </section>
+
+  <!-- RECENT -->
+  <section class="section">
+
+    <h2>Recent Businesses Approached</h2>
+
+    <div class="table-wrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Business</th>
+            <th>Type</th>
+            <th>Location</th>
+            <th>Contact</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+
+        <tbody id="recentBusinesses">
+
+          <tr>
+            <td colspan="6">
+              Loading...
+            </td>
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </section>
+
+</div>
+
+<script>
+
+let discoveredBusinesses = [];
+let preparedBusinesses = [];
+
+function showMessage(elementId, text, type = "info") {
+
+  const element = document.getElementById(elementId);
+
+  element.className = "message";
+
+  if (type === "success") {
+    element.classList.add("success-message");
+  } else if (type === "error") {
+    element.classList.add("error-message");
+  } else {
+    element.classList.add("info-message");
+  }
+
+  element.textContent = text;
+}
+
+function clearMessage(elementId) {
+
+  const element = document.getElementById(elementId);
+
+  element.className = "message";
+  element.textContent = "";
+}
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function money(value) {
+
+  const amount = Number(value || 0);
+
+  return amount.toLocaleString(
+    "en-GB",
+    {
+      style: "currency",
+      currency: "GBP"
+    }
+  );
+}
+
+function getNumber(...values) {
+
+  for (const value of values) {
+
+    const number = Number(value);
+
+    if (!Number.isNaN(number)) {
+      return number;
+    }
+  }
+
+  return 0;
+}
+
+async function checkAdmin() {
+
+  try {
+
+    const response = await fetch(
+      "/me",
+      {
+        credentials: "include",
+        cache: "no-store"
+      }
+    );
+
+    if (!response.ok) {
+
+      window.location.href = "/login.html";
+      return false;
+    }
+
+    const data = await response.json();
+
+    const email =
+      data?.user?.email ||
+      data?.email ||
+      "";
+
+    if (
+      email.toLowerCase() !==
+      "samtest
