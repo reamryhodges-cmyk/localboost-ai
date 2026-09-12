@@ -94,23 +94,31 @@
       background: #374151;
     }
 
+    .logoutButton {
+      background: #dc2626;
+    }
+
     #signupStatus,
     #loginStatus,
     #aiStatus,
-    #actionMessage {
+    #actionMessage,
+    #sessionStatus {
       margin-top: 15px;
       font-weight: bold;
       text-align: center;
     }
 
-    #accountInfo {
+    #accountCard {
       display: none;
-      margin-top: 18px;
+    }
+
+    #accountInfo {
+      margin-top: 15px;
       background: #f0fdf4;
       border: 1px solid #bbf7d0;
       padding: 15px;
       border-radius: 10px;
-      line-height: 1.6;
+      line-height: 1.7;
     }
 
     #aiResult {
@@ -184,9 +192,36 @@
 
 <main class="container">
 
+  <!-- ACCOUNT -->
+
+  <section
+    id="accountCard"
+    class="card"
+  >
+
+    <h2>👤 Your Account</h2>
+
+    <div id="accountInfo"></div>
+
+    <button
+      id="logoutButton"
+      class="logoutButton"
+      type="button"
+    >
+      Logout
+    </button>
+
+    <div id="sessionStatus"></div>
+
+  </section>
+
+
   <!-- CREATE ACCOUNT -->
 
-  <section class="card">
+  <section
+    id="signupCard"
+    class="card"
+  >
 
     <h2>👤 Create Your Account</h2>
 
@@ -230,7 +265,10 @@
 
   <!-- LOGIN -->
 
-  <section class="card">
+  <section
+    id="loginCard"
+    class="card"
+  >
 
     <h2>🔐 Customer Login</h2>
 
@@ -261,14 +299,15 @@
 
     <div id="loginStatus"></div>
 
-    <div id="accountInfo"></div>
-
   </section>
 
 
   <!-- AI GENERATOR -->
 
-  <section class="card">
+  <section
+    id="generatorCard"
+    class="card"
+  >
 
     <h2>✨ Create Your Social Media Post</h2>
 
@@ -392,11 +431,23 @@
 
 document.addEventListener("DOMContentLoaded", function () {
 
+  const signupCard =
+    document.getElementById("signupCard");
+
+  const loginCard =
+    document.getElementById("loginCard");
+
+  const accountCard =
+    document.getElementById("accountCard");
+
   const signupButton =
     document.getElementById("signupButton");
 
   const loginButton =
     document.getElementById("loginButton");
+
+  const logoutButton =
+    document.getElementById("logoutButton");
 
   const generateButton =
     document.getElementById("generateButton");
@@ -409,482 +460,101 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
   // -------------------------
-  // CREATE ACCOUNT
+  // SHOW LOGGED IN USER
   // -------------------------
 
-  signupButton.addEventListener("click", async function () {
+  function showLoggedInUser(user) {
 
-    const businessName =
-      document.getElementById("signupBusinessName").value.trim();
-
-    const email =
-      document.getElementById("signupEmail").value.trim();
-
-    const password =
-      document.getElementById("signupPassword").value;
-
-    const status =
-      document.getElementById("signupStatus");
-
-
-    if (!email || !password) {
-
-      status.textContent =
-        "❌ Please enter your email and password.";
-
-      return;
-    }
-
-
-    status.textContent =
-      "Creating your account...";
-
-    signupButton.disabled = true;
-
-
-    try {
-
-      const response = await fetch("/signup", {
-
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-          businessName,
-          email,
-          password
-        })
-
-      });
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.error ||
-          data.details ||
-          "Account could not be created."
-        );
-
-      }
-
-
-      status.textContent =
-        "✅ Account created successfully!";
-
-      document.getElementById("businessName").value =
-        businessName;
-
-      document.getElementById("loginEmail").value =
-        email;
-
-      document.getElementById("signupPassword").value =
-        "";
-
-
-    } catch (error) {
-
-      status.textContent =
-        "❌ " + error.message;
-
-    } finally {
-
-      signupButton.disabled = false;
-
-    }
-
-  });
-
-
-  // -------------------------
-  // LOGIN
-  // -------------------------
-
-  loginButton.addEventListener("click", async function () {
-
-    const email =
-      document.getElementById("loginEmail").value.trim();
-
-    const password =
-      document.getElementById("loginPassword").value;
-
-    const status =
-      document.getElementById("loginStatus");
+    signupCard.style.display = "none";
+    loginCard.style.display = "none";
+    accountCard.style.display = "block";
 
     const accountInfo =
       document.getElementById("accountInfo");
 
+    accountInfo.innerHTML =
+      "<strong>Welcome, " +
+      (user.businessName || user.email) +
+      "</strong><br>" +
+      "Email: " +
+      user.email +
+      "<br>" +
+      "Plan: " +
+      (user.plan || "free") +
+      "<br>" +
+      "Generations used: " +
+      (user.generationsUsed || 0);
 
-    accountInfo.style.display = "none";
-    accountInfo.textContent = "";
 
+    if (user.businessName) {
 
-    if (!email || !password) {
+      document.getElementById("businessName").value =
+        user.businessName;
 
-      status.textContent =
-        "❌ Please enter your email and password.";
-
-      return;
     }
 
+  }
 
-    status.textContent =
-      "Logging in...";
 
-    loginButton.disabled = true;
+  // -------------------------
+  // SHOW LOGGED OUT VIEW
+  // -------------------------
 
+  function showLoggedOut() {
+
+    signupCard.style.display = "block";
+    loginCard.style.display = "block";
+    accountCard.style.display = "none";
+
+  }
+
+
+  // -------------------------
+  // CHECK EXISTING SESSION
+  // -------------------------
+
+  async function checkSession() {
 
     try {
 
-      const response = await fetch("/login", {
-
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-          email,
-          password
-        })
-
-      });
+      const response =
+        await fetch("/me", {
+          method: "GET",
+          credentials: "same-origin"
+        });
 
 
       const data =
         await response.json();
 
 
-      if (!response.ok) {
+      if (
+        response.ok &&
+        data.loggedIn &&
+        data.user
+      ) {
 
-        throw new Error(
-          data.error ||
-          data.details ||
-          "Login failed."
+        showLoggedInUser(
+          data.user
         );
-
-      }
-
-
-      status.textContent =
-        "✅ Login successful!";
-
-
-      if (data.user) {
-
-        accountInfo.innerHTML =
-          "<strong>Welcome, " +
-          (data.user.businessName || data.user.email) +
-          "</strong><br>" +
-          "Plan: " +
-          (data.user.plan || "free") +
-          "<br>" +
-          "Generations used: " +
-          (data.user.generationsUsed || 0);
-
-        accountInfo.style.display =
-          "block";
-
-
-        if (data.user.businessName) {
-
-          document.getElementById("businessName").value =
-            data.user.businessName;
-
-        }
-
-      }
-
-
-      document.getElementById("loginPassword").value =
-        "";
-
-
-    } catch (error) {
-
-      status.textContent =
-        "❌ " + error.message;
-
-    } finally {
-
-      loginButton.disabled = false;
-
-    }
-
-  });
-
-
-  // -------------------------
-  // GENERATE CONTENT
-  // -------------------------
-
-  generateButton.addEventListener("click", async function () {
-
-    const status =
-      document.getElementById("aiStatus");
-
-    const result =
-      document.getElementById("aiResult");
-
-    const image =
-      document.getElementById("aiImage");
-
-    const actions =
-      document.getElementById("resultActions");
-
-    const actionMessage =
-      document.getElementById("actionMessage");
-
-
-    const businessName =
-      document.getElementById("businessName").value.trim();
-
-    const businessType =
-      document.getElementById("businessType").value.trim();
-
-    const location =
-      document.getElementById("location").value.trim();
-
-    const service =
-      document.getElementById("service").value.trim();
-
-    const extraDetails =
-      document.getElementById("extraDetails").value.trim();
-
-
-    if (!businessName || !businessType) {
-
-      status.textContent =
-        "Please enter your business name and business type.";
-
-      return;
-    }
-
-
-    status.textContent =
-      "✨ Creating your post and picture...";
-
-    result.textContent = "";
-    result.style.display = "none";
-
-    image.src = "";
-    image.style.display = "none";
-
-    actions.style.display = "none";
-
-    actionMessage.textContent = "";
-
-    generateButton.disabled = true;
-
-
-    try {
-
-      const response = await fetch("/generate", {
-
-        method: "POST",
-
-        headers: {
-          "Content-Type": "application/json"
-        },
-
-        body: JSON.stringify({
-          businessName,
-          businessType,
-          location,
-          service,
-          extraDetails
-        })
-
-      });
-
-
-      const data =
-        await response.json();
-
-
-      if (!response.ok) {
-
-        throw new Error(
-          data.details ||
-          data.error ||
-          "AI request failed."
-        );
-
-      }
-
-
-      if (data.result) {
-
-        result.textContent =
-          data.result;
-
-        result.style.display =
-          "block";
-
-      }
-
-
-      if (data.image) {
-
-        image.src =
-          data.image;
-
-        image.style.display =
-          "block";
-
-      }
-
-
-      if (data.result || data.image) {
-
-        actions.style.display =
-          "grid";
-
-      }
-
-
-      if (data.result && data.image) {
-
-        status.textContent =
-          "✅ Your post and picture are ready!";
-
-      } else if (data.result) {
-
-        status.textContent =
-          "⚠️ Your post is ready, but the picture could not be generated.";
 
       } else {
 
-        status.textContent =
-          "⚠️ No content was returned.";
+        showLoggedOut();
 
       }
 
-
     } catch (error) {
 
-      status.textContent =
-        "❌ " + error.message;
-
-    } finally {
-
-      generateButton.disabled = false;
+      showLoggedOut();
 
     }
 
-  });
+  }
 
 
   // -------------------------
-  // COPY POST
+  // CREATE ACCOUNT
   // -------------------------
 
-  copyButton.addEventListener("click", async function () {
-
-    const text =
-      document.getElementById("aiResult")
-        .textContent
-        .trim();
-
-    const message =
-      document.getElementById("actionMessage");
-
-
-    if (!text) {
-
-      message.textContent =
-        "There is no post to copy.";
-
-      return;
-
-    }
-
-
-    try {
-
-      await navigator.clipboard.writeText(text);
-
-      message.textContent =
-        "✅ Post copied!";
-
-    } catch (error) {
-
-      const textArea =
-        document.createElement("textarea");
-
-      textArea.value = text;
-
-      document.body.appendChild(textArea);
-
-      textArea.select();
-
-      document.execCommand("copy");
-
-      document.body.removeChild(textArea);
-
-      message.textContent =
-        "✅ Post copied!";
-
-    }
-
-  });
-
-
-  // -------------------------
-  // DOWNLOAD PICTURE
-  // -------------------------
-
-  downloadButton.addEventListener("click", function () {
-
-    const image =
-      document.getElementById("aiImage");
-
-    const message =
-      document.getElementById("actionMessage");
-
-
-    if (!image.src) {
-
-      message.textContent =
-        "There is no picture to download.";
-
-      return;
-
-    }
-
-
-    const link =
-      document.createElement("a");
-
-    link.href =
-      image.src;
-
-    link.download =
-      "localboost-ai-picture.jpg";
-
-    document.body.appendChild(link);
-
-    link.click();
-
-    document.body.removeChild(link);
-
-
-    message.textContent =
-      "✅ Picture download started.";
-
-  });
-
-});
-
-</script>
-
-</body>
-</html>
+  signup>
