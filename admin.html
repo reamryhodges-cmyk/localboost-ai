@@ -20,8 +20,18 @@
     header {
       background: #111827;
       color: white;
-      padding: 28px 18px;
+      padding: 30px 18px;
       text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 12px;
+      font-size: 34px;
+    }
+
+    header p {
+      margin: 0;
+      font-size: 18px;
     }
 
     .container {
@@ -30,45 +40,55 @@
       margin: 24px auto;
     }
 
+    .status {
+      font-weight: bold;
+      margin-bottom: 20px;
+      font-size: 18px;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      margin-bottom: 22px;
+      gap: 14px;
+      margin-bottom: 24px;
     }
 
     .stat {
       background: white;
-      padding: 18px;
-      border-radius: 12px;
+      padding: 20px 14px;
+      border-radius: 18px;
       text-align: center;
       box-shadow: 0 3px 12px rgba(0,0,0,.08);
     }
 
+    .stat-title {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+
     .number {
-      font-size: 28px;
+      font-size: 34px;
       font-weight: bold;
-      margin-top: 8px;
     }
 
     .card {
       background: white;
-      padding: 20px;
-      border-radius: 12px;
+      padding: 22px;
+      border-radius: 18px;
       margin-bottom: 22px;
       box-shadow: 0 3px 12px rgba(0,0,0,.08);
     }
 
-    .status {
-      font-weight: bold;
-      margin-bottom: 18px;
+    .card h2 {
+      margin-top: 0;
+      font-size: 28px;
     }
 
     label {
       display: block;
       font-weight: bold;
-      margin-top: 12px;
-      margin-bottom: 5px;
+      margin-top: 14px;
+      margin-bottom: 6px;
     }
 
     input,
@@ -83,40 +103,62 @@
     input,
     select,
     textarea {
-      padding: 12px;
+      padding: 13px;
       border: 1px solid #d1d5db;
-      border-radius: 8px;
+      border-radius: 10px;
     }
 
     textarea {
-      min-height: 80px;
+      min-height: 90px;
+      resize: vertical;
     }
 
     button {
       border: 0;
       background: #2563eb;
       color: white;
-      padding: 13px;
-      border-radius: 8px;
+      padding: 14px;
+      border-radius: 10px;
       font-weight: bold;
-      margin-top: 14px;
+      margin-top: 16px;
+      cursor: pointer;
     }
 
     button:disabled {
       opacity: .6;
+      cursor: default;
+    }
+
+    .plan-row {
+      font-size: 19px;
+      margin: 18px 0;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
+      min-width: 700px;
     }
 
     th,
     td {
-      padding: 10px;
+      padding: 12px 10px;
       border-bottom: 1px solid #e5e7eb;
       text-align: left;
-      font-size: 14px;
+      font-size: 15px;
+    }
+
+    th {
+      font-weight: bold;
+    }
+
+    .empty-row {
+      text-align: center;
+      padding: 20px;
     }
 
     @media (max-width: 800px) {
@@ -124,8 +166,12 @@
         grid-template-columns: 1fr 1fr;
       }
 
-      .tableWrap {
-        overflow-x: auto;
+      header h1 {
+        font-size: 30px;
+      }
+
+      .card h2 {
+        font-size: 24px;
       }
     }
   </style>
@@ -147,27 +193,27 @@
   <section class="grid">
 
     <div class="stat">
-      <div>Total Approached</div>
+      <div class="stat-title">Total Approached</div>
       <div id="approached" class="number">0</div>
     </div>
 
     <div class="stat">
-      <div>Total Signups</div>
+      <div class="stat-title">Total Signups</div>
       <div id="signups" class="number">0</div>
     </div>
 
     <div class="stat">
-      <div>Paid Customers</div>
+      <div class="stat-title">Paid Customers</div>
       <div id="paid" class="number">0</div>
     </div>
 
     <div class="stat">
-      <div>Conversion Rate</div>
+      <div class="stat-title">Conversion Rate</div>
       <div id="conversion" class="number">0%</div>
     </div>
 
     <div class="stat">
-      <div>Monthly Revenue</div>
+      <div class="stat-title">Monthly Revenue</div>
       <div id="revenue" class="number">£0.00</div>
     </div>
 
@@ -179,6 +225,7 @@
     <label for="businessName">
       Business name
     </label>
+
     <input
       id="businessName"
       type="text"
@@ -188,6 +235,7 @@
     <label for="businessType">
       Business type
     </label>
+
     <input
       id="businessType"
       type="text"
@@ -197,6 +245,7 @@
     <label for="location">
       Location
     </label>
+
     <input
       id="location"
       type="text"
@@ -206,8 +255,9 @@
     <label for="contactMethod">
       Contact method
     </label>
+
     <select id="contactMethod">
-      <option value="">Select</option>
+      <option value="">Select contact method</option>
       <option value="email">Email</option>
       <option value="facebook">Facebook</option>
       <option value="instagram">Instagram</option>
@@ -219,9 +269,10 @@
     <label for="contactDetails">
       Contact details / notes
     </label>
+
     <textarea
       id="contactDetails"
-      placeholder="Email address, page name, phone number or notes"
+      placeholder="Email address, phone number, page name or notes"
     ></textarea>
 
     <button
@@ -234,56 +285,75 @@
     <div
       id="prospectStatus"
       class="status"
+      style="margin-top:16px;"
     ></div>
   </section>
 
   <section class="card">
     <h2>Paid Plans</h2>
 
-    <p>
+    <div class="plan-row">
       Starter:
       <strong id="starter">0</strong>
-    </p>
+    </div>
 
-    <p>
+    <div class="plan-row">
       Business:
       <strong id="business">0</strong>
-    </p>
+    </div>
 
-    <p>
+    <div class="plan-row">
       Pro:
       <strong id="pro">0</strong>
-    </p>
+    </div>
   </section>
 
   <section class="card">
     <h2>Recent Businesses Approached</h2>
 
-    <div class="tableWrap">
+    <div class="table-wrap">
+
       <table>
+
         <thead>
           <tr>
             <th>Business</th>
             <th>Type</th>
             <th>Location</th>
             <th>Method</th>
+            <th>Details</th>
             <th>Status</th>
             <th>Date</th>
           </tr>
         </thead>
 
-        <tbody id="prospectTable"></tbody>
+        <tbody id="prospectTable">
+
+          <tr>
+            <td
+              colspan="7"
+              class="empty-row"
+            >
+              Loading...
+            </td>
+          </tr>
+
+        </tbody>
+
       </table>
+
     </div>
   </section>
 
   <section class="card">
+
     <button
       type="button"
       onclick="window.location.href='/'"
     >
       Back to LocalBoost
     </button>
+
   </section>
 
 </main>
@@ -291,26 +361,35 @@
 <script>
 "use strict";
 
-const $ = id =>
+const $ = (id) =>
   document.getElementById(id);
 
 
 async function loadDashboard() {
-  const status = $("status");
+
+  const status =
+    $("status");
 
   try {
-    const response = await fetch(
-      "/admin-stats",
-      {
-        credentials: "same-origin",
-        cache: "no-store"
-      }
-    );
+
+    const response =
+      await fetch(
+        "/admin-stats",
+        {
+          method: "GET",
+          credentials: "same-origin",
+          cache: "no-store"
+        }
+      );
 
     const contentType =
       response.headers.get("content-type") || "";
 
-    if (!contentType.includes("application/json")) {
+    if (
+      !contentType.includes(
+        "application/json"
+      )
+    ) {
       throw new Error(
         "Admin statistics endpoint is not responding correctly."
       );
@@ -330,16 +409,24 @@ async function loadDashboard() {
       data.stats || {};
 
     $("approached").textContent =
-      stats.approached || 0;
+      Number(
+        stats.approached || 0
+      );
 
     $("signups").textContent =
-      stats.signups || 0;
+      Number(
+        stats.signups || 0
+      );
 
     $("paid").textContent =
-      stats.paid || 0;
+      Number(
+        stats.paid || 0
+      );
 
     $("conversion").textContent =
-      (stats.conversionRate || 0) + "%";
+      Number(
+        stats.conversionRate || 0
+      ) + "%";
 
     $("revenue").textContent =
       "£" +
@@ -348,13 +435,19 @@ async function loadDashboard() {
       ).toFixed(2);
 
     $("starter").textContent =
-      stats.starter || 0;
+      Number(
+        stats.starter || 0
+      );
 
     $("business").textContent =
-      stats.business || 0;
+      Number(
+        stats.business || 0
+      );
 
     $("pro").textContent =
-      stats.pro || 0;
+      Number(
+        stats.pro || 0
+      );
 
     renderProspects(
       data.prospects || []
@@ -364,95 +457,167 @@ async function loadDashboard() {
       "✅ Dashboard loaded";
 
   } catch (error) {
+
     status.textContent =
       "❌ " + error.message;
+
   }
 }
 
 
 function renderProspects(prospects) {
+
   const table =
     $("prospectTable");
 
   table.innerHTML = "";
 
   if (!prospects.length) {
-    table.innerHTML = `
-      <tr>
-        <td colspan="6">
-          No businesses have been recorded yet.
-        </td>
-      </tr>
-    `;
+
+    const row =
+      document.createElement("tr");
+
+    const cell =
+      document.createElement("td");
+
+    cell.colSpan = 7;
+    cell.className =
+      "empty-row";
+
+    cell.textContent =
+      "No businesses have been added yet.";
+
+    row.appendChild(cell);
+    table.appendChild(row);
 
     return;
   }
 
-  for (const prospect of prospects) {
+
+  for (
+    const prospect of prospects
+  ) {
+
     const row =
       document.createElement("tr");
 
-    row.innerHTML = `
-      <td>${escapeHtml(
-        prospect.business_name || ""
-      )}</td>
+    addCell(
+      row,
+      prospect.business_name
+    );
 
-      <td>${escapeHtml(
-        prospect.business_type || ""
-      )}</td>
+    addCell(
+      row,
+      prospect.business_type
+    );
 
-      <td>${escapeHtml(
-        prospect.location || ""
-      )}</td>
+    addCell(
+      row,
+      prospect.location
+    );
 
-      <td>${escapeHtml(
-        prospect.contact_method || ""
-      )}</td>
+    addCell(
+      row,
+      prospect.contact_method
+    );
 
-      <td>${escapeHtml(
-        prospect.status || ""
-      )}</td>
+    addCell(
+      row,
+      prospect.contact_details
+    );
 
-      <td>${escapeHtml(
-        formatDate(
-          prospect.approached_at
-        )
-      )}</td>
-    `;
+    addCell(
+      row,
+      prospect.status
+    );
+
+    addCell(
+      row,
+      formatDate(
+        prospect.approached_at
+      )
+    );
 
     table.appendChild(row);
   }
 }
 
 
-$("addProspectButton").addEventListener(
-  "click",
-  async function () {
+function addCell(
+  row,
+  value
+) {
 
-    const button =
-      $("addProspectButton");
+  const cell =
+    document.createElement("td");
 
-    const status =
-      $("prospectStatus");
+  cell.textContent =
+    value || "";
 
-    const businessName =
-      $("businessName")
-        .value
-        .trim();
+  row.appendChild(cell);
+}
 
-    if (!businessName) {
-      status.textContent =
-        "❌ Enter the business name.";
-      return;
-    }
 
-    button.disabled = true;
+$("addProspectButton")
+  .addEventListener(
+    "click",
+    addProspect
+  );
+
+
+async function addProspect() {
+
+  const button =
+    $("addProspectButton");
+
+  const status =
+    $("prospectStatus");
+
+  const businessName =
+    $("businessName")
+      .value
+      .trim();
+
+  const businessType =
+    $("businessType")
+      .value
+      .trim();
+
+  const location =
+    $("location")
+      .value
+      .trim();
+
+  const contactMethod =
+    $("contactMethod")
+      .value
+      .trim();
+
+  const contactDetails =
+    $("contactDetails")
+      .value
+      .trim();
+
+
+  if (!businessName) {
 
     status.textContent =
-      "Saving...";
+      "❌ Enter the business name.";
 
-    try {
-      const response = await fetch(
+    return;
+  }
+
+
+  button.disabled = true;
+
+  status.textContent =
+    "Saving business...";
+
+
+  try {
+
+    const response =
+      await fetch(
         "/add-prospect",
         {
           method: "POST",
@@ -466,29 +631,135 @@ $("addProspectButton").addEventListener(
           },
 
           body: JSON.stringify({
-            businessName:
-              businessName,
-
-            businessType:
-              $("businessType")
-                .value
-                .trim(),
-
-            location:
-              $("location")
-                .value
-                .trim(),
-
-            contactMethod:
-              $("contactMethod")
-                .value,
-
-            contactDetails:
-              $("contactDetails")
-                .value
-                .trim()
+            businessName,
+            businessType,
+            location,
+            contactMethod,
+            contactDetails
           })
         }
       );
+
+
+    const contentType =
+      response.headers.get(
+        "content-type"
+      ) || "";
+
+
+    if (
+      !contentType.includes(
+        "application/json"
+      )
+    ) {
+      throw new Error(
+        "Add prospect endpoint is not responding correctly."
+      );
+    }
+
+
+    const data =
+      await response.json();
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        data.error ||
+        "Could not record business."
+      );
+
+    }
+
+
+    status.textContent =
+      "✅ Business recorded as approached.";
+
+
+    $("businessName").value =
+      "";
+
+    $("businessType").value =
+      "";
+
+    $("location").value =
+      "";
+
+    $("contactMethod").value =
+      "";
+
+    $("contactDetails").value =
+      "";
+
+
+    await loadDashboard();
+
+
+  } catch (error) {
+
+    status.textContent =
+      "❌ " + error.message;
+
+  } finally {
+
+    button.disabled = false;
+
+  }
+}
+
+
+function formatDate(value) {
+
+  if (!value) {
+    return "";
+  }
+
+
+  let parsedValue =
+    value;
+
+
+  if (
+    typeof value === "string" &&
+    !value.includes("T")
+  ) {
+
+    parsedValue =
+      value.replace(
+        " ",
+        "T"
+      ) + "Z";
+
+  }
+
+
+  const date =
+    new Date(parsedValue);
+
+
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return value;
+  }
+
+
+  return date.toLocaleString(
+    "en-GB",
+    {
+      dateStyle: "short",
+      timeStyle: "short"
+    }
+  );
+}
+
+
+loadDashboard();
+</script>
+
+</body>
+</html>
 
      
