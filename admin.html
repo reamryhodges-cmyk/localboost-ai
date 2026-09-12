@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>LocalBoost AI Admin</title>
 
@@ -25,119 +25,100 @@
     }
 
     .header-inner {
-      max-width: 1200px;
-      margin: auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      max-width: 1100px;
+      margin: 0 auto;
     }
 
     h1 {
-      margin: 0;
-      font-size: 22px;
+      margin: 0 0 4px;
+      font-size: 24px;
     }
 
     .container {
-      max-width: 1200px;
-      margin: auto;
+      max-width: 1100px;
+      margin: 0 auto;
       padding: 20px 14px 50px;
     }
 
-    .section {
+    .card {
       background: white;
-      border-radius: 14px;
-      padding: 18px;
+      border-radius: 16px;
+      padding: 20px;
       margin-bottom: 18px;
-      box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+      box-shadow: 0 3px 14px rgba(0,0,0,0.07);
     }
 
-    .section h2 {
+    h2 {
       margin-top: 0;
-      font-size: 20px;
+      font-size: 22px;
     }
 
-    .section h3 {
-      margin-top: 0;
+    .small {
+      color: #6b7280;
+      font-size: 14px;
     }
 
-    .stats-grid {
+    .stats {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
       gap: 12px;
     }
 
     .stat {
+      padding: 14px;
       background: #f9fafb;
       border: 1px solid #e5e7eb;
       border-radius: 12px;
-      padding: 15px;
     }
 
-    .stat-label {
+    .stat-title {
       font-size: 13px;
       color: #6b7280;
-      margin-bottom: 7px;
     }
 
-    .stat-value {
-      font-size: 24px;
+    .stat-number {
+      margin-top: 6px;
+      font-size: 25px;
       font-weight: bold;
-    }
-
-    .button-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 12px 0;
     }
 
     button {
-      border: none;
-      border-radius: 9px;
-      padding: 11px 15px;
-      font-size: 15px;
+      display: block;
+      width: 100%;
+      border: 0;
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 10px;
+      font-size: 16px;
       font-weight: bold;
-      cursor: pointer;
       background: #2563eb;
       color: white;
-    }
-
-    button:hover {
-      opacity: 0.92;
+      cursor: pointer;
     }
 
     button:disabled {
-      opacity: 0.55;
+      opacity: 0.5;
       cursor: not-allowed;
     }
 
-    .secondary {
-      background: #374151;
-    }
-
-    .success {
-      background: #15803d;
-    }
-
-    .danger {
+    button.red {
       background: #dc2626;
     }
 
-    .warning-button {
-      background: #d97706;
+    button.grey {
+      background: #374151;
     }
 
     input,
-    select,
-    textarea {
+    select {
+      display: block;
       width: 100%;
-      padding: 11px;
-      margin-top: 6px;
+      padding: 13px;
+      margin-top: 7px;
       margin-bottom: 12px;
+      font-size: 16px;
       border: 1px solid #d1d5db;
-      border-radius: 9px;
-      font-size: 15px;
+      border-radius: 10px;
       background: white;
     }
 
@@ -147,46 +128,50 @@
     }
 
     .message {
-      margin-top: 12px;
-      padding: 12px;
-      border-radius: 9px;
       display: none;
+      margin-top: 14px;
+      border-radius: 10px;
+      padding: 12px;
       white-space: pre-wrap;
     }
 
-    .message.success-message {
-      display: block;
-      background: #dcfce7;
-      color: #166534;
-      border: 1px solid #86efac;
-    }
-
-    .message.error-message {
-      display: block;
-      background: #fee2e2;
-      color: #991b1b;
-      border: 1px solid #fecaca;
-    }
-
-    .message.info-message {
+    .message.info {
       display: block;
       background: #dbeafe;
-      color: #1e40af;
       border: 1px solid #93c5fd;
+      color: #1e40af;
     }
 
-    .warning-box {
+    .message.success {
+      display: block;
+      background: #dcfce7;
+      border: 1px solid #86efac;
+      color: #166534;
+    }
+
+    .message.error {
+      display: block;
+      background: #fee2e2;
+      border: 1px solid #fecaca;
+      color: #991b1b;
+    }
+
+    .warning {
       background: #fff7ed;
       border: 1px solid #fdba74;
       color: #9a3412;
-      border-radius: 10px;
       padding: 12px;
-      margin: 12px 0;
+      border-radius: 10px;
+      margin-top: 14px;
+    }
+
+    .hidden {
+      display: none !important;
     }
 
     .table-wrap {
       overflow-x: auto;
-      margin-top: 14px;
+      margin-top: 16px;
     }
 
     table {
@@ -200,67 +185,23 @@
       text-align: left;
       padding: 10px;
       border-bottom: 1px solid #e5e7eb;
-      vertical-align: top;
+      font-size: 14px;
     }
 
     th {
       background: #f9fafb;
-      font-size: 13px;
     }
 
-    td {
-      font-size: 14px;
-    }
-
-    .small {
-      font-size: 13px;
-      color: #6b7280;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .status-pill {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 20px;
-      font-size: 12px;
-      background: #e5e7eb;
-    }
-
-    .plan-grid {
+    .quick-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 12px;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 18px;
     }
 
-    .plan-card {
-      background: #f9fafb;
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 14px;
-    }
-
-    .plan-price {
-      font-size: 22px;
-      font-weight: bold;
-      margin-top: 6px;
-    }
-
-    @media (max-width: 650px) {
-      .header-inner {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      button {
-        width: 100%;
-      }
-
-      .button-row {
-        display: grid;
-        grid-template-columns: 1fr;
+    @media (min-width: 700px) {
+      .quick-grid {
+        grid-template-columns: repeat(3, 1fr);
       }
     }
   </style>
@@ -270,99 +211,86 @@
 
 <header>
   <div class="header-inner">
-    <div>
-      <h1>LocalBoost AI Admin</h1>
-      <div class="small" style="color:#d1d5db;">
-        Customer & outreach control centre
-      </div>
+    <h1>LocalBoost AI Admin</h1>
+    <div class="small" style="color:#d1d5db;">
+      Customer & Outreach Control Centre
     </div>
-
-    <button class="secondary" onclick="logout()">
-      Logout
-    </button>
   </div>
 </header>
 
 <div class="container">
 
-  <!-- ADMIN STATUS -->
-  <div id="adminStatus" class="message"></div>
+  <div id="adminMessage" class="message"></div>
 
   <!-- STATS -->
-  <section class="section">
+
+  <section class="card">
+
     <h2>Business Overview</h2>
 
-    <div class="stats-grid">
+    <div class="stats">
 
       <div class="stat">
-        <div class="stat-label">Total Approached</div>
-        <div class="stat-value" id="totalApproached">—</div>
+        <div class="stat-title">Total Approached</div>
+        <div id="totalApproached" class="stat-number">—</div>
       </div>
 
       <div class="stat">
-        <div class="stat-label">Total Signups</div>
-        <div class="stat-value" id="totalSignups">—</div>
+        <div class="stat-title">Total Signups</div>
+        <div id="totalSignups" class="stat-number">—</div>
       </div>
 
       <div class="stat">
-        <div class="stat-label">Paid Customers</div>
-        <div class="stat-value" id="paidCustomers">—</div>
+        <div class="stat-title">Paid Customers</div>
+        <div id="paidCustomers" class="stat-number">—</div>
       </div>
 
       <div class="stat">
-        <div class="stat-label">Conversion Rate</div>
-        <div class="stat-value" id="conversionRate">—</div>
+        <div class="stat-title">Conversion</div>
+        <div id="conversionRate" class="stat-number">—</div>
       </div>
 
       <div class="stat">
-        <div class="stat-label">Estimated MRR</div>
-        <div class="stat-value" id="estimatedMRR">—</div>
+        <div class="stat-title">Estimated MRR</div>
+        <div id="estimatedMRR" class="stat-number">—</div>
       </div>
 
     </div>
+
   </section>
+
 
   <!-- PLANS -->
-  <section class="section">
-    <h2>Paid Plans</h2>
 
-    <div class="plan-grid">
+  <section class="card">
 
-      <div class="plan-card">
-        <strong>Starter</strong>
-        <div class="plan-price">£9.99</div>
-        <div class="small">per month</div>
-        <p>
-          Customers:
-          <strong id="starterCustomers">—</strong>
-        </p>
+    <h2>Customers by Plan</h2>
+
+    <div class="stats">
+
+      <div class="stat">
+        <div class="stat-title">Starter £9.99</div>
+        <div id="starterCount" class="stat-number">—</div>
       </div>
 
-      <div class="plan-card">
-        <strong>Business</strong>
-        <div class="plan-price">£24.99</div>
-        <div class="small">per month</div>
-        <p>
-          Customers:
-          <strong id="businessCustomers">—</strong>
-        </p>
+      <div class="stat">
+        <div class="stat-title">Business £24.99</div>
+        <div id="businessCount" class="stat-number">—</div>
       </div>
 
-      <div class="plan-card">
-        <strong>Pro</strong>
-        <div class="plan-price">£49.99</div>
-        <div class="small">per month</div>
-        <p>
-          Customers:
-          <strong id="proCustomers">—</strong>
-        </p>
+      <div class="stat">
+        <div class="stat-title">Pro £49.99</div>
+        <div id="proCount" class="stat-number">—</div>
       </div>
 
     </div>
+
   </section>
 
-  <!-- BUSINESS FINDER -->
-  <section class="section">
+
+  <!-- FIND BUSINESSES -->
+
+  <section class="card">
 
     <h2>Find UK Businesses</h2>
 
@@ -370,60 +298,53 @@
       Find suitable UK small businesses before preparing outreach emails.
     </p>
 
-    <div class="button-row">
+    <div class="quick-grid">
 
-      <button onclick="quickSearch('Car Valeting')">
+      <button class="quickSearch" data-query="Car Valeting">
         Car Valeting
       </button>
 
-      <button onclick="quickSearch('Plumber')">
+      <button class="quickSearch" data-query="Plumber">
         Plumbers
       </button>
 
-      <button onclick="quickSearch('Electrician')">
+      <button class="quickSearch" data-query="Electrician">
         Electricians
       </button>
 
-      <button onclick="quickSearch('Hair Salon')">
+      <button class="quickSearch" data-query="Hair Salon">
         Hair Salons
       </button>
 
-      <button onclick="quickSearch('Beauty Salon')">
+      <button class="quickSearch" data-query="Beauty Salon">
         Beauty Salons
       </button>
 
-      <button onclick="quickSearch('Landscaping')">
+      <button class="quickSearch" data-query="Landscaping">
         Landscaping
       </button>
 
     </div>
 
-    <label for="businessQuery">
-      Business type
-    </label>
+    <label for="businessQuery">Business type</label>
 
     <input
       id="businessQuery"
       type="text"
-      placeholder="Example: Car Valeting"
       value="Car Valeting"
-    />
-
-    <button
-      id="findBusinessesButton"
-      onclick="findBusinesses()"
+      placeholder="Example: Car Valeting"
     >
+
+    <button id="findButton">
       Find Suitable UK Businesses
     </button>
 
-    <div id="finderMessage" class="message"></div>
+    <div id="findMessage" class="message"></div>
 
-    <div
-      id="finderResultsContainer"
-      class="table-wrap hidden"
-    >
+    <div id="findResultsWrap" class="table-wrap hidden">
 
       <table>
+
         <thead>
           <tr>
             <th>Business</th>
@@ -433,7 +354,7 @@
           </tr>
         </thead>
 
-        <tbody id="finderResults"></tbody>
+        <tbody id="findResults"></tbody>
 
       </table>
 
@@ -441,53 +362,39 @@
 
   </section>
 
-  <!-- PREPARE OUTREACH -->
-  <section class="section">
+
+  <!-- PREPARE -->
+
+  <section class="card">
 
     <h2>Prepare Outreach</h2>
 
-    <div class="warning-box">
-      Preparing emails does not send anything.
-      You can review the businesses before live outreach.
+    <p class="small">
+      First find suitable businesses above.
+    </p>
+
+    <div class="warning">
+      Preparing the businesses does NOT send an email.
     </div>
 
-    <button
-      id="prepareButton"
-      onclick="prepareOutreach()"
-      disabled
-    >
+    <button id="prepareButton" disabled>
       Prepare First 10 Emails
     </button>
 
     <div id="prepareMessage" class="message"></div>
 
-    <div
-      id="previewContainer"
-      class="hidden"
-    >
+    <div id="preparedSection" class="hidden">
 
-      <h3>Outreach Email Preview</h3>
-
-      <div class="stats-grid">
+      <div class="stats" style="margin-top:16px;">
 
         <div class="stat">
-          <div class="stat-label">Businesses Checked</div>
-          <div
-            class="stat-value"
-            id="businessesChecked"
-          >
-            0
-          </div>
+          <div class="stat-title">Businesses Checked</div>
+          <div id="checkedCount" class="stat-number">0</div>
         </div>
 
         <div class="stat">
-          <div class="stat-label">Ready to Contact</div>
-          <div
-            class="stat-value"
-            id="businessesReady"
-          >
-            0
-          </div>
+          <div class="stat-title">Ready to Contact</div>
+          <div id="readyCount" class="stat-number">0</div>
         </div>
 
       </div>
@@ -505,25 +412,17 @@
             </tr>
           </thead>
 
-          <tbody id="previewResults"></tbody>
+          <tbody id="preparedResults"></tbody>
 
         </table>
 
       </div>
 
-      <div
-        id="sendWarning"
-        class="warning-box hidden"
-      >
-        ⚠️ The button below sends real emails to these businesses.
-        For the first live test, send no more than this prepared batch.
+      <div id="realSendWarning" class="warning hidden">
+        ⚠️ The button below sends REAL outreach emails.
       </div>
 
-      <button
-        id="sendEmailsButton"
-        class="danger hidden"
-        onclick="sendPreparedEmails()"
-      >
+      <button id="sendButton" class="red hidden">
         Send These Emails
       </button>
 
@@ -533,67 +432,55 @@
 
   </section>
 
-  <!-- MANUAL PROSPECT -->
-  <section class="section">
+
+  <!-- MANUAL -->
+
+  <section class="card">
 
     <h2>Add Business Manually</h2>
 
-    <p class="small">
-      Record a business as approached manually.
-    </p>
-
-    <label for="manualBusinessName">
-      Business name
-    </label>
+    <label for="manualName">Business name</label>
 
     <input
-      id="manualBusinessName"
+      id="manualName"
       type="text"
       placeholder="Business name"
-    />
+    >
 
-    <label for="manualBusinessType">
-      Business type
-    </label>
+    <label for="manualType">Business type</label>
 
     <input
-      id="manualBusinessType"
+      id="manualType"
       type="text"
       placeholder="Example: Mobile car valeting"
-    />
+    >
 
-    <label for="manualLocation">
-      Location
-    </label>
+    <label for="manualLocation">Location</label>
 
     <input
       id="manualLocation"
       type="text"
       placeholder="Example: Gloucester"
-    />
+    >
 
-    <label for="manualContactMethod">
-      Contact method
-    </label>
+    <label for="manualMethod">Contact method</label>
 
-    <select id="manualContactMethod">
+    <select id="manualMethod">
       <option value="email">Email</option>
       <option value="phone">Phone</option>
       <option value="website">Website</option>
       <option value="other">Other</option>
     </select>
 
-    <label for="manualContactDetails">
-      Contact details
-    </label>
+    <label for="manualDetails">Contact details</label>
 
     <input
-      id="manualContactDetails"
+      id="manualDetails"
       type="text"
       placeholder="Email, phone or website"
-    />
+    >
 
-    <button onclick="addManualProspect()">
+    <button id="manualButton">
       Add Business Approached
     </button>
 
@@ -601,8 +488,10 @@
 
   </section>
 
+
   <!-- RECENT -->
-  <section class="section">
+
+  <section class="card">
 
     <h2>Recent Businesses Approached</h2>
 
@@ -621,14 +510,10 @@
           </tr>
         </thead>
 
-        <tbody id="recentBusinesses">
-
+        <tbody id="recentResults">
           <tr>
-            <td colspan="6">
-              Loading...
-            </td>
+            <td colspan="6">Loading...</td>
           </tr>
-
         </tbody>
 
       </table>
@@ -637,80 +522,72 @@
 
   </section>
 
+
+  <section class="card">
+
+    <button id="logoutButton" class="grey">
+      Logout
+    </button>
+
+  </section>
+
 </div>
+
 
 <script>
 
-let discoveredBusinesses = [];
-let preparedBusinesses = [];
+var discoveredBusinesses = [];
+var preparedBusinesses = [];
 
-function showMessage(elementId, text, type = "info") {
 
-  const element = document.getElementById(elementId);
+function showMessage(id, text, type) {
 
-  element.className = "message";
+  var box = document.getElementById(id);
 
-  if (type === "success") {
-    element.classList.add("success-message");
-  } else if (type === "error") {
-    element.classList.add("error-message");
-  } else {
-    element.classList.add("info-message");
+  box.className = "message " + type;
+  box.textContent = text;
+}
+
+
+function hideMessage(id) {
+
+  var box = document.getElementById(id);
+
+  box.className = "message";
+  box.textContent = "";
+}
+
+
+function safe(value) {
+
+  var div = document.createElement("div");
+
+  div.textContent =
+    value === null || value === undefined
+      ? ""
+      : String(value);
+
+  return div.innerHTML;
+}
+
+
+function numberValue(value) {
+
+  var number = Number(value);
+
+  if (isNaN(number)) {
+    return 0;
   }
 
-  element.textContent = text;
+  return number;
 }
 
-function clearMessage(elementId) {
 
-  const element = document.getElementById(elementId);
-
-  element.className = "message";
-  element.textContent = "";
-}
-
-function escapeHtml(value) {
-
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function money(value) {
-
-  const amount = Number(value || 0);
-
-  return amount.toLocaleString(
-    "en-GB",
-    {
-      style: "currency",
-      currency: "GBP"
-    }
-  );
-}
-
-function getNumber(...values) {
-
-  for (const value of values) {
-
-    const number = Number(value);
-
-    if (!Number.isNaN(number)) {
-      return number;
-    }
-  }
-
-  return 0;
-}
-
-async function checkAdmin() {
+async function checkLogin() {
 
   try {
 
-    const response = await fetch(
+    var response = await fetch(
       "/me",
       {
         credentials: "include",
@@ -724,13 +601,748 @@ async function checkAdmin() {
       return false;
     }
 
-    const data = await response.json();
+    var data = await response.json();
 
-    const email =
-      data?.user?.email ||
-      data?.email ||
-      "";
+    var email = "";
+
+    if (data.user && data.user.email) {
+      email = data.user.email;
+    } else if (data.email) {
+      email = data.email;
+    }
 
     if (
       email.toLowerCase() !==
-      "samtest
+      "samtest1109@example.com"
+    ) {
+
+      showMessage(
+        "adminMessage",
+        "Admin access required.",
+        "error"
+      );
+
+      return false;
+    }
+
+    return true;
+
+  } catch (error) {
+
+    showMessage(
+      "adminMessage",
+      "Unable to check admin login.",
+      "error"
+    );
+
+    return false;
+  }
+}
+
+
+async function loadStats() {
+
+  try {
+
+    var response = await fetch(
+      "/admin-stats",
+      {
+        credentials: "include",
+        cache: "no-store"
+      }
+    );
+
+    var data = await response.json();
+
+    if (!response.ok || data.success === false) {
+
+      throw new Error(
+        data.error || "Unable to load statistics."
+      );
+    }
+
+    var approached =
+      numberValue(
+        data.totalApproached !== undefined
+          ? data.totalApproached
+          : data.total_approached
+      );
+
+    var signups =
+      numberValue(
+        data.totalSignups !== undefined
+          ? data.totalSignups
+          : (
+            data.totalUsers !== undefined
+              ? data.totalUsers
+              : data.total_users
+          )
+      );
+
+    var starter =
+      numberValue(
+        data.starter !== undefined
+          ? data.starter
+          : (
+            data.starterCustomers !== undefined
+              ? data.starterCustomers
+              : (
+                data.plans
+                  ? data.plans.starter
+                  : 0
+              )
+          )
+      );
+
+    var business =
+      numberValue(
+        data.business !== undefined
+          ? data.business
+          : (
+            data.businessCustomers !== undefined
+              ? data.businessCustomers
+              : (
+                data.plans
+                  ? data.plans.business
+                  : 0
+              )
+          )
+      );
+
+    var pro =
+      numberValue(
+        data.pro !== undefined
+          ? data.pro
+          : (
+            data.proCustomers !== undefined
+              ? data.proCustomers
+              : (
+                data.plans
+                  ? data.plans.pro
+                  : 0
+              )
+          )
+      );
+
+    var paid =
+      numberValue(
+        data.paidCustomers !== undefined
+          ? data.paidCustomers
+          : starter + business + pro
+      );
+
+    var conversion = 0;
+
+    if (data.conversionRate !== undefined) {
+
+      conversion =
+        numberValue(data.conversionRate);
+
+    } else if (data.conversion_rate !== undefined) {
+
+      conversion =
+        numberValue(data.conversion_rate);
+
+    } else if (approached > 0) {
+
+      conversion =
+        (paid / approached) * 100;
+    }
+
+    var mrr;
+
+    if (data.estimatedMRR !== undefined) {
+
+      mrr = numberValue(data.estimatedMRR);
+
+    } else if (data.estimated_mrr !== undefined) {
+
+      mrr = numberValue(data.estimated_mrr);
+
+    } else {
+
+      mrr =
+        (starter * 9.99) +
+        (business * 24.99) +
+        (pro * 49.99);
+    }
+
+    document.getElementById(
+      "totalApproached"
+    ).textContent = approached;
+
+    document.getElementById(
+      "totalSignups"
+    ).textContent = signups;
+
+    document.getElementById(
+      "paidCustomers"
+    ).textContent = paid;
+
+    document.getElementById(
+      "conversionRate"
+    ).textContent =
+      conversion.toFixed(1) + "%";
+
+    document.getElementById(
+      "estimatedMRR"
+    ).textContent =
+      "£" + mrr.toFixed(2);
+
+    document.getElementById(
+      "starterCount"
+    ).textContent = starter;
+
+    document.getElementById(
+      "businessCount"
+    ).textContent = business;
+
+    document.getElementById(
+      "proCount"
+    ).textContent = pro;
+
+
+    var recent = [];
+
+    if (Array.isArray(data.recent)) {
+
+      recent = data.recent;
+
+    } else if (
+      Array.isArray(data.recentProspects)
+    ) {
+
+      recent = data.recentProspects;
+
+    } else if (
+      Array.isArray(data.recent_prospects)
+    ) {
+
+      recent = data.recent_prospects;
+    }
+
+    renderRecent(recent);
+
+  } catch (error) {
+
+    showMessage(
+      "adminMessage",
+      error.message,
+      "error"
+    );
+  }
+}
+
+
+function renderRecent(rows) {
+
+  var tbody =
+    document.getElementById("recentResults");
+
+  tbody.innerHTML = "";
+
+  if (!rows || rows.length === 0) {
+
+    tbody.innerHTML =
+      "<tr><td colspan='6'>No businesses recorded yet.</td></tr>";
+
+    return;
+  }
+
+  rows.forEach(function(row) {
+
+    var name =
+      row.business_name ||
+      row.businessName ||
+      "";
+
+    var type =
+      row.business_type ||
+      row.businessType ||
+      "";
+
+    var location =
+      row.location || "";
+
+    var contact =
+      row.contact_details ||
+      row.contactDetails ||
+      "";
+
+    var status =
+      row.status || "approached";
+
+    var date =
+      row.approached_at ||
+      row.approachedAt ||
+      "";
+
+    var tr =
+      document.createElement("tr");
+
+    tr.innerHTML =
+      "<td>" + safe(name) + "</td>" +
+      "<td>" + safe(type) + "</td>" +
+      "<td>" + safe(location) + "</td>" +
+      "<td>" + safe(contact) + "</td>" +
+      "<td>" + safe(status) + "</td>" +
+      "<td>" + safe(date) + "</td>";
+
+    tbody.appendChild(tr);
+  });
+}
+
+
+async function findBusinesses() {
+
+  hideMessage("findMessage");
+
+  var query =
+    document.getElementById(
+      "businessQuery"
+    ).value.trim();
+
+  if (!query) {
+
+    showMessage(
+      "findMessage",
+      "Enter a business type first.",
+      "error"
+    );
+
+    return;
+  }
+
+  var button =
+    document.getElementById("findButton");
+
+  button.disabled = true;
+  button.textContent = "Searching...";
+
+  try {
+
+    var response = await fetch(
+      "/find-uk-businesses",
+      {
+        method: "POST",
+
+        credentials: "include",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          query: query
+        })
+      }
+    );
+
+    var data = await response.json();
+
+    if (!response.ok || data.success === false) {
+
+      throw new Error(
+        data.error ||
+        "Unable to find businesses."
+      );
+    }
+
+    if (Array.isArray(data.businesses)) {
+
+      discoveredBusinesses =
+        data.businesses;
+
+    } else if (Array.isArray(data.results)) {
+
+      discoveredBusinesses =
+        data.results;
+
+    } else if (Array.isArray(data.eligible)) {
+
+      discoveredBusinesses =
+        data.eligible;
+
+    } else {
+
+      discoveredBusinesses = [];
+    }
+
+    renderFoundBusinesses();
+
+    document.getElementById(
+      "prepareButton"
+    ).disabled =
+      discoveredBusinesses.length === 0;
+
+    showMessage(
+      "findMessage",
+      "✅ Search complete.\nSuitable businesses: " +
+      discoveredBusinesses.length,
+      "success"
+    );
+
+  } catch (error) {
+
+    discoveredBusinesses = [];
+
+    document.getElementById(
+      "prepareButton"
+    ).disabled = true;
+
+    showMessage(
+      "findMessage",
+      "❌ " + error.message,
+      "error"
+    );
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "Find Suitable UK Businesses";
+  }
+}
+
+
+function renderFoundBusinesses() {
+
+  var tbody =
+    document.getElementById(
+      "findResults"
+    );
+
+  tbody.innerHTML = "";
+
+  if (discoveredBusinesses.length === 0) {
+
+    document.getElementById(
+      "findResultsWrap"
+    ).classList.add("hidden");
+
+    return;
+  }
+
+  discoveredBusinesses.forEach(
+    function(business) {
+
+      var name =
+        business.businessName ||
+        business.business_name ||
+        business.name ||
+        "";
+
+      var type =
+        business.businessType ||
+        business.business_type ||
+        business.type ||
+        "";
+
+      var location =
+        business.location || "";
+
+      var domain =
+        business.domain ||
+        business.website ||
+        "";
+
+      var tr =
+        document.createElement("tr");
+
+      tr.innerHTML =
+        "<td>" + safe(name) + "</td>" +
+        "<td>" + safe(type) + "</td>" +
+        "<td>" + safe(location) + "</td>" +
+        "<td>" + safe(domain) + "</td>";
+
+      tbody.appendChild(tr);
+    }
+  );
+
+  document.getElementById(
+    "findResultsWrap"
+  ).classList.remove("hidden");
+}
+
+
+async function prepareOutreach() {
+
+  hideMessage("prepareMessage");
+  hideMessage("sendMessage");
+
+  if (discoveredBusinesses.length === 0) {
+
+    showMessage(
+      "prepareMessage",
+      "Find businesses first.",
+      "error"
+    );
+
+    return;
+  }
+
+  var button =
+    document.getElementById(
+      "prepareButton"
+    );
+
+  button.disabled = true;
+  button.textContent =
+    "Preparing...";
+
+  try {
+
+    var response = await fetch(
+      "/prepare-outreach",
+      {
+        method: "POST",
+
+        credentials: "include",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          businesses:
+            discoveredBusinesses.slice(0, 10)
+        })
+      }
+    );
+
+    var data = await response.json();
+
+    if (!response.ok || data.success === false) {
+
+      throw new Error(
+        data.error ||
+        "Unable to prepare outreach."
+      );
+    }
+
+    if (Array.isArray(data.businesses)) {
+
+      preparedBusinesses =
+        data.businesses;
+
+    } else {
+
+      preparedBusinesses = [];
+    }
+
+    var checked =
+      data.checked !== undefined
+        ? data.checked
+        : Math.min(
+            discoveredBusinesses.length,
+            10
+          );
+
+    var ready =
+      data.ready !== undefined
+        ? data.ready
+        : preparedBusinesses.length;
+
+    document.getElementById(
+      "checkedCount"
+    ).textContent = checked;
+
+    document.getElementById(
+      "readyCount"
+    ).textContent = ready;
+
+    renderPreparedBusinesses();
+
+    document.getElementById(
+      "preparedSection"
+    ).classList.remove("hidden");
+
+    if (preparedBusinesses.length > 0) {
+
+      document.getElementById(
+        "sendButton"
+      ).classList.remove("hidden");
+
+      document.getElementById(
+        "realSendWarning"
+      ).classList.remove("hidden");
+    }
+
+    showMessage(
+      "prepareMessage",
+      "✅ Outreach preview prepared.\nNo emails have been sent.",
+      "success"
+    );
+
+  } catch (error) {
+
+    showMessage(
+      "prepareMessage",
+      "❌ " + error.message,
+      "error"
+    );
+
+  } finally {
+
+    button.disabled = false;
+
+    button.textContent =
+      "Prepare First 10 Emails";
+  }
+}
+
+
+function renderPreparedBusinesses() {
+
+  var tbody =
+    document.getElementById(
+      "preparedResults"
+    );
+
+  tbody.innerHTML = "";
+
+  if (preparedBusinesses.length === 0) {
+
+    tbody.innerHTML =
+      "<tr><td colspan='4'>No suitable emails found.</td></tr>";
+
+    return;
+  }
+
+  preparedBusinesses.forEach(
+    function(business) {
+
+      var tr =
+        document.createElement("tr");
+
+      tr.innerHTML =
+        "<td>" +
+        safe(business.businessName || "") +
+        "</td>" +
+
+        "<td>" +
+        safe(business.domain || "") +
+        "</td>" +
+
+        "<td>" +
+        safe(business.email || "") +
+        "</td>" +
+
+        "<td>" +
+        safe(
+          business.confidence !== undefined
+            ? business.confidence
+            : "—"
+        ) +
+        "</td>";
+
+      tbody.appendChild(tr);
+    }
+  );
+}
+
+
+async function sendPreparedEmails() {
+
+  hideMessage("sendMessage");
+
+  if (preparedBusinesses.length === 0) {
+
+    showMessage(
+      "sendMessage",
+      "There are no prepared emails.",
+      "error"
+    );
+
+    return;
+  }
+
+  var confirmSend =
+    window.confirm(
+      "This will send REAL outreach emails to " +
+      preparedBusinesses.length +
+      " businesses.\n\nDo you want to continue?"
+    );
+
+  if (!confirmSend) {
+    return;
+  }
+
+  var button =
+    document.getElementById(
+      "sendButton"
+    );
+
+  button.disabled = true;
+  button.textContent = "Sending...";
+
+  try {
+
+    var response = await fetch(
+      "/outreach-send",
+      {
+        method: "POST",
+
+        credentials: "include",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          businesses: preparedBusinesses
+        })
+      }
+    );
+
+    var data = await response.json();
+
+    if (!response.ok || data.success === false) {
+
+      throw new Error(
+        data.error ||
+        "Unable to send outreach."
+      );
+    }
+
+    var message =
+      "✅ Outreach completed.\n\n" +
+      "Sent: " +
+      numberValue(data.sentCount) +
+      "\nSkipped: " +
+      numberValue(data.skippedCount) +
+      "\nFailed: " +
+      numberValue(data.failedCount);
+
+    showMessage(
+      "sendMessage",
+      message,
+      "success"
+    );
+
+    preparedBusinesses = [];
+
+    button.classList.add("hidden");
+
+    document.getElementById(
+      "realSendWarning"
+    ).classList.add("hidden");
+
+    await loadStats();
+
+  } catch (error) {
+
+    showMessage(
+      "sendMessage",
+      "❌ " + error.message,
+      "error"
+    );
+
+  } finally {
+
+    button.disabled = false;
+    button.textContent =
+      "Send These Emails";
+  }
+}
