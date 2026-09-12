@@ -1,386 +1,231 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <title>LocalBoost AI Admin</title>
-
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      color: #1f2937;
-    }
-
-    header {
-      background: #111827;
-      color: white;
-      padding: 24px 18px;
-      text-align: center;
-    }
-
-    .container {
-      width: 92%;
-      max-width: 1000px;
-      margin: 24px auto;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      margin-bottom: 22px;
-    }
-
-    .stat {
-      background: white;
-      padding: 18px;
-      border-radius: 12px;
-      text-align: center;
-      box-shadow: 0 3px 12px rgba(0,0,0,.08);
-    }
-
-    .number {
-      font-size: 28px;
-      font-weight: bold;
-      margin-top: 8px;
-    }
-
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 22px;
-      box-shadow: 0 3px 12px rgba(0,0,0,.08);
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    th,
-    td {
-      padding: 10px;
-      border-bottom: 1px solid #e5e7eb;
-      text-align: left;
-      font-size: 14px;
-    }
-
-    .status {
-      font-weight: bold;
-      margin-top: 12px;
-    }
-
-    button {
-      border: 0;
-      background: #2563eb;
-      color: white;
-      padding: 11px 16px;
-      border-radius: 8px;
-      font-weight: bold;
-    }
-
-    @media (max-width: 800px) {
-      .grid {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      table {
-        font-size: 12px;
-      }
-
-      .tableWrap {
-        overflow-x: auto;
-      }
-    }
-  </style>
-</head>
-
-<body>
-
-<header>
-  <h1>LocalBoost AI Admin</h1>
-  <p>Customer and sales dashboard</p>
-</header>
-
-<main class="container">
-
-  <div id="status" class="status">
-    Loading dashboard...
-  </div>
-
-  <section class="grid">
-
-    <div class="stat">
-      <div>Total Approached</div>
-      <div id="approached" class="number">0</div>
-    </div>
-
-    <div class="stat">
-      <div>Total Signups</div>
-      <div id="signups" class="number">0</div>
-    </div>
-
-    <div class="stat">
-      <div>Paid Customers</div>
-      <div id="paid" class="number">0</div>
-    </div>
-
-    <div class="stat">
-      <div>Conversion Rate</div>
-      <div id="conversion" class="number">0%</div>
-    </div>
-
-    <div class="stat">
-      <div>Monthly Revenue</div>
-      <div id="revenue" class="number">£0.00</div>
-    </div>
-
-  </section>
-
-
-  <section class="card">
-    <h2>Paid Plans</h2>
-
-    <p>
-      Starter:
-      <strong id="starter">0</strong>
-    </p>
-
-    <p>
-      Business:
-      <strong id="business">0</strong>
-    </p>
-
-    <p>
-      Pro:
-      <strong id="pro">0</strong>
-    </p>
-  </section>
-
-
-  <section class="card">
-    <h2>Recent Businesses Approached</h2>
-
-    <div class="tableWrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Business</th>
-            <th>Contact</th>
-            <th>Email</th>
-            <th>Status</th>
-            <th>Plan</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-
-        <tbody id="leadTable">
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-
-  <section class="card">
-    <button
-      type="button"
-      onclick="window.location.href='/'"
-    >
-      Back to LocalBoost
-    </button>
-  </section>
-
-</main>
-
-
-<script>
-"use strict";
-
-async function loadDashboard() {
-  const status =
-    document.getElementById("status");
+export async function onRequestGet(context) {
+  const { request, env } = context;
 
   try {
-    const response =
-      await fetch(
-        "/admin-stats",
+    const cookieHeader = request.headers.get("Cookie") || "";
+
+    const cookies = Object.fromEntries(
+      cookieHeader
+        .split(";")
+        .map(cookie => cookie.trim())
+        .filter(Boolean)
+        .map(cookie => {
+          const separator = cookie.indexOf("=");
+
+          if (separator === -1) {
+            return [cookie, ""];
+          }
+
+          return [
+            cookie.slice(0, separator),
+            cookie.slice(separator + 1)
+          ];
+        })
+    );
+
+    const sessionToken = cookies.localboost_session;
+
+    if (!sessionToken) {
+      return jsonResponse(
         {
-          credentials: "same-origin",
-          cache: "no-store"
-        }
-      );
-
-    const data =
-      await response.json();
-
-    if (!response.ok) {
-      throw new Error(
-        data.error ||
-        "Could not load dashboard."
+          success: false,
+          error: "Please log in."
+        },
+        401
       );
     }
 
-    const stats =
-      data.stats || {};
+    const session = await env.DB
+      .prepare(`
+        SELECT
+          s.user_id,
+          s.expires_at,
+          u.email
+        FROM sessions s
+        JOIN users u
+          ON u.id = s.user_id
+        WHERE s.token = ?
+        LIMIT 1
+      `)
+      .bind(sessionToken)
+      .first();
 
-    document.getElementById(
-      "approached"
-    ).textContent =
-      stats.approached || 0;
+    if (!session) {
+      return jsonResponse(
+        {
+          success: false,
+          error: "Invalid session."
+        },
+        401
+      );
+    }
 
-    document.getElementById(
-      "signups"
-    ).textContent =
-      stats.signups || 0;
+    if (
+      session.expires_at &&
+      new Date(session.expires_at).getTime() <= Date.now()
+    ) {
+      return jsonResponse(
+        {
+          success: false,
+          error: "Session expired. Please log in again."
+        },
+        401
+      );
+    }
 
-    document.getElementById(
-      "paid"
-    ).textContent =
-      stats.paid || 0;
+    const ADMIN_EMAIL = "samtest1109@example.com";
 
-    document.getElementById(
-      "conversion"
-    ).textContent =
-      (stats.conversionRate || 0) +
-      "%";
+    if (
+      String(session.email || "")
+        .trim()
+        .toLowerCase() !== ADMIN_EMAIL.toLowerCase()
+    ) {
+      return jsonResponse(
+        {
+          success: false,
+          error: "Admin access only."
+        },
+        403
+      );
+    }
 
-    document.getElementById(
-      "revenue"
-    ).textContent =
-      "£" +
-      Number(
-        stats.monthlyRevenue || 0
-      ).toFixed(2);
+    const approachedRow = await env.DB
+      .prepare(`
+        SELECT COUNT(*) AS total
+        FROM leads
+      `)
+      .first();
 
-    document.getElementById(
-      "starter"
-    ).textContent =
-      stats.starter || 0;
-
-    document.getElementById(
-      "business"
-    ).textContent =
-      stats.business || 0;
-
-    document.getElementById(
-      "pro"
-    ).textContent =
-      stats.pro || 0;
-
-    renderLeads(
-      data.leads || []
+    const approached = Number(
+      approachedRow?.total || 0
     );
 
-    status.textContent =
-      "✅ Dashboard loaded";
+    const signupRow = await env.DB
+      .prepare(`
+        SELECT COUNT(*) AS total
+        FROM users
+      `)
+      .first();
+
+    const signups = Number(
+      signupRow?.total || 0
+    );
+
+    const starterRow = await env.DB
+      .prepare(`
+        SELECT COUNT(*) AS total
+        FROM users
+        WHERE LOWER(plan) = 'starter'
+      `)
+      .first();
+
+    const starter = Number(
+      starterRow?.total || 0
+    );
+
+    const businessRow = await env.DB
+      .prepare(`
+        SELECT COUNT(*) AS total
+        FROM users
+        WHERE LOWER(plan) IN ('business', 'growth')
+      `)
+      .first();
+
+    const business = Number(
+      businessRow?.total || 0
+    );
+
+    const proRow = await env.DB
+      .prepare(`
+        SELECT COUNT(*) AS total
+        FROM users
+        WHERE LOWER(plan) = 'pro'
+      `)
+      .first();
+
+    const pro = Number(
+      proRow?.total || 0
+    );
+
+    const paid = starter + business + pro;
+
+    const conversionRate =
+      approached > 0
+        ? Number(
+            ((paid / approached) * 100).toFixed(1)
+          )
+        : 0;
+
+    const monthlyRevenue = Number(
+      (
+        starter * 9.99 +
+        business * 24.99 +
+        pro * 49.99
+      ).toFixed(2)
+    );
+
+    const leadsResult = await env.DB
+      .prepare(`
+        SELECT
+          id,
+          business_name,
+          contact_name,
+          email,
+          phone,
+          status,
+          plan,
+          approached_at,
+          signed_up_at,
+          paid_at
+        FROM leads
+        ORDER BY id DESC
+        LIMIT 50
+      `)
+      .all();
+
+    return jsonResponse(
+      {
+        success: true,
+
+        stats: {
+          approached,
+          signups,
+          paid,
+          starter,
+          business,
+          pro,
+          conversionRate,
+          monthlyRevenue
+        },
+
+        leads: leadsResult?.results || []
+      },
+      200
+    );
 
   } catch (error) {
-    status.textContent =
-      "❌ " + error.message;
-  }
-}
+    console.error("Admin stats error:", error);
 
-
-function renderLeads(leads) {
-  const table =
-    document.getElementById(
-      "leadTable"
+    return jsonResponse(
+      {
+        success: false,
+        error: "Could not load admin statistics."
+      },
+      500
     );
-
-  table.innerHTML = "";
-
-  if (!leads.length) {
-    table.innerHTML =
-      `
-        <tr>
-          <td colspan="6">
-            No businesses have been added yet.
-          </td>
-        </tr>
-      `;
-
-    return;
-  }
-
-  for (const lead of leads) {
-    const row =
-      document.createElement("tr");
-
-    row.innerHTML =
-      `
-        <td>${escapeHtml(
-          lead.business_name || ""
-        )}</td>
-
-        <td>${escapeHtml(
-          lead.contact_name || ""
-        )}</td>
-
-        <td>${escapeHtml(
-          lead.email || ""
-        )}</td>
-
-        <td>${escapeHtml(
-          lead.status || ""
-        )}</td>
-
-        <td>${escapeHtml(
-          lead.plan || "-"
-        )}</td>
-
-        <td>${escapeHtml(
-          formatDate(
-            lead.approached_at
-          )
-        )}</td>
-      `;
-
-    table.appendChild(row);
   }
 }
 
 
-function formatDate(value) {
-  if (!value) {
-    return "";
-  }
-
-  const date =
-    new Date(value);
-
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-    return value;
-  }
-
-  return date.toLocaleDateString(
-    "en-GB"
+function jsonResponse(data, status = 200) {
+  return new Response(
+    JSON.stringify(data),
+    {
+      status,
+      headers: {
+        "Content-Type": "application/json; charset=UTF-8",
+        "Cache-Control": "no-store"
+      }
+    }
   );
 }
-
-
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-
-loadDashboard();
-</script>
-
-</body>
-</html>
