@@ -64,6 +64,48 @@
       margin-bottom: 18px;
     }
 
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 12px;
+      margin-bottom: 5px;
+    }
+
+    input,
+    select,
+    textarea,
+    button {
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+
+    input,
+    select,
+    textarea {
+      padding: 12px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+    }
+
+    textarea {
+      min-height: 80px;
+    }
+
+    button {
+      border: 0;
+      background: #2563eb;
+      color: white;
+      padding: 13px;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-top: 14px;
+    }
+
+    button:disabled {
+      opacity: .6;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
@@ -75,17 +117,6 @@
       border-bottom: 1px solid #e5e7eb;
       text-align: left;
       font-size: 14px;
-    }
-
-    button {
-      width: 100%;
-      border: 0;
-      background: #2563eb;
-      color: white;
-      padding: 13px;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 16px;
     }
 
     @media (max-width: 800px) {
@@ -143,6 +174,70 @@
   </section>
 
   <section class="card">
+    <h2>Add Business Approached</h2>
+
+    <label for="businessName">
+      Business name
+    </label>
+    <input
+      id="businessName"
+      type="text"
+      placeholder="Example: Gloucester Shine"
+    >
+
+    <label for="businessType">
+      Business type
+    </label>
+    <input
+      id="businessType"
+      type="text"
+      placeholder="Example: Mobile car valeting"
+    >
+
+    <label for="location">
+      Location
+    </label>
+    <input
+      id="location"
+      type="text"
+      placeholder="Example: Gloucester"
+    >
+
+    <label for="contactMethod">
+      Contact method
+    </label>
+    <select id="contactMethod">
+      <option value="">Select</option>
+      <option value="email">Email</option>
+      <option value="facebook">Facebook</option>
+      <option value="instagram">Instagram</option>
+      <option value="phone">Phone</option>
+      <option value="website">Website</option>
+      <option value="other">Other</option>
+    </select>
+
+    <label for="contactDetails">
+      Contact details / notes
+    </label>
+    <textarea
+      id="contactDetails"
+      placeholder="Email address, page name, phone number or notes"
+    ></textarea>
+
+    <button
+      id="addProspectButton"
+      type="button"
+    >
+      Record as Approached
+    </button>
+
+    <div
+      id="prospectStatus"
+      class="status"
+    ></div>
+  </section>
+
+  <section class="card">
     <h2>Paid Plans</h2>
 
     <p>
@@ -169,15 +264,15 @@
         <thead>
           <tr>
             <th>Business</th>
-            <th>Contact</th>
-            <th>Email</th>
+            <th>Type</th>
+            <th>Location</th>
+            <th>Method</th>
             <th>Status</th>
-            <th>Plan</th>
             <th>Date</th>
           </tr>
         </thead>
 
-        <tbody id="leadTable"></tbody>
+        <tbody id="prospectTable"></tbody>
       </table>
     </div>
   </section>
@@ -196,19 +291,21 @@
 <script>
 "use strict";
 
+const $ = id =>
+  document.getElementById(id);
+
+
 async function loadDashboard() {
-  const status =
-    document.getElementById("status");
+  const status = $("status");
 
   try {
-    const response =
-      await fetch(
-        "/admin-stats",
-        {
-          credentials: "same-origin",
-          cache: "no-store"
-        }
-      );
+    const response = await fetch(
+      "/admin-stats",
+      {
+        credentials: "same-origin",
+        cache: "no-store"
+      }
+    );
 
     const contentType =
       response.headers.get("content-type") || "";
@@ -232,51 +329,35 @@ async function loadDashboard() {
     const stats =
       data.stats || {};
 
-    document.getElementById(
-      "approached"
-    ).textContent =
+    $("approached").textContent =
       stats.approached || 0;
 
-    document.getElementById(
-      "signups"
-    ).textContent =
+    $("signups").textContent =
       stats.signups || 0;
 
-    document.getElementById(
-      "paid"
-    ).textContent =
+    $("paid").textContent =
       stats.paid || 0;
 
-    document.getElementById(
-      "conversion"
-    ).textContent =
+    $("conversion").textContent =
       (stats.conversionRate || 0) + "%";
 
-    document.getElementById(
-      "revenue"
-    ).textContent =
+    $("revenue").textContent =
       "£" +
       Number(
         stats.monthlyRevenue || 0
       ).toFixed(2);
 
-    document.getElementById(
-      "starter"
-    ).textContent =
+    $("starter").textContent =
       stats.starter || 0;
 
-    document.getElementById(
-      "business"
-    ).textContent =
+    $("business").textContent =
       stats.business || 0;
 
-    document.getElementById(
-      "pro"
-    ).textContent =
+    $("pro").textContent =
       stats.pro || 0;
 
-    renderLeads(
-      data.leads || []
+    renderProspects(
+      data.prospects || []
     );
 
     status.textContent =
@@ -289,17 +370,17 @@ async function loadDashboard() {
 }
 
 
-function renderLeads(leads) {
+function renderProspects(prospects) {
   const table =
-    document.getElementById("leadTable");
+    $("prospectTable");
 
   table.innerHTML = "";
 
-  if (!leads.length) {
+  if (!prospects.length) {
     table.innerHTML = `
       <tr>
         <td colspan="6">
-          No businesses have been added yet.
+          No businesses have been recorded yet.
         </td>
       </tr>
     `;
@@ -307,34 +388,34 @@ function renderLeads(leads) {
     return;
   }
 
-  for (const lead of leads) {
+  for (const prospect of prospects) {
     const row =
       document.createElement("tr");
 
     row.innerHTML = `
       <td>${escapeHtml(
-        lead.business_name || ""
+        prospect.business_name || ""
       )}</td>
 
       <td>${escapeHtml(
-        lead.contact_name || ""
+        prospect.business_type || ""
       )}</td>
 
       <td>${escapeHtml(
-        lead.email || ""
+        prospect.location || ""
       )}</td>
 
       <td>${escapeHtml(
-        lead.status || ""
+        prospect.contact_method || ""
       )}</td>
 
       <td>${escapeHtml(
-        lead.plan || "-"
+        prospect.status || ""
       )}</td>
 
       <td>${escapeHtml(
         formatDate(
-          lead.approached_at
+          prospect.approached_at
         )
       )}</td>
     `;
@@ -344,38 +425,70 @@ function renderLeads(leads) {
 }
 
 
-function formatDate(value) {
-  if (!value) {
-    return "";
-  }
+$("addProspectButton").addEventListener(
+  "click",
+  async function () {
 
-  const date =
-    new Date(value);
+    const button =
+      $("addProspectButton");
 
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-    return value;
-  }
+    const status =
+      $("prospectStatus");
 
-  return date.toLocaleDateString("en-GB");
-}
+    const businessName =
+      $("businessName")
+        .value
+        .trim();
 
+    if (!businessName) {
+      status.textContent =
+        "❌ Enter the business name.";
+      return;
+    }
 
-function escapeHtml(value) {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
+    button.disabled = true;
 
+    status.textContent =
+      "Saving...";
 
-loadDashboard();
-</script>
+    try {
+      const response = await fetch(
+        "/add-prospect",
+        {
+          method: "POST",
 
-</body>
-</html>
+          credentials:
+            "same-origin",
+
+          headers: {
+            "Content-Type":
+              "application/json"
+          },
+
+          body: JSON.stringify({
+            businessName:
+              businessName,
+
+            businessType:
+              $("businessType")
+                .value
+                .trim(),
+
+            location:
+              $("location")
+                .value
+                .trim(),
+
+            contactMethod:
+              $("contactMethod")
+                .value,
+
+            contactDetails:
+              $("contactDetails")
+                .value
+                .trim()
+          })
+        }
+      );
+
+     
