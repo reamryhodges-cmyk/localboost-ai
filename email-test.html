@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>LocalBoost AI Email Test</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6fa;
+      margin: 0;
+      padding: 25px;
+      color: #172033;
+    }
+
+    .card {
+      max-width: 600px;
+      margin: 40px auto;
+      background: white;
+      padding: 28px;
+      border-radius: 22px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 16px;
+      font-size: 18px;
+      border: 1px solid #ccc;
+      border-radius: 12px;
+      margin-bottom: 18px;
+    }
+
+    button {
+      width: 100%;
+      padding: 16px;
+      border: 0;
+      border-radius: 12px;
+      background: #2868ed;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="card">
+
+    <h1>LocalBoost AI Email Test</h1>
+
+    <p>
+      Send one test email through Resend.
+    </p>
+
+    <input
+      id="email"
+      type="email"
+      placeholder="Your email address"
+    >
+
+    <button onclick="sendTestEmail()">
+      Send Test Email
+    </button>
+
+    <div id="result"></div>
+
+  </div>
+
+  <script>
+    async function sendTestEmail() {
+
+      const email =
+        document.getElementById("email").value.trim();
+
+      const result =
+        document.getElementById("result");
+
+      if (!email) {
+        result.textContent =
+          "❌ Enter an email address.";
+        return;
+      }
+
+      result.textContent =
+        "Sending...";
+
+      try {
+
+        const response =
+          await fetch("/test-email", {
+            method: "POST",
+            credentials: "same-origin",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              to: email
+            })
+          });
+
+        const data =
+          await response.json();
+
+        if (!response.ok || !data.success) {
+          result.textContent =
+            "❌ " +
+            (data.error || "Email failed.");
+          return;
+        }
+
+        result.textContent =
+          "✅ Test email sent successfully.";
+
+      } catch (error) {
+
+        result.textContent =
+          "❌ Could not contact email service.";
+
+      }
+    }
+  </script>
+
+</body>
+</html>
