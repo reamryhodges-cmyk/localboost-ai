@@ -1,600 +1,442 @@
 export async function onRequestPost(context) {
+  const { request, env } = context;
+
+  const PLAN_LIMITS = {
+    starter: 30,
+    business: 100,
+    pro: 300
+  };
+
   try {
     // -----------------------------
-    // CHECK REQUIRED BINDINGS
+    // 1. GET SESSION COOKIE
     // -----------------------------
+    const cookieHeader = request.headers.get("Cookie") || "";
 
-    if (!context.env.DB) {
-      return Response.json(
+    const cookies = Object.fromEntries(
+      cookieHeader
+        .split(";")
+        .map(cookie => cookie.trim())
+        .filter(Boolean)
+        .map(cookie => {
+          const separator = cookie.indexOf("=");
+
+          if (separator === -1) {
+            return [cookie, ""];
+          }
+
+          return [
+            cookie.slice(0, separator),
+            cookie.slice(separator + 1)
+          ];
+        })
+    );
+
+    const sessionToken = cookies.localboost_session;
+
+    if (!sessionToken) {
+      return jsonResponse(
         {
-          error: "Database is not connected."
+          success: false,
+          error: "Please log in to use the AI generator."
         },
-        {
-          status: 500
-        }
+        401
       );
     }
 
-    if (!context.env.AI) {
-      return Response.json(
+    // -----------------------------
+    // 2. FIND LOGGED-IN USER
+    // -----------------------------
+    const session = await env.DB
+      .prepare(`
+        SELECT
+          s.user_id,
+          s.expires_at,
+          u.email,
+          u.business_name,
+          u.plan,
+          u.generations_used,
+          u.generation_period_start
+        FROM sessions s
+        JOIN users u
+          ON u.id = s.user_id
+        WHERE s.token = ?
+        LIMIT 1
+      `)
+      .bind(sessionToken)
+      .first();
+
+    if (!session) {
+      return jsonResponse(
         {
-          error: "Workers AI binding is not configured."
+          success: false,
+          error: "Your login session has expired. Please log in again."
         },
-        {
-          status: 500
-        }
+        401
       );
     }
 
+    if (
+      session.expires_at &&
+      new Date(session.expires_at).getTime() <= Date.now()
+    ) {
+      await env.DB
+        .prepare(`
+          DELETE FROM sessions
+          WHERE token = ?
+        `)
+        .bind(sessionToken)
+        .run();
+
+      return jsonResponse(
+        {
+          success: false,
+          error: "Your login session has expired. Please log in again."
+        },
+        401
+      );
+    }
 
     // -----------------------------
-    // CHECK LOGIN SESSION
+    // 3. NORMALISE PLAN
     // -----------------------------
+    let plan = String(session.plan || "free").toLowerCase();
 
-    const cookieHeader =
-      context.request.headers.get("Cookie") || "";
+    // Compatibility with old Growth name.
+    if (plan === "growth") {
+      plan = "business";
+    }
 
-    let token = "";
+    if (!PLAN_LIMITS[plan]) {
+      return jsonResponse(
+        {
+          success: false,
+          error: "You need an active paid plan to use the AI generator."
+        },
+        403
+      );
+    }
 
-    for (const part of cookieHeader.split(";")) {
-      const cookie = part.trim();
+    const limit = PLAN_LIMITS[plan];
 
-      if (
-        cookie.startsWith(
-          "localboost_session="
-        )
-      ) {
-        token =
-          cookie.substring(
-            "localboost_session=".length
-          );
+    // -----------------------------
+    // 4. MONTHLY USAGE PERIOD
+    // -----------------------------
+    const now = new Date();
 
-        break;
+    let periodStart = session.generation_period_start
+      ? new Date(session.generation_period_start)
+      : null;
+
+    let generationsUsed = Number(session.generations_used || 0);
+
+    let resetRequired = false;
+
+    if (
+      !periodStart ||
+      Number.isNaN(periodStart.getTime())
+    ) {
+      resetRequired = true;
+    } else {
+      const nextReset = new Date(periodStart);
+
+      nextReset.setUTCMonth(
+        nextReset.getUTCMonth() + 1
+      );
+
+      if (now >= nextReset) {
+        resetRequired = true;
       }
     }
 
+    if (resetRequired) {
+      periodStart = now;
+      generationsUsed = 0;
 
-    if (!token) {
-      return Response.json(
-        {
-          error:
-            "Please log in to use the AI generator."
-        },
-        {
-          status: 401
-        }
-      );
-    }
-
-
-    const session =
-      await context.env.DB
+      await env.DB
         .prepare(`
-          SELECT
-            sessions.expires_at,
-            users.id,
-            users.email,
-            users.business_name,
-            users.plan,
-            users.generations_used
-          FROM sessions
-          JOIN users
-            ON users.id = sessions.user_id
-          WHERE sessions.token = ?
+          UPDATE users
+          SET
+            generations_used = 0,
+            generation_period_start = ?
+          WHERE id = ?
         `)
-        .bind(token)
-        .first();
+        .bind(
+          now.toISOString(),
+          session.user_id
+        )
+        .run();
+    }
 
-
-    if (!session) {
-      return Response.json(
+    // -----------------------------
+    // 5. CHECK PLAN LIMIT
+    // -----------------------------
+    if (generationsUsed >= limit) {
+      return jsonResponse(
         {
+          success: false,
           error:
-            "Your login session is invalid. Please log in again."
+            `You have used all ${limit} generations included in your ${capitalise(plan)} plan this month.`,
+          plan,
+          generationsUsed,
+          limit,
+          remaining: 0
         },
-        {
-          status: 401
-        }
+        403
       );
     }
 
+    // -----------------------------
+    // 6. READ GENERATOR FORM
+    // -----------------------------
+    let body;
 
-    const expiry =
-      new Date(
-        session.expires_at
-      ).getTime();
-
-
-    if (
-      Number.isNaN(expiry) ||
-      expiry <= Date.now()
-    ) {
-      return Response.json(
+    try {
+      body = await request.json();
+    } catch {
+      return jsonResponse(
         {
-          error:
-            "Your login session has expired. Please log in again."
+          success: false,
+          error: "Invalid generator request."
         },
-        {
-          status: 401
-        }
+        400
       );
     }
-
-
-    // -----------------------------
-    // CHECK PAID PLAN
-    // -----------------------------
-
-    const allowedPlans = [
-      "starter",
-      "business",
-      "pro"
-    ];
-
-
-    const userPlan =
-      String(
-        session.plan || ""
-      )
-        .trim()
-        .toLowerCase();
-
-
-    if (!allowedPlans.includes(userPlan)) {
-      return Response.json(
-        {
-          error:
-            "You need an active paid plan to use the AI generator.",
-          paymentRequired: true,
-          plan: userPlan || "free"
-        },
-        {
-          status: 403
-        }
-      );
-    }
-
-
-    // -----------------------------
-    // GET FORM DETAILS
-    // -----------------------------
-
-    const body =
-      await context.request.json();
-
 
     const businessName =
-      String(
-        body.businessName || ""
-      ).trim();
-
+      clean(body.businessName);
 
     const businessType =
-      String(
-        body.businessType || ""
-      ).trim();
-
+      clean(body.businessType);
 
     const location =
-      String(
-        body.location || ""
-      ).trim();
-
+      clean(body.location);
 
     const service =
-      String(
-        body.service || ""
-      ).trim();
-
+      clean(body.service);
 
     const extraDetails =
-      String(
-        body.extraDetails || ""
-      ).trim();
-
+      clean(body.extraDetails);
 
     if (
       !businessName ||
-      !businessType
+      !businessType ||
+      !location ||
+      !service
     ) {
-      return Response.json(
+      return jsonResponse(
         {
+          success: false,
           error:
-            "Business name and business type are required."
+            "Please complete the business name, business type, location and service."
         },
-        {
-          status: 400
-        }
+        400
       );
     }
 
-
     // -----------------------------
-    // CREATE SOCIAL MEDIA POST
+    // 7. CREATE SOCIAL MEDIA POST
     // -----------------------------
+    const textPrompt = `
+You are LocalBoost AI, a professional UK social media marketing assistant.
 
-    const postPrompt = `
-Create one finished social media post for a real UK local business.
+Create one high-quality social media post for this local business.
 
 Business name: ${businessName}
 Business type: ${businessType}
 Location: ${location}
 Service or offer: ${service}
-Extra information: ${extraDetails}
+Extra details: ${extraDetails || "None provided"}
 
-Rules:
-
-Write between 60 and 100 words.
-
-Use natural British English.
-
-Write like an experienced social media manager.
-
-Make the post sound friendly, professional and believable.
-
-Use the exact business information supplied.
-
-Do not invent people.
-
-Do not invent an author's name.
-
-Do not invent staff names.
-
-Do not invent prices.
-
-Do not invent discounts.
-
-Do not invent phone numbers.
-
-Do not invent awards.
-
-Do not invent reviews or ratings.
-
-Do not invent facts about the business.
-
-Do not write:
-"Here is the finished social media post"
-
-Do not write:
-"By..."
-
-Do not write:
-"Give your name as the author"
-
-Do not provide explanations.
-
-Do not provide instructions.
-
-Do not provide analysis.
-
-Do not use headings.
-
-Do not use quotation marks around the whole post.
-
-Include a clear and natural call to action.
-
-Finish with exactly 5 relevant hashtags.
-
-Return ONLY the finished social media post.
+Requirements:
+- Write naturally in British English.
+- Make it sound like a genuine local business.
+- Do not make up prices, discounts, awards or guarantees.
+- Keep it concise and engaging.
+- Start with a strong opening line.
+- Clearly explain the service.
+- Mention the location naturally.
+- Include a clear call to action.
+- Finish with 4 to 7 relevant hashtags.
+- Do not include headings such as "Caption" or "Social Media Post".
 `;
 
-
-    const textResponse =
-      await context.env.AI.run(
-        "@cf/meta/llama-3.1-8b-instruct-fast",
-        {
-          prompt: postPrompt,
-          max_tokens: 200
-        }
-      );
-
-
-    let post =
-      textResponse.response ||
-      textResponse.result ||
-      "";
-
-
-    post =
-      String(post).trim();
-
-
-    // -----------------------------
-    // CLEAN AI TEXT
-    // -----------------------------
-
-    post =
-      post.replace(
-        /^(here is|here's) the finished social media post\s*:?\s*/i,
-        ""
-      );
-
-
-    post =
-      post.replace(
-        /^give your name as the author\.?\s*/i,
-        ""
-      );
-
-
-    post =
-      post.replace(
-        /^by\s+[A-Za-z .'-]+\s*/i,
-        ""
-      );
-
-
-    post =
-      post.replace(
-        /^(final answer|final post|social media post|finished post)\s*:?\s*/i,
-        ""
-      );
-
-
-    if (post.includes("---")) {
-      post =
-        post.split("---")[0];
-    }
-
-
-    if (post.includes("## Step")) {
-      post =
-        post.split("## Step")[0];
-    }
-
-
-    post =
-      post.replace(
-        /-1(?:-0){2,}.*$/s,
-        ""
-      );
-
-
-    post =
-      post.replace(
-        /(?:£\s*){5,}/g,
-        ""
-      );
-
-
-    // -----------------------------
-    // HASHTAGS
-    // -----------------------------
-
-    const hashtagMatches =
-      post.match(
-        /#[A-Za-z0-9_]+/g
-      ) || [];
-
-
-    const uniqueHashtags = [];
-
-
-    for (const tag of hashtagMatches) {
-      if (
-        !uniqueHashtags.some(
-          existing =>
-            existing.toLowerCase() ===
-            tag.toLowerCase()
-        )
-      ) {
-        uniqueHashtags.push(tag);
-      }
-
-      if (
-        uniqueHashtags.length === 5
-      ) {
-        break;
-      }
-    }
-
-
-    post =
-      post.replace(
-        /#[A-Za-z0-9_]+/g,
-        ""
-      );
-
-
-    post =
-      post
-        .replace(/[ \t]+/g, " ")
-        .replace(/\n[ \t]+/g, "\n")
-        .replace(/\n{3,}/g, "\n\n")
-        .trim();
-
-
-    const cleanBusinessName =
-      businessName.replace(
-        /[^A-Za-z0-9]/g,
-        ""
-      );
-
-
-    const cleanBusinessType =
-      businessType
-        .replace(
-          /[^A-Za-z0-9 ]/g,
-          ""
-        )
-        .split(" ")
-        .filter(Boolean)
-        .join("");
-
-
-    const cleanLocation =
-      location.replace(
-        /[^A-Za-z0-9]/g,
-        ""
-      );
-
-
-    const backupHashtags = [
-      cleanBusinessName
-        ? `#${cleanBusinessName}`
-        : "#LocalBusiness",
-
-      cleanLocation
-        ? `#${cleanLocation}`
-        : "#UKBusiness",
-
-      cleanBusinessType
-        ? `#${cleanBusinessType}`
-        : "#LocalServices",
-
-      "#SupportLocal",
-
-      "#UKSmallBusiness"
-    ];
-
-
-    for (const tag of backupHashtags) {
-      if (
-        uniqueHashtags.length < 5 &&
-        !uniqueHashtags.some(
-          existing =>
-            existing.toLowerCase() ===
-            tag.toLowerCase()
-        )
-      ) {
-        uniqueHashtags.push(tag);
-      }
-    }
-
-
-    uniqueHashtags.splice(5);
-
-
-    post =
-      post +
-      "\n\n" +
-      uniqueHashtags.join(" ");
-
-
-    // -----------------------------
-    // CREATE AI PICTURE
-    // -----------------------------
-
-    const safeBusinessType =
-      businessType
-        .replace(
-          /[^\w\s-]/g,
-          ""
-        )
-        .slice(0, 80);
-
-
-    const safeService =
-      service
-        .replace(
-          /[^\w\s-]/g,
-          ""
-        )
-        .slice(0, 100);
-
-
-    const safeLocation =
-      location
-        .replace(
-          /[^\w\s-]/g,
-          ""
-        )
-        .slice(0, 60);
-
-
-    const imagePrompt = `
-Create a realistic professional commercial photograph for a ${safeBusinessType} business.
-
-Service being promoted:
-${safeService}
-
-Location style:
-${safeLocation || "United Kingdom"}
-
-Suitable for a professional social media advertisement.
-
-Realistic photography.
-
-Clean composition.
-
-Square format.
-
-No written text.
-
-No logos.
-
-No prices.
-
-No phone numbers.
-
-No watermarks.
-`;
-
-
-    let image = "";
-
-
-    try {
-      const imageResponse =
-        await context.env.AI.run(
-          "@cf/black-forest-labs/flux-1-schnell",
+    const textResult = await env.AI.run(
+      "@cf/meta/llama-3.1-8b-instruct-fast",
+      {
+        messages: [
           {
-            prompt: imagePrompt,
-            steps: 4
+            role: "system",
+            content:
+              "You create professional social media content for UK local businesses."
+          },
+          {
+            role: "user",
+            content: textPrompt
           }
-        );
-
-
-      if (
-        imageResponse &&
-        imageResponse.image
-      ) {
-        image =
-          `data:image/jpeg;charset=utf-8;base64,${imageResponse.image}`;
+        ],
+        max_tokens: 500
       }
-
-    } catch (imageError) {
-      console.log(
-        "Image generation failed:",
-        imageError.message
-      );
-    }
-
-
-    return Response.json({
-      success: true,
-      result: post,
-      image: image,
-      imageGenerated:
-        image !== "",
-      user: {
-        id: session.id,
-        email: session.email,
-        plan: session.plan,
-        generationsUsed:
-          session.generations_used
-      }
-    });
-
-
-  } catch (error) {
-    console.log(
-      "Generation error:",
-      error.message
     );
 
+    const postText =
+      textResult?.response ||
+      textResult?.result?.response ||
+      textResult?.text ||
+      "";
 
-    return Response.json(
+    if (!postText) {
+      throw new Error(
+        "The AI did not return a social media post."
+      );
+    }
+
+    // -----------------------------
+    // 8. CREATE IMAGE
+    // -----------------------------
+    const imagePrompt = `
+Create a realistic professional advertising photograph for a UK local business.
+
+Business: ${businessName}
+Business type: ${businessType}
+Location: ${location}
+Service: ${service}
+
+The image should look suitable for Facebook or Instagram.
+
+Requirements:
+- realistic commercial photography
+- professional and trustworthy
+- clean composition
+- relevant to the service
+- no logos
+- no watermarks
+- no written text
+- no fake prices
+- no promotional banners
+`;
+
+    const imageResult = await env.AI.run(
+      "@cf/black-forest-labs/flux-1-schnell",
       {
-        error:
-          "Something went wrong.",
-        details:
-          error.message
-      },
-      {
-        status: 500
+        prompt: imagePrompt,
+        steps: 4
       }
+    );
+
+    let imageData = null;
+
+    if (imageResult) {
+      if (typeof imageResult === "string") {
+        imageData = imageResult;
+      } else if (imageResult.image) {
+        imageData = imageResult.image;
+      } else if (imageResult.result?.image) {
+        imageData = imageResult.result.image;
+      }
+    }
+
+    if (imageData && !imageData.startsWith("data:")) {
+      imageData =
+        "data:image/jpeg;base64," +
+        imageData;
+    }
+
+    // -----------------------------
+    // 9. INCREASE USAGE ONLY AFTER
+    // SUCCESSFUL GENERATION
+    // -----------------------------
+    const newUsage =
+      generationsUsed + 1;
+
+    await env.DB
+      .prepare(`
+        UPDATE users
+        SET generations_used = ?
+        WHERE id = ?
+      `)
+      .bind(
+        newUsage,
+        session.user_id
+      )
+      .run();
+
+    // -----------------------------
+    // 10. RETURN RESULT
+    // -----------------------------
+    return jsonResponse(
+      {
+        success: true,
+
+        result: postText,
+
+        post: postText,
+
+        image: imageData,
+
+        plan,
+
+        generationsUsed: newUsage,
+
+        limit,
+
+        remaining:
+          Math.max(
+            0,
+            limit - newUsage
+          )
+      },
+      200
+    );
+
+  } catch (error) {
+    console.error(
+      "LocalBoost generate error:",
+      error
+    );
+
+    return jsonResponse(
+      {
+        success: false,
+        error:
+          "Something went wrong while creating your post. Please try again."
+      },
+      500
     );
   }
 }
 
+
+function clean(value) {
+  return String(value || "")
+    .trim()
+    .slice(0, 1000);
+}
+
+
+function capitalise(value) {
+  if (!value) {
+    return "";
+  }
+
+  return (
+    value.charAt(0).toUpperCase() +
+    value.slice(1)
+  );
+}
+
+
+function jsonResponse(data, status = 200) {
+  return new Response(
+    JSON.stringify(data),
+    {
+      status,
+      headers: {
+        "Content-Type":
+          "application/json; charset=UTF-8",
+        "Cache-Control":
+          "no-store"
+      }
+    }
+  );
+}
