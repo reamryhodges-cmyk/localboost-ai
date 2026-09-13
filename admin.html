@@ -4,7 +4,6 @@
 
 <head>
   <meta charset="UTF-8">
-
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
@@ -198,12 +197,10 @@
 
     @media (min-width: 700px) {
       .quick-grid {
-        grid-template-columns:
-          repeat(3,1fr);
+        grid-template-columns: repeat(3,1fr);
       }
     }
   </style>
-
 </head>
 
 <body>
@@ -287,45 +284,27 @@
 
     <div class="quick-grid">
 
-      <button
-        class="quickSearch"
-        data-query="Car Valeting"
-      >
+      <button class="quickSearch" data-query="Car Valeting">
         Car Valeting
       </button>
 
-      <button
-        class="quickSearch"
-        data-query="Plumber"
-      >
+      <button class="quickSearch" data-query="Plumber">
         Plumbers
       </button>
 
-      <button
-        class="quickSearch"
-        data-query="Electrician"
-      >
+      <button class="quickSearch" data-query="Electrician">
         Electricians
       </button>
 
-      <button
-        class="quickSearch"
-        data-query="Hair Salon"
-      >
+      <button class="quickSearch" data-query="Hair Salon">
         Hair Salons
       </button>
 
-      <button
-        class="quickSearch"
-        data-query="Beauty Salon"
-      >
+      <button class="quickSearch" data-query="Beauty Salon">
         Beauty Salons
       </button>
 
-      <button
-        class="quickSearch"
-        data-query="Landscaping"
-      >
+      <button class="quickSearch" data-query="Landscaping">
         Landscaping
       </button>
 
@@ -348,10 +327,7 @@
 
     <div id="findMessage" class="message"></div>
 
-    <div
-      id="findResultsWrap"
-      class="table-wrap hidden"
-    >
+    <div id="findResultsWrap" class="table-wrap hidden">
       <table>
         <thead>
           <tr>
@@ -380,36 +356,21 @@
       Preparing outreach does NOT send any emails.
     </div>
 
-    <button
-      id="prepareButton"
-      disabled
-    >
+    <button id="prepareButton" disabled>
       Prepare First 10 Emails
     </button>
 
-    <div
-      id="prepareMessage"
-      class="message"
-    ></div>
+    <div id="prepareMessage" class="message"></div>
 
-    <div
-      id="preparedSection"
-      class="hidden"
-    >
+    <div id="preparedSection" class="hidden">
 
-      <div
-        class="stats"
-        style="margin-top:16px"
-      >
+      <div class="stats" style="margin-top:16px">
 
         <div class="stat">
           <div class="stat-title">
             Businesses Checked
           </div>
-          <div
-            id="checkedCount"
-            class="stat-number"
-          >
+          <div id="checkedCount" class="stat-number">
             0
           </div>
         </div>
@@ -418,10 +379,7 @@
           <div class="stat-title">
             Ready to Contact
           </div>
-          <div
-            id="readyCount"
-            class="stat-number"
-          >
+          <div id="readyCount" class="stat-number">
             0
           </div>
         </div>
@@ -443,24 +401,15 @@
         </table>
       </div>
 
-      <div
-        id="realSendWarning"
-        class="warning hidden"
-      >
+      <div id="realSendWarning" class="warning hidden">
         ⚠️ The button below sends REAL outreach emails.
       </div>
 
-      <button
-        id="sendButton"
-        class="red hidden"
-      >
+      <button id="sendButton" class="red hidden">
         Send These Emails
       </button>
 
-      <div
-        id="sendMessage"
-        class="message"
-      ></div>
+      <div id="sendMessage" class="message"></div>
 
     </div>
 
@@ -470,111 +419,28 @@
 
     <h2>Add Business Manually</h2>
 
-    <label for="manualName">
-      Business name
-    </label>
+    <label for="manualName">Business name</label>
+
     <input
       id="manualName"
       type="text"
       placeholder="Business name"
     >
 
-    <label for="manualType">
-      Business type
-    </label>
+    <label for="manualType">Business type</label>
+
     <input
       id="manualType"
       type="text"
       placeholder="Example: Mobile car valeting"
     >
 
-    <label for="manualLocation">
-      Location
-    </label>
+    <label for="manualLocation">Location</label>
+
     <input
       id="manualLocation"
       type="text"
       placeholder="Example: Gloucester"
     >
 
-    <label for="manualMethod">
-      Contact method
-    </label>
-
-    <select id="manualMethod">
-      <option value="email">Email</option>
-      <option value="phone">Phone</option>
-      <option value="website">Website</option>
-      <option value="other">Other</option>
-    </select>
-
-    <label for="manualDetails">
-      Contact details
-    </label>
-
-    <input
-      id="manualDetails"
-      type="text"
-      placeholder="Email, phone or website"
-    >
-
-    <button id="manualButton">
-      Add Business Approached
-    </button>
-
-    <div
-      id="manualMessage"
-      class="message"
-    ></div>
-
-  </section>
-
-  <section class="card">
-
-    <h2>Recent Businesses Approached</h2>
-
-    <div class="table-wrap">
-
-      <table>
-        <thead>
-          <tr>
-            <th>Business</th>
-            <th>Type</th>
-            <th>Location</th>
-            <th>Contact</th>
-            <th>Status</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-
-        <tbody id="recentResults">
-          <tr>
-            <td colspan="6">
-              Loading...
-            </td>
-          </tr>
-        </tbody>
-      </table>
-
-    </div>
-
-  </section>
-
-  <section class="card">
-    <button
-      id="logoutButton"
-      class="grey"
-    >
-      Logout
-    </button>
-  </section>
-
-</main>
-
-<script
-  src="/admin.js?v=2"
-  defer
-></script>
-
-</body>
-</html>
+    <label for="manualMethod">Contact method</label>
