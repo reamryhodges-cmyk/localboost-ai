@@ -44,6 +44,10 @@
       margin-top: 0;
     }
 
+    h3 {
+      margin-bottom: 8px;
+    }
+
     .container {
       padding: 18px 14px 50px;
     }
@@ -59,6 +63,7 @@
     .small {
       color: #6b7280;
       font-size: 14px;
+      line-height: 1.5;
     }
 
     .stats {
@@ -96,10 +101,12 @@
       color: white;
       font-size: 16px;
       font-weight: bold;
+      cursor: pointer;
     }
 
     button:disabled {
       opacity: .5;
+      cursor: not-allowed;
     }
 
     .red {
@@ -139,6 +146,7 @@
       padding: 12px;
       border-radius: 10px;
       white-space: pre-wrap;
+      line-height: 1.5;
     }
 
     .message.info {
@@ -166,6 +174,17 @@
       border-radius: 10px;
       background: #fff7ed;
       color: #9a3412;
+      line-height: 1.5;
+    }
+
+    .safe {
+      margin-top: 14px;
+      padding: 12px;
+      border: 1px solid #86efac;
+      border-radius: 10px;
+      background: #f0fdf4;
+      color: #166534;
+      line-height: 1.5;
     }
 
     .hidden {
@@ -179,7 +198,7 @@
 
     table {
       width: 100%;
-      min-width: 650px;
+      min-width: 700px;
       border-collapse: collapse;
     }
 
@@ -189,10 +208,28 @@
       border-bottom: 1px solid #e5e7eb;
       text-align: left;
       font-size: 14px;
+      vertical-align: top;
     }
 
     th {
       background: #f9fafb;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: #eef2ff;
+      color: #3730a3;
+      font-size: 13px;
+      font-weight: bold;
     }
 
     @media (min-width: 700px) {
@@ -348,10 +385,55 @@
 
   <section class="card">
 
+    <h2>Outreach Safeguards</h2>
+
+    <div class="safe">
+      LocalBoost now uses a quality-first outreach flow.
+    </div>
+
+    <div class="pill-row">
+
+      <span class="pill">
+        UK domains only
+      </span>
+
+      <span class="pill">
+        1–50 employees
+      </span>
+
+      <span class="pill">
+        Generic emails only
+      </span>
+
+      <span class="pill">
+        Minimum confidence 70%
+      </span>
+
+      <span class="pill">
+        Max 10 per batch
+      </span>
+
+      <span class="pill">
+        Max 30 sends per day
+      </span>
+
+    </div>
+
+    <p class="small">
+      Finding businesses does not send emails.
+      Preparing outreach does not send emails.
+      Real outreach only sends after you press the red Send button and confirm it.
+    </p>
+
+  </section>
+
+  <section class="card">
+
     <h2>Find UK Businesses</h2>
 
     <p class="small">
-      Find suitable UK small businesses for LocalBoost outreach.
+      Finds quality-first small UK businesses suitable for LocalBoost AI outreach.
+      Large chains, directories, foreign domains and unsuitable companies are filtered out.
     </p>
 
     <div class="quick-grid">
@@ -429,9 +511,9 @@
         <thead>
           <tr>
             <th>Business</th>
-            <th>Type</th>
+            <th>Type / Quality</th>
             <th>Location</th>
-            <th>Domain</th>
+            <th>UK Domain</th>
           </tr>
         </thead>
 
@@ -446,11 +528,13 @@
     <h2>Prepare Outreach</h2>
 
     <p class="small">
-      This checks the first 10 businesses for suitable business email addresses.
+      Checks up to the first 10 approved businesses for suitable generic email addresses.
+      Hunter lookups only happen after the business passes the UK and quality checks.
     </p>
 
     <div class="warning">
       Preparing outreach does NOT send any emails.
+      This stage may use Hunter email-search credits.
     </div>
 
     <button
@@ -509,7 +593,7 @@
           <thead>
             <tr>
               <th>Business</th>
-              <th>Domain</th>
+              <th>UK Domain</th>
               <th>Email</th>
               <th>Confidence</th>
             </tr>
@@ -525,6 +609,8 @@
         class="warning hidden"
       >
         ⚠️ The button below sends REAL outreach emails.
+        The backend will re-check UK status, email confidence, suppression list,
+        duplicate history and the 30-per-day limit before sending.
       </div>
 
       <button
@@ -545,6 +631,10 @@
   <section class="card">
 
     <h2>Add Business Manually</h2>
+
+    <p class="small">
+      Use this to record a business you have already approached outside the automatic outreach system.
+    </p>
 
     <label for="manualName">
       Business name
@@ -581,6 +671,7 @@
     </label>
 
     <select id="manualMethod">
+
       <option value="email">
         Email
       </option>
@@ -596,6 +687,7 @@
       <option value="other">
         Other
       </option>
+
     </select>
 
     <label for="manualDetails">
@@ -666,7 +758,10 @@
 
 </main>
 
-<script src="/admin.js?v=100" defer></script>
+<script
+  src="/admin.js?v=101"
+  defer
+></script>
 
 </body>
 </html>
