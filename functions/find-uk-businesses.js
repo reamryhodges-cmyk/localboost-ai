@@ -1,4 +1,3 @@
-
 const ADMIN_EMAIL = "samtest1109@example.com";
 
 const BLOCKED_WORDS = [
@@ -34,7 +33,41 @@ const BLOCKED_WORDS = [
   "corporation",
   "holdings",
   "global",
-  "international"
+  "international",
+  "group plc",
+  "plc"
+];
+
+const BLOCKED_LARGE_BRANDS = [
+  "sally beauty",
+  "cosmoprof",
+  "saloncentric",
+  "supercuts",
+  "toni & guy",
+  "toni and guy",
+  "regis",
+  "headmasters",
+  "rush hair",
+  "nuffield health",
+  "puregym",
+  "the gym group",
+  "david lloyd",
+  "anytime fitness",
+  "mcdonald",
+  "starbucks",
+  "subway",
+  "burger king",
+  "kfc",
+  "domino",
+  "pizza hut",
+  "greggs",
+  "costa coffee",
+  "tesco",
+  "asda",
+  "sainsbury",
+  "morrisons",
+  "halfords",
+  "kwik fit"
 ];
 
 const CATEGORY_KEYWORDS = {
@@ -221,7 +254,7 @@ export async function onRequestPost({ request, env }) {
 
     const query = String(
       body.query ||
-      "Small independent local businesses based in the United Kingdom"
+      "Independent local service businesses"
     )
       .trim()
       .slice(0, 1500);
@@ -234,6 +267,35 @@ export async function onRequestPost({ request, env }) {
         encodeURIComponent(env.HUNTER_API_KEY)
       }`;
 
+    const discoverBody = {
+      query:
+        buildHunterQuery(
+          query,
+          category
+        ),
+
+      headquarters_location: {
+        include: [
+          {
+            country: "GB"
+          }
+        ]
+      },
+
+      headcount: [
+        "1-10",
+        "11-50"
+      ],
+
+      company_type: {
+        exclude: [
+          "educational",
+          "non profit",
+          "government agency"
+        ]
+      }
+    };
+
     const hunterResponse =
       await fetch(
         hunterUrl,
@@ -245,9 +307,10 @@ export async function onRequestPost({ request, env }) {
               "application/json"
           },
 
-          body: JSON.stringify({
-            query
-          })
+          body:
+            JSON.stringify(
+              discoverBody
+            )
         }
       );
 
@@ -284,6 +347,7 @@ export async function onRequestPost({ request, env }) {
     const results = [];
 
     let blocked = 0;
+    let wrongCountry = 0;
     let wrongType = 0;
     let noEmail = 0;
     let noGenericEmail = 0;
@@ -319,8 +383,28 @@ export async function onRequestPost({ request, env }) {
         );
 
       if (
+        !looksBritish(
+          company,
+          domain
+        )
+      ) {
+        wrongCountry++;
+        continue;
+      }
+
+      if (
         containsBlockedWord(
           searchableText
+        )
+      ) {
+        blocked++;
+        continue;
+      }
+
+      if (
+        isBlockedLargeBrand(
+          businessName,
+          domain
         )
       ) {
         blocked++;
@@ -365,10 +449,6 @@ export async function onRequestPost({ request, env }) {
         continue;
       }
 
-      /*
-        We want a public business address
-        wherever possible for outreach.
-      */
       if (genericEmails < 1) {
         noGenericEmail++;
         continue;
@@ -405,6 +485,29 @@ export async function onRequestPost({ request, env }) {
       });
     }
 
+    results.sort(
+      (a, b) => {
+        const aUk =
+          a.domain.endsWith(".uk")
+            ? 1
+            : 0;
+
+        const bUk =
+          b.domain.endsWith(".uk")
+            ? 1
+            : 0;
+
+        if (aUk !== bUk) {
+          return bUk - aUk;
+        }
+
+        return (
+          b.genericEmails -
+          a.genericEmails
+        );
+      }
+    );
+
     return json({
       success: true,
 
@@ -412,6 +515,9 @@ export async function onRequestPost({ request, env }) {
 
       country:
         "United Kingdom",
+
+      companySize:
+        "1-50 employees",
 
       category,
 
@@ -428,6 +534,7 @@ export async function onRequestPost({ request, env }) {
 
       rejected: {
         blocked,
+        wrongCountry,
         wrongType,
         noEmail,
         noGenericEmail,
@@ -435,7 +542,7 @@ export async function onRequestPost({ request, env }) {
       },
 
       message:
-        "Search complete. Only suitable LocalBoost prospects are shown. No outreach emails were sent."
+        "Search complete. Only small UK businesses suitable for LocalBoost outreach are shown. No outreach emails were sent."
     });
 
   } catch (error) {
@@ -456,252 +563,35 @@ export async function onRequestPost({ request, env }) {
 }
 
 
-function detectCategory(query) {
-  const text =
-    normalize(query);
-
-  if (
-    text.includes("valet") ||
-    text.includes("detailing") ||
-    text.includes("vehicle cleaning") ||
-    text.includes("car care")
-  ) {
-    return "car";
-  }
-
-  if (
-    text.includes("barber") ||
-    text.includes("hair salon") ||
-    text.includes("beauty salon") ||
-    text.includes("nail salon")
-  ) {
-    return "beauty";
-  }
-
-  if (
-    text.includes("cleaner") ||
-    text.includes("cleaning")
-  ) {
-    return "cleaning";
-  }
-
-  if (
-    text.includes("plumber") ||
-    text.includes("electrician") ||
-    text.includes("builder") ||
-    text.includes("landscap") ||
-    text.includes("trades")
-  ) {
-    return "trades";
-  }
-
-  if (
-    text.includes("restaurant") ||
-    text.includes("takeaway") ||
-    text.includes("cafe") ||
-    text.includes("café") ||
-    text.includes("food business")
-  ) {
-    return "food";
-  }
-
-  if (
-    text.includes("gym") ||
-    text.includes("fitness") ||
-    text.includes("personal trainer")
-  ) {
-    return "fitness";
-  }
-
-  return "mixed";
-}
-
-
-function matchesCategory(
-  text,
+function buildHunterQuery(
+  query,
   category
 ) {
-  const words =
-    CATEGORY_KEYWORDS[category] || [];
+  const categoryText = {
+    car:
+      "car valeting, vehicle detailing, car care and vehicle cleaning businesses",
 
-  return words.some(
-    word =>
-      text.includes(
-        normalize(word)
-      )
-  );
-}
+    beauty:
+      "independent hair salons, beauty salons, barbers, nail salons and aesthetics businesses",
 
+    cleaning:
+      "independent cleaning, carpet cleaning, window cleaning and pressure washing businesses",
 
-function containsBlockedWord(
-  text
-) {
-  return BLOCKED_WORDS.some(
-    word =>
-      text.includes(
-        normalize(word)
-      )
-  );
-}
+    trades:
+      "independent plumbers, electricians, builders, roofers, gardeners and local trades businesses",
 
+    food:
+      "independent cafes, restaurants, takeaways, bakeries and local food businesses",
 
-function isBlockedDomain(domain) {
+    fitness:
+      "independent gyms, personal trainers, fitness studios, yoga and pilates businesses",
+
+    mixed:
+      "independent local service businesses"
+  };
+
   return (
-    domain.endsWith(".gov.uk") ||
-    domain.endsWith(".ac.uk") ||
-    domain.includes(".nhs.uk") ||
-    domain === "gov.uk"
-  );
-}
-
-
-function buildSearchableText(
-  company,
-  businessName,
-  domain
-) {
-  const fields = [
-    businessName,
-    domain,
-
-    company?.industry,
-    company?.sector,
-    company?.category,
-    company?.type,
-
-    company?.description,
-    company?.summary,
-
-    company?.city,
-    company?.location,
-    company?.country,
-
-    company?.keywords,
-    company?.tags
-  ];
-
-  const values = [];
-
-  for (const field of fields) {
-    if (
-      Array.isArray(field)
-    ) {
-      values.push(
-        ...field
-      );
-    }
-
-    else if (
-      field &&
-      typeof field === "object"
-    ) {
-      try {
-        values.push(
-          JSON.stringify(field)
-        );
-      } catch {
-        // Ignore unreadable metadata
-      }
-    }
-
-    else if (field) {
-      values.push(field);
-    }
-  }
-
-  return normalize(
-    values.join(" ")
-  );
-}
-
-
-function safeNumber(value) {
-  const number =
-    Number(value || 0);
-
-  return Number.isFinite(number)
-    ? number
-    : 0;
-}
-
-
-function cleanDomain(value) {
-  return String(value || "")
-    .trim()
-    .toLowerCase()
-    .replace(
-      /^https?:\/\//,
-      ""
-    )
-    .replace(
-      /^www\./,
-      ""
-    )
-    .replace(
-      /\/.*$/,
-      ""
-    )
-    .slice(0, 255);
-}
-
-
-function normalize(value) {
-  return String(value || "")
-    .toLowerCase()
-    .replace(
-      /[^a-z0-9.\-& ]+/g,
-      " "
-    )
-    .replace(
-      /\s+/g,
-      " "
-    )
-    .trim();
-}
-
-
-function getCookie(
-  header,
-  name
-) {
-  const item =
-    header
-      .split(";")
-      .map(
-        value =>
-          value.trim()
-      )
-      .find(
-        value =>
-          value.startsWith(
-            name + "="
-          )
-      );
-
-  return item
-    ? item.slice(
-        name.length + 1
-      )
-    : "";
-}
-
-
-function json(
-  data,
-  status = 200
-) {
-  return new Response(
-    JSON.stringify(data),
-    {
-      status,
-
-      headers: {
-        "Content-Type":
-          "application/json; charset=UTF-8",
-
-        "Cache-Control":
-          "no-store"
-      }
-    }
-  );
-}
+    String(query || "") +
+    ". Find " +
+    categoryText[category] +
+    " that are small independent local businesses based in the United Kingdom. Avoid large chains, national brands,
