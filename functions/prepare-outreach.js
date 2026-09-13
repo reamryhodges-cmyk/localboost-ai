@@ -1,6 +1,7 @@
 const ADMIN_EMAIL = "samtest1109@example.com";
 
 const MAX_BUSINESSES = 10;
+const HUNTER_EMAIL_LIMIT = 10;
 
 const PREFERRED_PREFIXES = [
   "hello",
@@ -235,6 +236,10 @@ export async function onRequestPost({
         addresses such as info@ or hello@,
         rather than personal employee
         addresses.
+
+        limit=10 keeps each domain lookup
+        capped to a single 1-10 result
+        search-credit block.
       */
 
       const hunterUrl =
@@ -250,6 +255,13 @@ export async function onRequestPost({
       hunterUrl.searchParams.set(
         "type",
         "generic"
+      );
+
+      hunterUrl.searchParams.set(
+        "limit",
+        String(
+          HUNTER_EMAIL_LIMIT
+        )
       );
 
       hunterUrl.searchParams.set(
