@@ -4,10 +4,7 @@ const VIDEO_LIMITS = {
   pro: 15
 };
 
-export async function onRequestPost({
-  request,
-  env
-}) {
+export async function onRequestPost({ request, env }) {
   try {
     const token = getCookie(
       request.headers.get("Cookie") || "",
@@ -63,9 +60,7 @@ export async function onRequestPost({
       );
     }
 
-    const plan = String(
-      user.plan || "free"
-    )
+    const plan = String(user.plan || "free")
       .trim()
       .toLowerCase();
 
@@ -107,8 +102,7 @@ export async function onRequestPost({
     }
 
     const businessName = clean(
-      body.businessName ||
-        user.business_name,
+      body.businessName || user.business_name,
       150
     );
 
@@ -133,17 +127,17 @@ export async function onRequestPost({
     );
 
     const callToAction = clean(
-      body.callToAction ||
-        "Contact us today",
+      body.callToAction || "Contact us today",
       100
     );
 
-    const format =
-      ["9:16", "16:9", "1:1"].includes(
-        body.format
-      )
-        ? body.format
-        : "9:16";
+    const format = [
+      "9:16",
+      "16:9",
+      "1:1"
+    ].includes(body.format)
+      ? body.format
+      : "9:16";
 
     if (
       !businessName ||
@@ -161,42 +155,55 @@ export async function onRequestPost({
     }
 
     const prompt = [
-      "Create a professional short-form advertising video for a real UK local business.",
+      "Professional realistic advertising video for a real UK local business.",
       `Business: ${businessName}.`,
       `Business type: ${businessType}.`,
       location
         ? `Location: ${location}.`
         : "",
-      `Service being advertised: ${service}.`,
+      `Service: ${service}.`,
       offer
         ? `Offer: ${offer}.`
         : "",
       `Call to action: ${callToAction}.`,
-      "Style: polished, realistic, trustworthy local-business advertising.",
-      "Show the service visually with natural movement and professional commercial cinematography.",
-      "Do not invent prices, awards, reviews, guarantees or factual claims.",
-      "Do not generate fake logos.",
-      "Suitable for social-media advertising.",
-      format === "9:16"
-        ? "Compose specifically for a vertical mobile advert."
-        : "Compose specifically for the requested advertising format."
+      "Show the service visually with realistic natural movement.",
+      "Professional commercial cinematography.",
+      "Clean, trustworthy local business advertising.",
+      "No fake logos.",
+      "Do not invent awards, reviews, guarantees or prices.",
+      "Suitable for social media advertising."
     ]
       .filter(Boolean)
-      .join(" ");
+      .join(" ")
+      .slice(0, 2500);
 
-    const response =
-      await env.AI.run(
-        "black-forest-labs/flux-3-video",
-        {
-          mode: "t2v",
-          prompt,
-          aspect_ratio: format,
-          resolution: "hd",
-          duration: 10,
-          generate_audio: true,
-          safety_tolerance: 2
-        }
-      );
+    console.log(
+      "Starting Wan 3.0 video generation",
+      {
+        userId: user.id,
+        format,
+        plan
+      }
+    );
+
+    const response = await env.AI.run(
+      "alibaba/wan-3.0",
+      {
+        prompt,
+        resolution: "480P",
+        ratio: format,
+        duration: 5
+      }
+    );
+
+    console.log(
+      "Wan 3.0 response received",
+      {
+        state: response?.state || "",
+        hasVideo:
+          Boolean(response?.result?.video)
+      }
+    );
 
     const videoUrl =
       response?.result?.video ||
@@ -205,7 +212,7 @@ export async function onRequestPost({
 
     if (!videoUrl) {
       console.error(
-        "Video response:",
+        "Wan 3.0 returned no video URL",
         response
       );
 
@@ -213,7 +220,7 @@ export async function onRequestPost({
         {
           success: false,
           error:
-            "The video could not be completed. Please try again."
+            "The AI video was not completed. Please try again."
         },
         502
       );
@@ -223,10 +230,9 @@ export async function onRequestPost({
       success: true,
       video: videoUrl,
       format,
-      duration: 10,
+      duration: 5,
       plan,
-      limit:
-        VIDEO_LIMITS[plan],
+      limit: VIDEO_LIMITS[plan],
       message:
         "Your LocalBoost AI video advert is ready."
     });
@@ -234,7 +240,7 @@ export async function onRequestPost({
   } catch (error) {
     console.error(
       "Video generation error:",
-      error
+      error?.message || error
     );
 
     return json(
@@ -248,63 +254,35 @@ export async function onRequestPost({
   }
 }
 
-
-function clean(
-  value,
-  maxLength
-) {
-  return String(
-    value || ""
-  )
+function clean(value, maxLength) {
+  return String(value || "")
     .trim()
-    .slice(
-      0,
-      maxLength
-    );
+    .slice(0, maxLength);
 }
 
-
-function getCookie(
-  header,
-  name
-) {
-  const item =
-    String(header || "")
-      .split(";")
-      .map(
-        value =>
-          value.trim()
-      )
-      .find(
-        value =>
-          value.startsWith(
-            name + "="
-          )
-      );
+function getCookie(header, name) {
+  const item = String(header || "")
+    .split(";")
+    .map(value => value.trim())
+    .find(value =>
+      value.startsWith(name + "=")
+    );
 
   return item
     ? decodeURIComponent(
-        item.slice(
-          name.length + 1
-        )
+        item.slice(name.length + 1)
       )
     : "";
 }
 
-
-function json(
-  data,
-  status = 200
-) {
+function json(data, status = 200) {
   return new Response(
     JSON.stringify(data),
     {
       status,
-
       headers: {
         "Content-Type":
           "application/json; charset=UTF-8",
-
         "Cache-Control":
           "no-store"
       }
