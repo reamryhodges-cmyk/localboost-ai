@@ -155,53 +155,63 @@ export async function onRequestPost({ request, env }) {
     }
 
     const prompt = [
-      "Professional realistic advertising video for a real UK local business.",
+      "Create a professional realistic advertising video for a real UK local business.",
       `Business: ${businessName}.`,
       `Business type: ${businessType}.`,
       location
         ? `Location: ${location}.`
         : "",
-      `Service: ${service}.`,
+      `Service being advertised: ${service}.`,
       offer
-        ? `Offer: ${offer}.`
+        ? `Special offer: ${offer}.`
         : "",
       `Call to action: ${callToAction}.`,
-      "Show the service visually with realistic natural movement.",
-      "Professional commercial cinematography.",
-      "Clean, trustworthy local business advertising.",
-      "No fake logos.",
-      "Do not invent awards, reviews, guarantees or prices.",
-      "Suitable for social media advertising."
+      "Show the service being performed visually.",
+      "Use realistic natural movement.",
+      "Use polished professional commercial cinematography.",
+      "Make the business look trustworthy and professional.",
+      "Do not generate fake logos.",
+      "Do not invent awards, reviews, guarantees or factual claims.",
+      "Do not add unreadable or distorted text into the video.",
+      "Suitable for social media advertising.",
+      format === "9:16"
+        ? "The intended final use is a vertical mobile social media advert."
+        : format === "16:9"
+        ? "The intended final use is a landscape advertising video."
+        : "The intended final use is a square social media advert."
     ]
       .filter(Boolean)
       .join(" ")
       .slice(0, 2500);
 
     console.log(
-      "Starting Wan 3.0 video generation",
+      "Starting Wan 3.0 Prime video generation",
       {
         userId: user.id,
-        format,
-        plan
+        plan,
+        requestedFormat: format
       }
     );
 
     const response = await env.AI.run(
-      "alibaba/wan-3.0",
+      "alibaba/wan-3.0-prime",
       {
         prompt,
         resolution: "480P",
-        ratio: format,
+        ratio: "adaptive",
         duration: 5
       }
     );
 
     console.log(
-      "Wan 3.0 response received",
+      "Wan 3.0 Prime response received",
       {
         state: response?.state || "",
-        hasVideo:
-          Boolean(response?.result?.video)
+        hasResult: Boolean(response?.result),
+        hasVideo: Boolean(
+          response?.result?.video ||
+          response?.video
+        )
       }
     );
 
@@ -212,7 +222,7 @@ export async function onRequestPost({ request, env }) {
 
     if (!videoUrl) {
       console.error(
-        "Wan 3.0 returned no video URL",
+        "Wan 3.0 Prime returned no video URL",
         response
       );
 
