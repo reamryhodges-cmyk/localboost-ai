@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LocalBoost AI Dashboard</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#18212f}header{background:#101828;color:#fff;padding:18px}header h1{margin:0;font-size:22px}.wrap{max-width:900px;margin:auto;padding:16px}.card{background:#fff;border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:0 2px 10px #00000010}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}.stat{background:#f8fafc;border:1px solid #e5e7eb;border-radius:12px;padding:14px}.stat b{display:block;font-size:22px;margin-top:5px}label{display:block;font-weight:bold;margin:12px 0 5px}input,textarea,select{width:100%;padding:12px;border:1px solid #ccd2da;border-radius:9px;font-size:16px}textarea{min-height:90px}button{border:0;border-radius:9px;padding:12px 16px;font-size:15px;font-weight:bold;cursor:pointer;background:#155eef;color:#fff;margin-top:12px}.secondary{background:#344054}.upgrade{background:#16a34a}.disabled{background:#98a2b3}.result{white-space:pre-wrap;background:#f8fafc;border-radius:10px;padding:14px;margin-top:14px;display:none}.result img{width:100%;max-width:520px;border-radius:12px;margin-top:12px}.notice{padding:12px;border-radius:9px;background:#eef4ff;margin-top:10px}.error{background:#feecec;color:#b42318}.success{background:#ecfdf3;color:#027a48}.tag{display:inline-block;padding:5px 9px;border-radius:20px;background:#eef4ff;font-size:13px;font-weight:bold}.coming{opacity:.8}h2{margin-top:0}.plans button{width:100%}
+</style>
+</head>
+<body>
+
+<header>
+<h1>LocalBoost AI</h1>
+<div>Your Marketing Dashboard</div>
+</header>
+
+<div class="wrap">
+
+<div class="card">
+<h2>Welcome back</h2>
+<div id="accountMessage" class="notice">Loading your account...</div>
+
+<div class="grid">
+<div class="stat">Business<b id="businessName">—</b></div>
+<div class="stat">Current Plan<b id="planName">—</b></div>
+<div class="stat">AI Generations<b id="generationCount">—</b></div>
+</div>
+</div>
+
+<div class="card">
+<h2>Create Marketing Content</h2>
+<p>Create an advert, social post and AI marketing image for your business.</p>
+
+<label>Business name</label>
+<input id="business" placeholder="Example: Gloucester Shine">
+
+<label>Business type</label>
+<input id="businessType" placeholder="Example: Mobile car valeting">
+
+<label>Location</label>
+<input id="location" placeholder="Example: Gloucester">
+
+<label>Service to advertise</label>
+<input id="service" placeholder="Example: Full interior and exterior valet">
+
+<label>Extra details</label>
+<textarea id="extraDetails" placeholder="Special offer, selling points, opening times, etc."></textarea>
+
+<button id="generateButton">✨ Create My Advert</button>
+
+<div id="generateMessage"></div>
+<div id="generateResult" class="result"></div>
+</div>
+
+<div class="card coming">
+<h2>🎬 Video Advertising</h2>
+<span class="tag">Coming Next</span>
+<p>Create short AI advertising videos for Reels, Stories, Facebook, Instagram and YouTube.</p>
+
+<label>Video type</label>
+<select disabled>
+<option>15 second promotional advert</option>
+<option>30 second promotional advert</option>
+<option>Offer / sale advert</option>
+<option>Business introduction</option>
+</select>
+
+<button class="disabled" disabled>Create AI Video</button>
+</div>
+
+<div class="card coming">
+<h2>📣 Advertise My Business</h2>
+<span class="tag">Coming Next</span>
+<p>Connect your own advertising accounts and let LocalBoost help create campaigns.</p>
+
+<div class="grid">
+<div class="stat">Facebook & Instagram<b>Not connected</b></div>
+<div class="stat">Google Ads<b>Not connected</b></div>
+<div class="stat">YouTube Ads<b>Not connected</b></div>
+</div>
+
+<div class="notice">
+Your advertising budget will remain separate from your LocalBoost subscription. Meta and Google will charge advertising spend directly to your own ad account.
+</div>
+</div>
+
+<div class="card plans">
+<h2>Plans</h2>
+<p>Upgrade your LocalBoost subscription at any time.</p>
+
+<div class="grid">
+<div class="stat">
+<strong>Starter</strong>
+<p>£9.99/month</p>
+<button class="upgrade" data-plan="starter">Choose Starter</button>
+</div>
+
+<div class="stat">
+<strong>Business</strong>
+<p>£24.99/month</p>
+<button class="upgrade" data-plan="business">Choose Business</button>
+</div>
+
+<div class="stat">
+<strong>Pro</strong>
+<p>£49.99/month</p>
+<button class="upgrade" data-plan="pro">Choose Pro</button>
+</div>
+</div>
+
+<div id="planMessage"></div>
+</div>
+
+<div class="card">
+<button id="logoutButton" class="secondary">Log Out</button>
+</div>
+
+</div>
+
+<script>
+var currentUser=null;
+
+function el(id){return document.getElementById(id)}
+
+function message(id,text,type){
+ var box=el(id);
+ box.className="notice "+(type||"");
+ box.textContent=text;
+}
+
+function escapeHtml(value){
+ return String(value||"")
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;");
+}
+
+async function requestJson(url,options){
+ var response=await fetch(url,options||{});
+ var data={};
+ try{data=await response.json()}catch(e){}
+ if(!response.ok){
+  throw new Error(data.error||data.message||"Request failed.");
+ }
+ return data;
+}
+
+async function loadAccount(){
+ try{
+  var data=await requestJson("/me");
+
+  if(!data.loggedIn||!data.user){
+   window.location.href="/";
+   return;
+  }
+
+  currentUser=data.user;
+
+  el("businessName").textContent=
+   currentUser.businessName||"My Business";
+
+  el("planName").textContent=
+   String(currentUser.plan||"free").toUpperCase();
+
+  el("generationCount").textContent=
+   currentUser.generationsUsed||0;
+
+  el("business").value=
+   currentUser.businessName||"";
+
+  message(
+   "accountMessage",
+   "Account loaded successfully.",
+   "success"
+  );
+
+ }catch(error){
+  message(
+   "accountMessage",
+   error.message,
+   "error"
+  );
+ }
+}
+
+async function generateContent(){
+ var button=el("generateButton");
+
+ var payload={
+  businessName:el("business").value.trim(),
+  businessType:el("businessType").value.trim(),
+  location:el("location").value.trim(),
+  service:el("service").value.trim(),
+  extraDetails:el("extraDetails").value.trim()
+ };
+
+ if(!payload.businessName||
+    !payload.businessType||
+    !payload.location||
+    !payload.service){
+  message(
+   "generateMessage",
+   "Please complete the business, type, location and service fields.",
+   "error"
+  );
+  return;
+ }
+
+ button.disabled=true;
+ button.textContent="Creating...";
+
+ message(
+  "generateMessage",
+  "LocalBoost AI is creating your marketing content..."
+ );
+
+ try{
+  var data=await requestJson(
+   "/generate",
+   {
+    method:"POST",
+    headers:{
+     "Content-Type":"application/json"
+    },
+    body:JSON.stringify(payload)
+   }
+  );
+
+  var result=el("generateResult");
+  var text=
+   data.content||
+   data.text||
+   data.post||
+   data.advert||
+   data.caption||
+   data.message||
+   "";
+
+  var image=
+   data.image||
+   data.imageUrl||
+   data.image_url||
+   "";
+
+  var html="";
+
+  if(text){
+   html+="<strong>Your AI advert</strong><br><br>"+
+    escapeHtml(text).replace(/\n/g,"<br>");
+  }
+
+  if(image){
+   html+='<br><img src="'+escapeHtml(image)+'" alt="AI generated advert image">';
+  }
+
+  if(!html){
+   html="<strong>Your content was generated successfully.</strong>";
+  }
+
+  result.innerHTML=html;
+  result.style.display="block";
+
+  message(
+   "generateMessage",
+   "✅ Your LocalBoost advert is ready.",
+   "success"
+  );
+
+  loadAccount();
+
+ }catch(error){
+  message(
+   "generateMessage",
+   error.message,
+   "error"
+  );
+ }
+
+ button.disabled=false;
+ button.textContent="✨ Create My Advert";
+}
+
+async function choosePlan(plan){
+ message(
+  "planMessage",
+  "Opening secure checkout..."
+ );
+
+ try{
+  var data=await requestJson(
+   "/create-checkout-session",
+   {
+    method:"POST",
+    headers:{
+     "Content-Type":"application/json"
+    },
+    body:JSON.stringify({
+     plan:plan
+    })
+   }
+  );
+
+  var url=
+   data.url||
+   data.checkoutUrl||
+   data.checkout_url;
+
+  if(!url){
+   throw new Error(
+    "Checkout link was not returned."
+   );
+  }
+
+  window.location.href=url;
+
+ }catch(error){
+  message(
+   "planMessage",
+   error.message,
+   "error"
+  );
+ }
+}
+
+async function logout(){
+ try{
+  await fetch(
+   "/logout",
+   {
+    method:"POST"
+   }
+  );
+ }catch(e){}
+
+ window.location.href="/";
+}
+
+window.addEventListener(
+ "load",
+ function(){
+  el("generateButton")
+   .addEventListener(
+    "click",
+    generateContent
+   );
+
+  el("logoutButton")
+   .addEventListener(
+    "click",
+    logout
+   );
+
+  var upgradeButtons=
+   document.querySelectorAll(
+    "[data-plan]"
+   );
+
+  for(
+   var i=0;
+   i<upgradeButtons.length;
+   i++
+  ){
+   upgradeButtons[i]
+    .addEventListener(
+     "click",
+     function(){
+      choosePlan(
+       this.getAttribute(
+        "data-plan"
+       )
+      );
+     }
+    );
+  }
+
+  loadAccount();
+ }
+);
+</script>
+
+</body>
+</html>
