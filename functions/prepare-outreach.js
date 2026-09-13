@@ -1,4 +1,5 @@
-const ADMIN_EMAIL = "samtest1109@example.com";
+const ADMIN_EMAIL =
+  "samtest1109@example.com";
 
 const MAX_BUSINESSES = 10;
 const HUNTER_EMAIL_LIMIT = 10;
@@ -92,6 +93,7 @@ const BLOCKED_BRANDS = [
   "sonnys"
 ];
 
+
 export async function onRequestPost({
   request,
   env
@@ -128,11 +130,15 @@ export async function onRequestPost({
     }
 
     const incomingBusinesses =
-      Array.isArray(body.businesses)
+      Array.isArray(
+        body.businesses
+      )
         ? body.businesses
         : [];
 
-    if (!incomingBusinesses.length) {
+    if (
+      !incomingBusinesses.length
+    ) {
       return json(
         {
           success: false,
@@ -143,16 +149,6 @@ export async function onRequestPost({
       );
     }
 
-    /*
-      Maximum 10 businesses per prepare run.
-
-      Important:
-      We perform every free/local validation
-      possible BEFORE calling Hunter Domain
-      Search so search credits are not wasted
-      on unsuitable businesses.
-    */
-
     const businesses =
       incomingBusinesses.slice(
         0,
@@ -160,7 +156,9 @@ export async function onRequestPost({
       );
 
     const prepared = [];
-    const seenDomains = new Set();
+
+    const seenDomains =
+      new Set();
 
     const skipped = {
       invalidBusiness: 0,
@@ -183,85 +181,78 @@ export async function onRequestPost({
     ) {
       const businessName =
         cleanText(
-          business?.businessName,
+          business
+            ?.businessName,
           250
         );
 
       const domain =
         cleanDomain(
-          business?.domain
+          business
+            ?.domain
         );
 
       if (
         !businessName ||
         !domain
       ) {
-        skipped.invalidBusiness++;
+        skipped
+          .invalidBusiness++;
+
         continue;
       }
 
-      /*
-        UK REVALIDATION
-
-        Never trust the browser/request alone.
-        The prepare stage independently
-        confirms the company uses a UK domain
-        before a Hunter credit is spent.
-      */
-
       if (
-        !isStrictUkDomain(domain)
+        !isStrictUkDomain(
+          domain
+        )
       ) {
-        skipped.notVerifiedUk++;
+        skipped
+          .notVerifiedUk++;
+
         continue;
       }
 
       if (
-        seenDomains.has(domain)
+        seenDomains.has(
+          domain
+        )
       ) {
-        skipped.duplicateInput++;
+        skipped
+          .duplicateInput++;
+
         continue;
       }
 
-      seenDomains.add(domain);
+      seenDomains.add(
+        domain
+      );
 
       if (
-        isBlockedDomain(domain) ||
+        isBlockedDomain(
+          domain
+        ) ||
         isBlockedBusiness(
           businessName,
           domain
         )
       ) {
-        skipped.blockedBusiness++;
+        skipped
+          .blockedBusiness++;
+
         continue;
       }
-
-      /*
-        Finder currently marks approved
-        results ukVerified=true.
-
-        If the field exists and is explicitly
-        false, reject the business.
-
-        Older admin data without the field
-        can still continue because the domain
-        itself has already passed our strict
-        UK validation above.
-      */
 
       if (
-        business?.ukVerified ===
+        business
+          ?.ukVerified ===
         false
       ) {
-        skipped.notVerifiedUk++;
+        skipped
+          .notVerifiedUk++;
+
         continue;
       }
-
-      /*
-        Check whether LocalBoost has already
-        approached this company BEFORE doing
-        the paid Hunter Domain Search.
-      */
 
       const existing =
         await findExistingProspect(
@@ -271,45 +262,46 @@ export async function onRequestPost({
         );
 
       if (existing) {
-        skipped.alreadyApproached++;
+        skipped
+          .alreadyApproached++;
+
         continue;
       }
-
-      /*
-        HUNTER DOMAIN SEARCH
-
-        This is the stage that can consume
-        Hunter search credits, so nothing
-        reaches here unless it has already
-        passed our filters.
-      */
 
       const hunterUrl =
         new URL(
           "https://api.hunter.io/v2/domain-search"
         );
 
-      hunterUrl.searchParams.set(
-        "domain",
-        domain
-      );
+      hunterUrl
+        .searchParams
+        .set(
+          "domain",
+          domain
+        );
 
-      hunterUrl.searchParams.set(
-        "type",
-        "generic"
-      );
+      hunterUrl
+        .searchParams
+        .set(
+          "type",
+          "generic"
+        );
 
-      hunterUrl.searchParams.set(
-        "limit",
-        String(
-          HUNTER_EMAIL_LIMIT
-        )
-      );
+      hunterUrl
+        .searchParams
+        .set(
+          "limit",
+          String(
+            HUNTER_EMAIL_LIMIT
+          )
+        );
 
-      hunterUrl.searchParams.set(
-        "api_key",
-        env.HUNTER_API_KEY
-      );
+      hunterUrl
+        .searchParams
+        .set(
+          "api_key",
+          env.HUNTER_API_KEY
+        );
 
       let hunterResponse;
       let hunterData;
@@ -322,9 +314,8 @@ export async function onRequestPost({
             hunterUrl.toString(),
             {
               method: "GET",
-
               headers: {
-                "Accept":
+                Accept:
                   "application/json"
               }
             }
@@ -339,138 +330,142 @@ export async function onRequestPost({
 
       } catch (error) {
         console.error(
-          "Hunter Domain Search request error:",
+          "Hunter request failed:",
           domain,
           error
         );
 
-        skipped.hunterError++;
+        skipped
+          .hunterError++;
+
         continue;
       }
 
-      if (!hunterResponse.ok) {
+      if (
+        !hunterResponse.ok
+      ) {
         console.error(
-          "Hunter Domain Search error:",
+          "Hunter error:",
           domain,
           hunterData
         );
 
-        skipped.hunterError++;
+        skipped
+          .hunterError++;
+
         continue;
       }
 
       const hunterEmails =
         Array.isArray(
-          hunterData?.data?.emails
+          hunterData
+            ?.data
+            ?.emails
         )
-          ? hunterData.data.emails
+          ? hunterData
+              .data
+              .emails
           : [];
 
-      /*
-        Only accept genuine role-based
-        business addresses.
-
-        Every candidate must:
-        - be generic
-        - be valid
-        - belong to the company's domain
-        - meet the confidence threshold
-      */
-
-      const rawGenericCandidates =
+      const generic =
         hunterEmails
           .map(
-            email => ({
+            item => ({
               email:
                 normalizeEmail(
-                  email?.value
+                  item?.value
                 ),
 
               type:
                 String(
-                  email?.type || ""
+                  item?.type ||
+                  ""
                 )
                   .trim()
                   .toLowerCase(),
 
               confidence:
                 safeNumber(
-                  email?.confidence
+                  item
+                    ?.confidence
                 )
             })
           )
           .filter(
-            candidate =>
-              candidate.email &&
-              candidate.type ===
+            item =>
+              item.email &&
+              item.type ===
                 "generic"
           );
 
       if (
-        !rawGenericCandidates.length
+        !generic.length
       ) {
-        skipped.noGenericEmail++;
+        skipped
+          .noGenericEmail++;
+
         continue;
       }
 
-      const domainMatched =
-        rawGenericCandidates.filter(
-          candidate =>
+      const matching =
+        generic.filter(
+          item =>
             emailMatchesDomain(
-              candidate.email,
+              item.email,
               domain
             )
         );
 
-      if (!domainMatched.length) {
-        skipped.wrongEmailDomain++;
+      if (
+        !matching.length
+      ) {
+        skipped
+          .wrongEmailDomain++;
+
         continue;
       }
 
-      const candidates =
-        domainMatched.filter(
-          candidate =>
-            candidate.confidence >=
-            MIN_CONFIDENCE
+      const confident =
+        matching.filter(
+          item =>
+            item.confidence !==
+              null &&
+            item.confidence >=
+              MIN_CONFIDENCE
         );
 
-      if (!candidates.length) {
-        skipped.lowConfidence++;
+      if (
+        !confident.length
+      ) {
+        skipped
+          .lowConfidence++;
+
         continue;
       }
 
-      candidates.sort(
+      confident.sort(
         compareCandidates
       );
 
-      /*
-        Try candidates in priority order.
-
-        Suppressed addresses are never made
-        ready for sending.
-      */
-
-      let selected = null;
+      let selected =
+        null;
 
       for (
         const candidate
-        of candidates
+        of confident
       ) {
-        const suppression =
+        const suppressed =
           await findSuppression(
             env,
             candidate.email
           );
 
-        if (suppression) {
-          skipped.suppressed++;
+        if (suppressed) {
+          skipped
+            .suppressed++;
+
           continue;
         }
-
-        /*
-          Also ensure this exact email has
-          not already appeared in prospects.
-        */
 
         const existingEmail =
           await findExistingEmail(
@@ -478,12 +473,18 @@ export async function onRequestPost({
             candidate.email
           );
 
-        if (existingEmail) {
-          skipped.alreadyApproached++;
+        if (
+          existingEmail
+        ) {
+          skipped
+            .alreadyApproached++;
+
           continue;
         }
 
-        selected = candidate;
+        selected =
+          candidate;
+
         break;
       }
 
@@ -496,14 +497,16 @@ export async function onRequestPost({
 
         businessType:
           cleanText(
-            business?.businessType,
+            business
+              ?.businessType,
             150
           ) ||
           "Local Service Business",
 
         location:
           cleanText(
-            business?.location,
+            business
+              ?.location,
             150
           ) ||
           "United Kingdom",
@@ -519,11 +522,13 @@ export async function onRequestPost({
         emailType:
           "generic",
 
-        ukVerified: true,
+        ukVerified:
+          true,
 
         qualityScore:
           safeNumber(
-            business?.qualityScore
+            business
+              ?.qualityScore
           ),
 
         status:
@@ -534,14 +539,6 @@ export async function onRequestPost({
       });
     }
 
-    /*
-      PREVIEW ONLY
-
-      Preparing an address never sends
-      anything. Sending remains a separate
-      explicit admin action.
-    */
-
     return json({
       success: true,
 
@@ -549,7 +546,8 @@ export async function onRequestPost({
         "preview",
 
       requested:
-        incomingBusinesses.length,
+        incomingBusinesses
+          .length,
 
       checked:
         businesses.length,
@@ -580,7 +578,6 @@ export async function onRequestPost({
     return json(
       {
         success: false,
-
         error:
           "Could not prepare outreach."
       },
@@ -594,6 +591,22 @@ async function requireAdmin(
   request,
   env
 ) {
+  if (!env.DB) {
+    return {
+      ok: false,
+
+      response:
+        json(
+          {
+            success: false,
+            error:
+              "Database is not configured."
+          },
+          500
+        )
+    };
+  }
+
   const token =
     getCookie(
       request.headers.get(
@@ -625,7 +638,8 @@ async function requireAdmin(
         u.email
       FROM sessions s
       JOIN users u
-        ON u.id = s.user_id
+        ON u.id =
+        s.user_id
       WHERE s.token = ?
       LIMIT 1
     `)
@@ -652,6 +666,443 @@ async function requireAdmin(
     session.expires_at &&
     new Date(
       session.expires_at
-    ).getTime() <= Date.now()
+    ).getTime() <=
+      Date.now()
   ) {
-    return
+    return {
+      ok: false,
+
+      response:
+        json(
+          {
+            success: false,
+            error:
+              "Session expired."
+          },
+          401
+        )
+    };
+  }
+
+  if (
+    String(
+      session.email ||
+      ""
+    )
+      .trim()
+      .toLowerCase() !==
+    ADMIN_EMAIL.toLowerCase()
+  ) {
+    return {
+      ok: false,
+
+      response:
+        json(
+          {
+            success: false,
+            error:
+              "Admin access required."
+          },
+          403
+        )
+    };
+  }
+
+  return {
+    ok: true
+  };
+}
+
+
+async function findExistingProspect(
+  env,
+  businessName,
+  domain
+) {
+  try {
+    const result =
+      await env.DB.prepare(`
+        SELECT id
+        FROM prospects
+        WHERE
+          LOWER(business_name)
+          =
+          LOWER(?)
+        OR
+          LOWER(contact_details)
+          LIKE ?
+        LIMIT 1
+      `)
+        .bind(
+          businessName,
+          `%${domain}%`
+        )
+        .first();
+
+    return !!result;
+
+  } catch (error) {
+    console.warn(
+      "Prospect check failed:",
+      error
+    );
+
+    return false;
+  }
+}
+
+
+async function findExistingEmail(
+  env,
+  email
+) {
+  try {
+    const result =
+      await env.DB.prepare(`
+        SELECT id
+        FROM prospects
+        WHERE
+          LOWER(contact_details)
+          =
+          LOWER(?)
+        LIMIT 1
+      `)
+        .bind(email)
+        .first();
+
+    return !!result;
+
+  } catch (error) {
+    console.warn(
+      "Existing email check failed:",
+      error
+    );
+
+    return false;
+  }
+}
+
+
+async function findSuppression(
+  env,
+  email
+) {
+  try {
+    const result =
+      await env.DB.prepare(`
+        SELECT email
+        FROM suppression_list
+        WHERE
+          LOWER(email)
+          =
+          LOWER(?)
+        LIMIT 1
+      `)
+        .bind(email)
+        .first();
+
+    return !!result;
+
+  } catch (error) {
+    console.warn(
+      "Suppression check failed:",
+      error
+    );
+
+    return true;
+  }
+}
+
+
+function compareCandidates(
+  a,
+  b
+) {
+  const aPrefix =
+    emailPrefixRank(
+      a.email
+    );
+
+  const bPrefix =
+    emailPrefixRank(
+      b.email
+    );
+
+  if (
+    aPrefix !==
+    bPrefix
+  ) {
+    return (
+      aPrefix -
+      bPrefix
+    );
+  }
+
+  return (
+    Number(
+      b.confidence ||
+      0
+    ) -
+    Number(
+      a.confidence ||
+      0
+    )
+  );
+}
+
+
+function emailPrefixRank(
+  email
+) {
+  const prefix =
+    String(
+      email || ""
+    )
+      .split("@")[0]
+      .toLowerCase();
+
+  const index =
+    PREFERRED_PREFIXES
+      .indexOf(
+        prefix
+      );
+
+  return index === -1
+    ? 999
+    : index;
+}
+
+
+function emailMatchesDomain(
+  email,
+  domain
+) {
+  const emailDomain =
+    String(
+      email || ""
+    )
+      .split("@")[1] ||
+    "";
+
+  return (
+    emailDomain ===
+      domain ||
+    emailDomain.endsWith(
+      "." + domain
+    ) ||
+    domain.endsWith(
+      "." +
+      emailDomain
+    )
+  );
+}
+
+
+function isStrictUkDomain(
+  domain
+) {
+  return (
+    domain.endsWith(
+      ".co.uk"
+    ) ||
+    domain.endsWith(
+      ".org.uk"
+    ) ||
+    domain.endsWith(
+      ".me.uk"
+    ) ||
+    domain.endsWith(
+      ".ltd.uk"
+    ) ||
+    domain.endsWith(
+      ".plc.uk"
+    ) ||
+    domain.endsWith(
+      ".net.uk"
+    ) ||
+    domain.endsWith(
+      ".uk"
+    )
+  );
+}
+
+
+function isBlockedDomain(
+  domain
+) {
+  return BLOCKED_DOMAINS
+    .some(
+      blocked =>
+        domain ===
+          blocked ||
+        domain.endsWith(
+          "." +
+          blocked
+        )
+    );
+}
+
+
+function isBlockedBusiness(
+  businessName,
+  domain
+) {
+  const text =
+    `${businessName} ${domain}`
+      .toLowerCase();
+
+  return BLOCKED_BRANDS
+    .some(
+      brand =>
+        text.includes(
+          brand
+        )
+    );
+}
+
+
+function cleanDomain(
+  value
+) {
+  let domain =
+    String(
+      value || ""
+    )
+      .trim()
+      .toLowerCase();
+
+  domain =
+    domain
+      .replace(
+        /^https?:\/\//,
+        ""
+      )
+      .replace(
+        /^www\./,
+        ""
+      )
+      .split("/")[0]
+      .split("?")[0]
+      .split("#")[0];
+
+  if (
+    !domain ||
+    !domain.includes(".")
+  ) {
+    return "";
+  }
+
+  return domain;
+}
+
+
+function normalizeEmail(
+  value
+) {
+  const email =
+    String(
+      value || ""
+    )
+      .trim()
+      .toLowerCase();
+
+  if (
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      .test(email)
+  ) {
+    return "";
+  }
+
+  return email.slice(
+    0,
+    320
+  );
+}
+
+
+function safeNumber(
+  value
+) {
+  if (
+    value === null ||
+    value === undefined ||
+    value === ""
+  ) {
+    return null;
+  }
+
+  const number =
+    Number(value);
+
+  return Number.isFinite(
+    number
+  )
+    ? number
+    : null;
+}
+
+
+function cleanText(
+  value,
+  maxLength
+) {
+  return String(
+    value || ""
+  )
+    .trim()
+    .slice(
+      0,
+      maxLength
+    );
+}
+
+
+function getCookie(
+  header,
+  name
+) {
+  const item =
+    String(
+      header || ""
+    )
+      .split(";")
+      .map(
+        value =>
+          value.trim()
+      )
+      .find(
+        value =>
+          value.startsWith(
+            name + "="
+          )
+      );
+
+  return item
+    ? decodeURIComponent(
+        item.slice(
+          name.length + 1
+        )
+      )
+    : "";
+}
+
+
+function json(
+  data,
+  status = 200
+) {
+  return new Response(
+    JSON.stringify(data),
+    {
+      status,
+
+      headers: {
+        "Content-Type":
+          "application/json; charset=UTF-8",
+
+        "Cache-Control":
+          "no-store"
+      }
+    }
+  );
+}
