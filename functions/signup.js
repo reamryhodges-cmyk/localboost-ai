@@ -1,13 +1,31 @@
 export async function onRequestPost(context) {
   try {
-    const body = await context.request.json();
+    let body;
+
+    try {
+      body = await context.request.json();
+    } catch {
+      return Response.json(
+        {
+          error: "Invalid signup request."
+        },
+        {
+          status: 400
+        }
+      );
+    }
 
     const email = String(body.email || "")
       .trim()
       .toLowerCase();
 
     const password = String(body.password || "");
-    const businessName = String(body.businessName || "").trim();
+
+    const businessName = String(
+      body.businessName || ""
+    )
+      .trim()
+      .slice(0, 150);
 
     if (!email || !password) {
       return Response.json(
@@ -20,7 +38,7 @@ export async function onRequestPost(context) {
       );
     }
 
-    if (!email.includes("@")) {
+    if (!isValidEmail(email)) {
       return Response.json(
         {
           error: "Please enter a valid email address."
@@ -42,10 +60,26 @@ export async function onRequestPost(context) {
       );
     }
 
-    if (!context.env.DB) {
+    if (password.length > 200) {
       return Response.json(
         {
-          error: "Database is not connected."
+          error: "Password is too long."
+        },
+        {
+          status: 400
+        }
+      );
+    }
+
+    if (!context.env.DB) {
+      console.error(
+        "Signup configuration error: DB binding missing."
+      );
+
+      return Response.json(
+        {
+          error:
+            "Account creation is temporarily unavailable."
         },
         {
           status: 500
@@ -53,18 +87,21 @@ export async function onRequestPost(context) {
       );
     }
 
-    // Check whether the account already exists
     const existingUser = await context.env.DB
-      .prepare(
-        "SELECT id FROM users WHERE email = ?"
-      )
+      .prepare(`
+        SELECT id
+        FROM users
+        WHERE email = ?
+        LIMIT 1
+      `)
       .bind(email)
       .first();
 
     if (existingUser) {
       return Response.json(
         {
-          error: "An account with this email already exists."
+          error:
+            "An account with this email already exists."
         },
         {
           status: 409
@@ -72,34 +109,35 @@ export async function onRequestPost(context) {
       );
     }
 
-    // Create a random password salt
     const salt = crypto.getRandomValues(
       new Uint8Array(16)
     );
 
-    // Convert the password into secure key material
-    const keyMaterial = await crypto.subtle.importKey(
-      "raw",
-      new TextEncoder().encode(password),
-      "PBKDF2",
-      false,
-      ["deriveBits"]
-    );
+    const keyMaterial =
+      await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(password),
+        "PBKDF2",
+        false,
+        ["deriveBits"]
+      );
 
-    // Securely hash the password
-    const hashBuffer = await crypto.subtle.deriveBits(
-      {
-        name: "PBKDF2",
-        salt,
-        iterations: 100000,
-        hash: "SHA-256"
-      },
-      keyMaterial,
-      256
-    );
+    const hashBuffer =
+      await crypto.subtle.deriveBits(
+        {
+          name: "PBKDF2",
+          salt,
+          iterations: 100000,
+          hash: "SHA-256"
+        },
+        keyMaterial,
+        256
+      );
 
     const hashArray =
-      Array.from(new Uint8Array(hashBuffer));
+      Array.from(
+        new Uint8Array(hashBuffer)
+      );
 
     const saltArray =
       Array.from(salt);
@@ -107,56 +145,74 @@ export async function onRequestPost(context) {
     const passwordHash =
       saltArray
         .map(byte =>
-          byte.toString(16).padStart(2, "0")
+          byte
+            .toString(16)
+            .padStart(2, "0")
         )
         .join("") +
       ":" +
       hashArray
         .map(byte =>
-          byte.toString(16).padStart(2, "0")
+          byte
+            .toString(16)
+            .padStart(2, "0")
         )
         .join("");
 
-    // Save the customer
-    const result = await context.env.DB
-      .prepare(`
-        INSERT INTO users
-        (
+    const result =
+      await context.env.DB
+        .prepare(`
+          INSERT INTO users
+          (
+            email,
+            password_hash,
+            business_name,
+            plan,
+            generations_used
+          )
+          VALUES (?, ?, ?, 'free', 0)
+        `)
+        .bind(
           email,
-          password_hash,
-          business_name,
-          plan,
-          generations_used
+          passwordHash,
+          businessName
         )
-        VALUES (?, ?, ?, 'free', 0)
-      `)
-      .bind(
-        email,
-        passwordHash,
-        businessName
-      )
-      .run();
+        .run();
 
-    return Response.json({
-      success: true,
-      message: "Account created successfully.",
-      userId: result.meta.last_row_id
-    });
+    return Response.json(
+      {
+        success: true,
+        message:
+          "Account created successfully.",
+        userId:
+          result?.meta?.last_row_id ||
+          null
+      },
+      {
+        status: 201
+      }
+    );
 
   } catch (error) {
-    console.log(
+    console.error(
       "Signup error:",
-      error.message
+      error
     );
 
     return Response.json(
       {
-        error: "Something went wrong creating the account.",
-        details: error.message
+        error:
+          "Something went wrong creating the account."
       },
       {
         status: 500
       }
     );
   }
+}
+
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+    value
+  );
 }
