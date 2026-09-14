@@ -31,8 +31,7 @@ export async function onRequestPost({
       return json(
         {
           success: false,
-          error:
-            "Database is not configured."
+          error: "Database is not configured."
         },
         500
       );
@@ -66,9 +65,7 @@ export async function onRequestPost({
 
     if (
       user.expires_at &&
-      new Date(
-        user.expires_at
-      ).getTime() <= Date.now()
+      new Date(user.expires_at).getTime() <= Date.now()
     ) {
       return json(
         {
@@ -85,8 +82,7 @@ export async function onRequestPost({
         .toLowerCase();
 
     const isAdminTest =
-      email ===
-      ADMIN_TEST_EMAIL.toLowerCase();
+      email === ADMIN_TEST_EMAIL.toLowerCase();
 
     const plan =
       String(user.plan || "free")
@@ -298,7 +294,7 @@ export async function onRequestPost({
       .slice(0, 2500);
 
     console.log(
-      "Starting Wan 3.0 Prime video generation",
+      "Starting Wan 3.0 video generation",
       {
         userId: user.id,
         plan,
@@ -314,7 +310,7 @@ export async function onRequestPost({
     try {
       response =
         await env.AI.run(
-          "alibaba/wan-3.0-prime",
+          "alibaba/wan-3.0",
           {
             prompt,
             resolution: "480P",
@@ -344,7 +340,7 @@ export async function onRequestPost({
     }
 
     console.log(
-      "Wan 3.0 Prime raw response",
+      "Wan 3.0 raw response",
       safeLog(response)
     );
 
@@ -356,7 +352,7 @@ export async function onRequestPost({
         describeResponse(response);
 
       console.error(
-        "Wan 3.0 Prime returned no usable video URL:",
+        "Wan 3.0 returned no usable video URL:",
         summary
       );
 
@@ -417,13 +413,6 @@ export async function onRequestPost({
         "Video usage update failed:",
         usageError
       );
-
-      /*
-        Do not hide a successfully
-        generated video from the
-        customer just because the
-        usage counter failed.
-      */
     }
 
     const remainingVideos =
@@ -439,8 +428,7 @@ export async function onRequestPost({
       format,
       duration: 5,
       plan,
-      videosUsed:
-        updatedUsage,
+      videosUsed: updatedUsage,
       videoLimit,
       remainingVideos,
       periodStart,
@@ -490,8 +478,7 @@ export async function onRequestPost({
           )
             .trim()
             .toLowerCase() ===
-          ADMIN_TEST_EMAIL
-            .toLowerCase();
+          ADMIN_TEST_EMAIL.toLowerCase();
       }
     } catch (_) {}
 
@@ -534,8 +521,7 @@ function findVideoUrl(response) {
     const value of candidates
   ) {
     if (
-      typeof value ===
-        "string" &&
+      typeof value === "string" &&
       value.trim()
     ) {
       return value.trim();
@@ -543,14 +529,11 @@ function findVideoUrl(response) {
   }
 
   if (
-    response?.result
-      ?.video?.url &&
-    typeof response.result
-      .video.url ===
+    response?.result?.video?.url &&
+    typeof response.result.video.url ===
       "string"
   ) {
-    return response.result
-      .video.url.trim();
+    return response.result.video.url.trim();
   }
 
   if (
@@ -558,8 +541,7 @@ function findVideoUrl(response) {
     typeof response.video.url ===
       "string"
   ) {
-    return response.video.url
-      .trim();
+    return response.video.url.trim();
   }
 
   return "";
@@ -582,8 +564,7 @@ function describeResponse(
     }
 
     if (
-      typeof response ===
-      "string"
+      typeof response === "string"
     ) {
       return response.slice(
         0,
@@ -592,8 +573,7 @@ function describeResponse(
     }
 
     if (
-      response instanceof
-      ArrayBuffer
+      response instanceof ArrayBuffer
     ) {
       return (
         `ArrayBuffer(` +
@@ -602,14 +582,11 @@ function describeResponse(
     }
 
     if (
-      ArrayBuffer.isView(
-        response
-      )
+      ArrayBuffer.isView(response)
     ) {
       return (
         `${
-          response.constructor
-            ?.name ||
+          response.constructor?.name ||
           "TypedArray"
         }(` +
         `${response.byteLength} bytes)`
@@ -617,15 +594,11 @@ function describeResponse(
     }
 
     const text =
-      JSON.stringify(
-        response
-      );
+      JSON.stringify(response);
 
     if (!text) {
       return Object.prototype
-        .toString.call(
-          response
-        );
+        .toString.call(response);
     }
 
     return text.slice(
@@ -653,9 +626,7 @@ function safeLog(response) {
         ?.name || "",
 
     summary:
-      describeResponse(
-        response
-      )
+      describeResponse(response)
   };
 }
 
@@ -665,8 +636,7 @@ function extractError(error) {
   }
 
   if (
-    typeof error ===
-    "string"
+    typeof error === "string"
   ) {
     return error.slice(
       0,
