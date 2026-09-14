@@ -161,6 +161,11 @@ h2{
   margin-top:0
 }
 
+.small{
+  font-size:13px;
+  color:#667085
+}
+
 #sandboxSection{
   display:none
 }
@@ -206,7 +211,198 @@ h2{
 
 <section class="card">
 
+  <h2>🏢 My Business Profile</h2>
+
+  <span class="tag">SAVE ONCE</span>
+
+  <p>
+    Enter your business information once.
+    LocalBoost will automatically reuse it when creating
+    marketing content, AI videos and advertising campaigns.
+  </p>
+
+  <div id="profileLoadMessage" class="notice">
+    Loading business profile...
+  </div>
+
+  <label>Business name</label>
+  <input
+    id="profileBusinessName"
+    placeholder="Gloucester Shine"
+  >
+
+  <label>Business type</label>
+  <input
+    id="profileBusinessType"
+    placeholder="Mobile car valeting"
+  >
+
+  <label>Business description</label>
+  <textarea
+    id="profileDescription"
+    placeholder="Tell LocalBoost what your business does and what makes it different."
+  ></textarea>
+
+  <label>Main service</label>
+  <input
+    id="profilePrimaryService"
+    placeholder="Full mobile car valet"
+  >
+
+  <label>Other services</label>
+  <textarea
+    id="profileOtherServices"
+    placeholder="Interior valet, exterior wash, deep clean, ceramic protection..."
+  ></textarea>
+
+  <div class="grid">
+
+    <div>
+      <label>Town / city</label>
+      <input
+        id="profileTownCity"
+        placeholder="Gloucester"
+      >
+    </div>
+
+    <div>
+      <label>Service area</label>
+      <input
+        id="profileServiceArea"
+        placeholder="Gloucester and surrounding areas"
+      >
+    </div>
+
+  </div>
+
+  <label>Postcode</label>
+  <input
+    id="profilePostcode"
+    placeholder="GL1"
+  >
+
+  <div class="grid">
+
+    <div>
+      <label>Phone</label>
+      <input
+        id="profilePhone"
+        type="tel"
+        placeholder="07..."
+      >
+    </div>
+
+    <div>
+      <label>Business email</label>
+      <input
+        id="profileEmail"
+        type="email"
+        placeholder="hello@example.co.uk"
+      >
+    </div>
+
+  </div>
+
+  <label>Website</label>
+  <input
+    id="profileWebsite"
+    type="url"
+    placeholder="https://example.co.uk"
+  >
+
+  <h3>Social media</h3>
+
+  <label>Facebook</label>
+  <input
+    id="profileFacebook"
+    type="url"
+    placeholder="https://facebook.com/..."
+  >
+
+  <label>Instagram</label>
+  <input
+    id="profileInstagram"
+    type="url"
+    placeholder="https://instagram.com/..."
+  >
+
+  <label>TikTok</label>
+  <input
+    id="profileTikTok"
+    type="url"
+    placeholder="https://tiktok.com/@..."
+  >
+
+  <label>YouTube</label>
+  <input
+    id="profileYouTube"
+    type="url"
+    placeholder="https://youtube.com/@..."
+  >
+
+  <label>Default offer</label>
+  <input
+    id="profileOffer"
+    placeholder="20% off your first booking"
+  >
+
+  <label>Default call to action</label>
+  <input
+    id="profileCTA"
+    value="Contact us today"
+  >
+
+  <label>Ideal customer</label>
+  <textarea
+    id="profileTargetCustomer"
+    placeholder="Who are you trying to attract?"
+  ></textarea>
+
+  <label>Brand tone</label>
+
+  <select id="profileBrandTone">
+    <option value="professional">
+      Professional
+    </option>
+    <option value="friendly">
+      Friendly
+    </option>
+    <option value="premium">
+      Premium
+    </option>
+    <option value="bold">
+      Bold
+    </option>
+    <option value="casual">
+      Casual
+    </option>
+    <option value="informative">
+      Informative
+    </option>
+  </select>
+
+  <button id="saveProfileButton">
+    Save Business Profile
+  </button>
+
+  <div id="profileMessage"></div>
+
+  <p class="small">
+    You can change any of these details later.
+    Saving your profile does not launch adverts or spend money.
+  </p>
+
+</section>
+
+
+<section class="card">
+
   <h2>✨ Create Marketing Content</h2>
+
+  <p class="small">
+    These fields are automatically filled from your Business Profile.
+    You can still change them for an individual advert.
+  </p>
 
   <label>Business name</label>
   <input id="business">
@@ -248,6 +444,10 @@ h2{
   <h2>🎬 AI Video Advertising</h2>
 
   <span class="tag">NEW</span>
+
+  <p class="small">
+    Your saved business information is automatically used here.
+  </p>
 
   <label>Service to advertise</label>
   <input id="videoService">
@@ -380,7 +580,6 @@ h2{
     YouTube Ads
   </label>
 
-
   <label>Campaign objective</label>
 
   <select id="objective">
@@ -407,7 +606,6 @@ h2{
 
   </select>
 
-
   <label>Service to advertise</label>
 
   <input
@@ -415,14 +613,12 @@ h2{
     placeholder="Full mobile car valet"
   >
 
-
   <label>Target town / area</label>
 
   <input
     id="targetLocation"
     placeholder="Gloucester"
   >
-
 
   <label>Target radius</label>
 
@@ -457,7 +653,6 @@ h2{
 
   </select>
 
-
   <label>
     Daily advertising budget (£)
   </label>
@@ -470,7 +665,6 @@ h2{
     placeholder="10"
   >
 
-
   <label>Call to action</label>
 
   <input
@@ -478,13 +672,11 @@ h2{
     value="Contact us today"
   >
 
-
   <button id="saveAdsButton">
     Save Advertising Setup
   </button>
 
   <div id="adsMessage"></div>
-
 
   <div class="notice">
 
@@ -521,7 +713,6 @@ h2{
 
     </div>
 
-
     <div class="stat">
 
       <b>Business</b>
@@ -536,7 +727,6 @@ h2{
       </button>
 
     </div>
-
 
     <div class="stat">
 
@@ -576,7 +766,6 @@ h2{
     It does not create a real payment or charge a real card.
   </p>
 
-
   <label>
     Test plan
   </label>
@@ -596,7 +785,6 @@ h2{
     </option>
 
   </select>
-
 
   <button
     id="sandboxButton"
@@ -627,6 +815,7 @@ h2{
 <script>
 
 var user = null;
+var businessProfile = null;
 
 var $ = function(x) {
   return document.getElementById(x);
@@ -677,6 +866,32 @@ function clean(v) {
     .replace(/&/g,"&amp;")
     .replace(/</g,"&lt;")
     .replace(/>/g,"&gt;");
+
+}
+
+
+function value(id,v) {
+
+  if ($(id)) {
+    $(id).value =
+      v === null ||
+      v === undefined
+        ? ""
+        : v;
+  }
+
+}
+
+
+function fillIfEmpty(id,v) {
+
+  if (
+    $(id) &&
+    !$(id).value.trim() &&
+    v
+  ) {
+    $(id).value = v;
+  }
 
 }
 
@@ -752,9 +967,11 @@ async function load() {
     }
 
 
-    loadAds();
+    await loadProfile();
 
-    loadConnections();
+    await loadAds();
+
+    await loadConnections();
 
     oauthMessage();
 
@@ -772,15 +989,451 @@ async function load() {
 }
 
 
+async function loadProfile() {
+
+  try {
+
+    var d =
+      await req(
+        "/business-profile"
+      );
+
+
+    var p =
+      d.profile ||
+      {};
+
+
+    if (!d.profile) {
+
+      p.businessName =
+        d.defaults &&
+        d.defaults.businessName
+          ? d.defaults.businessName
+          : user.businessName || "";
+
+      p.email =
+        d.defaults &&
+        d.defaults.email
+          ? d.defaults.email
+          : user.email || "";
+
+      p.defaultCallToAction =
+        "Contact us today";
+
+      p.brandTone =
+        "professional";
+
+    }
+
+
+    businessProfile = p;
+
+
+    value(
+      "profileBusinessName",
+      p.businessName
+    );
+
+    value(
+      "profileBusinessType",
+      p.businessType
+    );
+
+    value(
+      "profileDescription",
+      p.description
+    );
+
+    value(
+      "profilePrimaryService",
+      p.primaryService
+    );
+
+    value(
+      "profileOtherServices",
+      p.otherServices
+    );
+
+    value(
+      "profileTownCity",
+      p.townCity
+    );
+
+    value(
+      "profileServiceArea",
+      p.serviceArea
+    );
+
+    value(
+      "profilePostcode",
+      p.postcode
+    );
+
+    value(
+      "profilePhone",
+      p.phone
+    );
+
+    value(
+      "profileEmail",
+      p.email
+    );
+
+    value(
+      "profileWebsite",
+      p.website
+    );
+
+    value(
+      "profileFacebook",
+      p.facebookUrl
+    );
+
+    value(
+      "profileInstagram",
+      p.instagramUrl
+    );
+
+    value(
+      "profileTikTok",
+      p.tiktokUrl
+    );
+
+    value(
+      "profileYouTube",
+      p.youtubeUrl
+    );
+
+    value(
+      "profileOffer",
+      p.defaultOffer
+    );
+
+    value(
+      "profileCTA",
+      p.defaultCallToAction ||
+      "Contact us today"
+    );
+
+    value(
+      "profileTargetCustomer",
+      p.targetCustomer
+    );
+
+    value(
+      "profileBrandTone",
+      p.brandTone ||
+      "professional"
+    );
+
+
+    applyProfile(p);
+
+
+    msg(
+      "profileLoadMessage",
+      d.profile
+        ? "✅ Business profile loaded."
+        : "Complete your business profile below.",
+      d.profile
+        ? "success"
+        : ""
+    );
+
+
+  } catch(e) {
+
+    msg(
+      "profileLoadMessage",
+      e.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+function applyProfile(p) {
+
+  if (!p) {
+    return;
+  }
+
+
+  fillIfEmpty(
+    "business",
+    p.businessName
+  );
+
+  fillIfEmpty(
+    "businessType",
+    p.businessType
+  );
+
+  fillIfEmpty(
+    "location",
+    p.townCity ||
+    p.serviceArea
+  );
+
+  fillIfEmpty(
+    "service",
+    p.primaryService
+  );
+
+  fillIfEmpty(
+    "extraDetails",
+    p.description
+  );
+
+
+  fillIfEmpty(
+    "videoService",
+    p.primaryService
+  );
+
+  fillIfEmpty(
+    "videoOffer",
+    p.defaultOffer
+  );
+
+
+  if (
+    $("videoCTA") &&
+    (
+      !$("videoCTA").value.trim() ||
+      $("videoCTA").value ===
+      "Contact us today"
+    )
+  ) {
+
+    $("videoCTA").value =
+      p.defaultCallToAction ||
+      "Contact us today";
+
+  }
+
+
+  fillIfEmpty(
+    "adService",
+    p.primaryService
+  );
+
+  fillIfEmpty(
+    "targetLocation",
+    p.townCity ||
+    p.serviceArea
+  );
+
+
+  if (
+    $("adCTA") &&
+    (
+      !$("adCTA").value.trim() ||
+      $("adCTA").value ===
+      "Contact us today"
+    )
+  ) {
+
+    $("adCTA").value =
+      p.defaultCallToAction ||
+      "Contact us today";
+
+  }
+
+
+  if (p.businessName) {
+
+    $("businessName").textContent =
+      p.businessName;
+
+  }
+
+}
+
+
+async function saveProfile() {
+
+  var b =
+    $("saveProfileButton");
+
+
+  var p = {
+
+    businessName:
+      $("profileBusinessName")
+        .value
+        .trim(),
+
+    businessType:
+      $("profileBusinessType")
+        .value
+        .trim(),
+
+    description:
+      $("profileDescription")
+        .value
+        .trim(),
+
+    primaryService:
+      $("profilePrimaryService")
+        .value
+        .trim(),
+
+    otherServices:
+      $("profileOtherServices")
+        .value
+        .trim(),
+
+    townCity:
+      $("profileTownCity")
+        .value
+        .trim(),
+
+    serviceArea:
+      $("profileServiceArea")
+        .value
+        .trim(),
+
+    postcode:
+      $("profilePostcode")
+        .value
+        .trim(),
+
+    phone:
+      $("profilePhone")
+        .value
+        .trim(),
+
+    email:
+      $("profileEmail")
+        .value
+        .trim(),
+
+    website:
+      $("profileWebsite")
+        .value
+        .trim(),
+
+    facebookUrl:
+      $("profileFacebook")
+        .value
+        .trim(),
+
+    instagramUrl:
+      $("profileInstagram")
+        .value
+        .trim(),
+
+    tiktokUrl:
+      $("profileTikTok")
+        .value
+        .trim(),
+
+    youtubeUrl:
+      $("profileYouTube")
+        .value
+        .trim(),
+
+    defaultOffer:
+      $("profileOffer")
+        .value
+        .trim(),
+
+    defaultCallToAction:
+      $("profileCTA")
+        .value
+        .trim(),
+
+    targetCustomer:
+      $("profileTargetCustomer")
+        .value
+        .trim(),
+
+    brandTone:
+      $("profileBrandTone")
+        .value
+
+  };
+
+
+  if (!p.businessName) {
+
+    msg(
+      "profileMessage",
+      "Business name is required.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  b.disabled = true;
+
+  b.textContent =
+    "Saving...";
+
+
+  try {
+
+    var d =
+      await req(
+        "/business-profile",
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify(p)
+        }
+      );
+
+
+    businessProfile =
+      d.profile || p;
+
+
+    applyProfile(
+      businessProfile
+    );
+
+
+    msg(
+      "profileMessage",
+      "✅ Business profile saved. LocalBoost will now reuse these details automatically.",
+      "success"
+    );
+
+
+  } catch(e) {
+
+    msg(
+      "profileMessage",
+      e.message,
+      "error"
+    );
+
+  }
+
+
+  b.disabled = false;
+
+  b.textContent =
+    "Save Business Profile";
+
+}
+
+
 /*
   Google OAuth diagnostic result display.
-
-  The backend redirects to:
-  /dashboard.html?google=RESULT
-
-  This function now shows the exact safe
-  failure reason instead of hiding all
-  failures behind one generic message.
 */
 
 function oauthMessage() {
@@ -1219,7 +1872,7 @@ async function video() {
 
     msg(
       "videoMessage",
-      "Enter business name, type and service first.",
+      "Complete your Business Profile first so LocalBoost knows what business and service to advertise.",
       "error"
     );
 
@@ -1335,14 +1988,20 @@ async function loadAds() {
     }
 
 
-    $("adService").value =
-      s.service ||
-      "";
+    if (s.service) {
+
+      $("adService").value =
+        s.service;
+
+    }
 
 
-    $("targetLocation").value =
-      s.target_location ||
-      "";
+    if (s.target_location) {
+
+      $("targetLocation").value =
+        s.target_location;
+
+    }
 
 
     $("radiusMiles").value =
@@ -1357,9 +2016,12 @@ async function loadAds() {
       "";
 
 
-    $("adCTA").value =
-      s.call_to_action ||
-      "Contact us today";
+    if (s.call_to_action) {
+
+      $("adCTA").value =
+        s.call_to_action;
+
+    }
 
 
   } catch(e) {}
@@ -1608,6 +2270,10 @@ async function sandboxCheckout() {
 window.addEventListener(
   "load",
   function() {
+
+
+    $("saveProfileButton").onclick =
+      saveProfile;
 
 
     $("generateButton").onclick =
