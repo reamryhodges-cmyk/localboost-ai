@@ -1,1 +1,1 @@
-LocalBoost production redeploy - Stripe sandbox configuration refresh
+LocalBoost production redeploy - Google OAuth credentials refresh
