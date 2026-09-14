@@ -41,17 +41,34 @@ export async function onRequest(context) {
 }
 
 async function getUser(request, env) {
-  const cookie = request.headers.get("Cookie") || "";
+  const cookieHeader =
+    request.headers.get("Cookie") || "";
 
-  const match = cookie.match(
-    /(?:^|;\s*)session=([^;]+)/
+  const cookies = Object.fromEntries(
+    cookieHeader
+      .split(";")
+      .map(cookie => cookie.trim())
+      .filter(Boolean)
+      .map(cookie => {
+        const equalsIndex = cookie.indexOf("=");
+
+        if (equalsIndex === -1) {
+          return [cookie, ""];
+        }
+
+        return [
+          cookie.slice(0, equalsIndex),
+          cookie.slice(equalsIndex + 1)
+        ];
+      })
   );
 
-  if (!match) {
+  const token =
+    cookies.localboost_session || "";
+
+  if (!token) {
     return null;
   }
-
-  const sessionToken = decodeURIComponent(match[1]);
 
   const session = await env.DB
     .prepare(`
@@ -67,23 +84,26 @@ async function getUser(request, env) {
       WHERE s.token = ?
       LIMIT 1
     `)
-    .bind(sessionToken)
+    .bind(token)
     .first();
 
   if (!session) {
     return null;
   }
 
+  const expiry =
+    new Date(session.expires_at).getTime();
+
   if (
-    session.expires_at &&
-    new Date(session.expires_at).getTime() < Date.now()
+    Number.isNaN(expiry) ||
+    expiry <= Date.now()
   ) {
     await env.DB
       .prepare(`
         DELETE FROM sessions
         WHERE token = ?
       `)
-      .bind(sessionToken)
+      .bind(token)
       .run();
 
     return null;
@@ -240,7 +260,8 @@ async function saveProfile(request, env, user) {
   );
 
   const defaultCallToAction = clean(
-    body.defaultCallToAction || "Contact us today",
+    body.defaultCallToAction ||
+      "Contact us today",
     200
   );
 
@@ -315,7 +336,8 @@ async function saveProfile(request, env, user) {
         tiktok_url = excluded.tiktok_url,
         youtube_url = excluded.youtube_url,
         default_offer = excluded.default_offer,
-        default_call_to_action = excluded.default_call_to_action,
+        default_call_to_action =
+          excluded.default_call_to_action,
         target_customer = excluded.target_customer,
         brand_tone = excluded.brand_tone,
         updated_at = CURRENT_TIMESTAMP
@@ -407,8 +429,7 @@ function mapProfile(row) {
       "Contact us today",
     targetCustomer: row.target_customer || "",
     brandTone:
-      row.brand_tone ||
-      "professional",
+      row.brand_tone || "professional",
     createdAt: row.created_at || null,
     updatedAt: row.updated_at || null
   };
@@ -468,9 +489,10 @@ function json(data, status = 200) {
     {
       status,
       headers: {
-        "Content-Type": "application/json; charset=utf-8",
+        "Content-Type":
+          "application/json; charset=utf-8",
         "Cache-Control": "no-store"
       }
     }
   );
-    }
+}
