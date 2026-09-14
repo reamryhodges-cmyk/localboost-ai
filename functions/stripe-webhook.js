@@ -1,24 +1,40 @@
 function json(data, status = 200) {
-  return new Response(JSON.stringify(data), {
-    status,
-    headers: {
-      "Content-Type": "application/json"
+  return new Response(
+    JSON.stringify(data),
+    {
+      status,
+      headers: {
+        "Content-Type":
+          "application/json",
+        "Cache-Control":
+          "no-store"
+      }
     }
-  });
+  );
 }
 
-async function verifyStripeSignature(payload, signatureHeader, secret) {
-  if (!signatureHeader || !secret) {
+async function verifyStripeSignature(
+  payload,
+  signatureHeader,
+  secret
+) {
+  if (
+    !signatureHeader ||
+    !secret
+  ) {
     return false;
   }
 
-  const parts = signatureHeader.split(",");
+  const parts =
+    signatureHeader.split(",");
 
   let timestamp = null;
+
   const signatures = [];
 
   for (const part of parts) {
-    const [key, value] = part.split("=");
+    const [key, value] =
+      part.split("=");
 
     if (key === "t") {
       timestamp = value;
@@ -29,23 +45,31 @@ async function verifyStripeSignature(payload, signatureHeader, secret) {
     }
   }
 
-  if (!timestamp || signatures.length === 0) {
+  if (
+    !timestamp ||
+    signatures.length === 0
+  ) {
     return false;
   }
 
-  // Reject webhook messages older than 5 minutes.
-  const age = Math.abs(
-    Math.floor(Date.now() / 1000) - Number(timestamp)
-  );
+  const age =
+    Math.abs(
+      Math.floor(Date.now() / 1000) -
+      Number(timestamp)
+    );
 
-  if (!Number.isFinite(age) || age > 300) {
+  if (
+    !Number.isFinite(age) ||
+    age > 300
+  ) {
     return false;
   }
 
   const signedPayload =
     timestamp + "." + payload;
 
-  const encoder = new TextEncoder();
+  const encoder =
+    new TextEncoder();
 
   const cryptoKey =
     await crypto.subtle.importKey(
@@ -63,19 +87,58 @@ async function verifyStripeSignature(payload, signatureHeader, secret) {
     await crypto.subtle.sign(
       "HMAC",
       cryptoKey,
-      encoder.encode(signedPayload)
+      encoder.encode(
+        signedPayload
+      )
     );
 
   const expectedSignature =
-    Array.from(new Uint8Array(signature))
+    Array.from(
+      new Uint8Array(signature)
+    )
       .map(byte =>
-        byte.toString(16).padStart(2, "0")
+        byte
+          .toString(16)
+          .padStart(2, "0")
       )
       .join("");
 
   return signatures.some(
-    sig => sig === expectedSignature
+    sig =>
+      safeEqual(
+        sig,
+        expectedSignature
+      )
   );
+}
+
+function safeEqual(a, b) {
+  const left =
+    String(a || "");
+
+  const right =
+    String(b || "");
+
+  if (
+    left.length !==
+    right.length
+  ) {
+    return false;
+  }
+
+  let result = 0;
+
+  for (
+    let i = 0;
+    i < left.length;
+    i++
+  ) {
+    result |=
+      left.charCodeAt(i) ^
+      right.charCodeAt(i);
+  }
+
+  return result === 0;
 }
 
 async function updateUserPlan(
@@ -109,50 +172,98 @@ async function updateUserPlan(
     .run();
 }
 
-export async function onRequestPost(context) {
+export async function onRequestPost(
+  context
+) {
   try {
-    const { request, env } = context;
+    const {
+      request,
+      env
+    } = context;
 
     if (!env.DB) {
       return json(
-        { error: "Database is not configured." },
+        {
+          error:
+            "Database is not configured."
+        },
         500
       );
     }
 
-    if (!env.STRIPE_WEBHOOK_SECRET) {
+    if (
+      !env.STRIPE_WEBHOOK_SECRET &&
+      !env.STRIPE_SANDBOX_WEBHOOK_SECRET
+    ) {
       return json(
-        { error: "Webhook secret is not configured." },
+        {
+          error:
+            "Webhook secret is not configured."
+        },
         500
       );
     }
 
-    const rawBody = await request.text();
+    const rawBody =
+      await request.text();
 
     const stripeSignature =
-      request.headers.get("Stripe-Signature");
+      request.headers.get(
+        "Stripe-Signature"
+      );
+
+    let event;
+
+    try {
+      event =
+        JSON.parse(rawBody);
+    } catch {
+      return json(
+        {
+          error:
+            "Invalid webhook payload."
+        },
+        400
+      );
+    }
+
+    const isLiveEvent =
+      event?.livemode === true;
+
+    const selectedSecret =
+      isLiveEvent
+        ? env.STRIPE_WEBHOOK_SECRET
+        : env.STRIPE_SANDBOX_WEBHOOK_SECRET;
+
+    if (!selectedSecret) {
+      console.error(
+        isLiveEvent
+          ? "Live Stripe webhook secret missing."
+          : "Sandbox Stripe webhook secret missing."
+      );
+
+      return json(
+        {
+          error:
+            "Webhook secret is not configured for this Stripe mode."
+        },
+        500
+      );
+    }
 
     const validSignature =
       await verifyStripeSignature(
         rawBody,
         stripeSignature,
-        env.STRIPE_WEBHOOK_SECRET
+        selectedSecret
       );
 
     if (!validSignature) {
       return json(
-        { error: "Invalid Stripe signature." },
-        400
-      );
-    }
-
-    let event;
-
-    try {
-      event = JSON.parse(rawBody);
-    } catch {
-      return json(
-        { error: "Invalid webhook payload." },
+        {
+          error:
+            "Invalid Stripe signature."
+        },
         400
       );
     }
@@ -161,7 +272,9 @@ export async function onRequestPost(context) {
       event?.data?.object;
 
     if (!object) {
-      return json({ received: true });
+      return json({
+        received: true
+      });
     }
 
     if (
@@ -173,17 +286,24 @@ export async function onRequestPost(context) {
         object.metadata?.user_id;
 
       let plan =
-        object.metadata?.plan;
+        String(
+          object.metadata?.plan ||
+          ""
+        )
+          .trim()
+          .toLowerCase();
 
-      // Standardise old "growth" name
-      // to the website's "business" plan.
       if (plan === "growth") {
         plan = "business";
       }
 
       if (
         userId &&
-        ["starter", "business", "pro"].includes(plan)
+        [
+          "starter",
+          "business",
+          "pro"
+        ].includes(plan)
       ) {
         await updateUserPlan(
           env,
@@ -204,7 +324,12 @@ export async function onRequestPost(context) {
         object.metadata?.user_id;
 
       let plan =
-        object.metadata?.plan;
+        String(
+          object.metadata?.plan ||
+          ""
+        )
+          .trim()
+          .toLowerCase();
 
       if (plan === "growth") {
         plan = "business";
@@ -216,7 +341,9 @@ export async function onRequestPost(context) {
       ];
 
       const planToSave =
-        activeStatuses.includes(object.status)
+        activeStatuses.includes(
+          object.status
+        )
           ? plan
           : "unpaid";
 
@@ -250,6 +377,16 @@ export async function onRequestPost(context) {
         );
       }
     }
+
+    console.log(
+      "Stripe webhook processed",
+      {
+        type:
+          event.type,
+        livemode:
+          event.livemode === true
+      }
+    );
 
     return json({
       received: true
