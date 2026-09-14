@@ -7,22 +7,26 @@
 
 <style>
 *{box-sizing:border-box}
+
 body{
   margin:0;
   font-family:Arial;
   background:#f5f7fb;
   color:#18212f
 }
+
 header{
   background:#101828;
   color:#fff;
   padding:18px
 }
+
 .wrap{
   max-width:900px;
   margin:auto;
   padding:16px
 }
+
 .card{
   background:#fff;
   border-radius:14px;
@@ -30,27 +34,32 @@ header{
   margin-bottom:16px;
   box-shadow:0 2px 10px #0001
 }
+
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(170px,1fr));
   gap:12px
 }
+
 .stat,.connect{
   background:#f8fafc;
   border:1px solid #e5e7eb;
   border-radius:12px;
   padding:14px
 }
+
 .stat b{
   display:block;
   font-size:20px;
   margin-top:5px
 }
+
 label{
   display:block;
   font-weight:bold;
   margin:12px 0 5px
 }
+
 input,textarea,select{
   width:100%;
   padding:12px;
@@ -58,9 +67,11 @@ input,textarea,select{
   border-radius:9px;
   font-size:16px
 }
+
 textarea{
   min-height:85px
 }
+
 button,.button{
   display:inline-block;
   border:0;
@@ -73,31 +84,38 @@ button,.button{
   margin-top:12px;
   text-decoration:none
 }
+
 .green{background:#16a34a}
 .grey{background:#475467}
 .orange{background:#d97706}
+
 .disabled{
   background:#98a2b3;
   pointer-events:none
 }
+
 .notice{
   padding:12px;
   border-radius:9px;
   background:#eef4ff;
   margin-top:10px
 }
+
 .error{
   background:#feecec;
   color:#b42318
 }
+
 .success{
   background:#ecfdf3;
   color:#027a48
 }
+
 .warning{
   background:#fff7ed;
   color:#9a3412
 }
+
 .result{
   display:none;
   margin-top:14px;
@@ -106,12 +124,14 @@ button,.button{
   border-radius:10px;
   white-space:pre-wrap
 }
+
 .result img,.result video{
   width:100%;
   max-width:600px;
   border-radius:12px;
   margin-top:12px
 }
+
 .tag{
   display:inline-block;
   background:#eef4ff;
@@ -120,19 +140,30 @@ button,.button{
   font-size:13px;
   font-weight:bold
 }
+
 .check{
   display:flex;
   gap:10px;
   align-items:center;
   margin:10px 0
 }
-.check input{width:auto}
+
+.check input{
+  width:auto
+}
+
 .status{
   font-weight:bold;
   margin-top:8px
 }
-h2{margin-top:0}
-#sandboxSection{display:none}
+
+h2{
+  margin-top:0
+}
+
+#sandboxSection{
+  display:none
+}
 </style>
 </head>
 
@@ -153,6 +184,7 @@ h2{margin-top:0}
   </div>
 
   <div class="grid">
+
     <div class="stat">
       Business
       <b id="businessName">—</b>
@@ -167,11 +199,13 @@ h2{margin-top:0}
       AI Generations
       <b id="generationCount">—</b>
     </div>
+
   </div>
 </section>
 
 
 <section class="card">
+
   <h2>✨ Create Marketing Content</h2>
 
   <label>Business name</label>
@@ -205,10 +239,12 @@ h2{margin-top:0}
     id="generateResult"
     class="result"
   ></div>
+
 </section>
 
 
 <section class="card">
+
   <h2>🎬 AI Video Advertising</h2>
 
   <span class="tag">NEW</span>
@@ -226,7 +262,9 @@ h2{margin-top:0}
   >
 
   <label>Video format</label>
+
   <select id="videoFormat">
+
     <option value="9:16">
       Vertical — Reels / Stories
     </option>
@@ -238,6 +276,7 @@ h2{margin-top:0}
     <option value="1:1">
       Square
     </option>
+
   </select>
 
   <button id="videoButton">
@@ -250,10 +289,12 @@ h2{margin-top:0}
     id="videoResult"
     class="result"
   ></div>
+
 </section>
 
 
 <section class="card">
+
   <h2>🔗 Advertising Accounts</h2>
 
   <p>
@@ -264,6 +305,7 @@ h2{margin-top:0}
   <div class="grid">
 
     <div class="connect">
+
       <b>Google Ads & YouTube</b>
 
       <div
@@ -280,9 +322,11 @@ h2{margin-top:0}
       >
         Connect Google Ads
       </a>
+
     </div>
 
     <div class="connect">
+
       <b>Facebook & Instagram</b>
 
       <div class="status">
@@ -292,15 +336,18 @@ h2{margin-top:0}
       <span class="button disabled">
         Meta connection coming next
       </span>
+
     </div>
 
   </div>
 
   <div id="connectionMessage"></div>
+
 </section>
 
 
 <section class="card">
+
   <h2>📣 Advertise My Business</h2>
 
   <span class="tag">SETUP</span>
@@ -333,9 +380,11 @@ h2{margin-top:0}
     YouTube Ads
   </label>
 
+
   <label>Campaign objective</label>
 
   <select id="objective">
+
     <option value="leads">
       Get enquiries / leads
     </option>
@@ -355,7 +404,9 @@ h2{margin-top:0}
     <option value="sales">
       Generate sales
     </option>
+
   </select>
+
 
   <label>Service to advertise</label>
 
@@ -364,12 +415,14 @@ h2{margin-top:0}
     placeholder="Full mobile car valet"
   >
 
+
   <label>Target town / area</label>
 
   <input
     id="targetLocation"
     placeholder="Gloucester"
   >
+
 
   <label>Target radius</label>
 
@@ -404,6 +457,7 @@ h2{margin-top:0}
 
   </select>
 
+
   <label>
     Daily advertising budget (£)
   </label>
@@ -416,6 +470,7 @@ h2{margin-top:0}
     placeholder="10"
   >
 
+
   <label>Call to action</label>
 
   <input
@@ -423,28 +478,38 @@ h2{margin-top:0}
     value="Contact us today"
   >
 
+
   <button id="saveAdsButton">
     Save Advertising Setup
   </button>
 
   <div id="adsMessage"></div>
 
+
   <div class="notice">
+
     Saving does not launch adverts or spend money.
+
     Campaigns require approval before going live.
+
     Google or Meta will charge advertising spend directly
     to the customer's advertising account.
+
   </div>
+
 </section>
 
 
 <section class="card">
+
   <h2>Plans</h2>
 
   <div class="grid">
 
     <div class="stat">
+
       <b>Starter</b>
+
       £9.99/month
 
       <button
@@ -453,10 +518,14 @@ h2{margin-top:0}
       >
         Choose Starter
       </button>
+
     </div>
 
+
     <div class="stat">
+
       <b>Business</b>
+
       £24.99/month
 
       <button
@@ -465,10 +534,14 @@ h2{margin-top:0}
       >
         Choose Business
       </button>
+
     </div>
 
+
     <div class="stat">
+
       <b>Pro</b>
+
       £49.99/month
 
       <button
@@ -477,11 +550,13 @@ h2{margin-top:0}
       >
         Choose Pro
       </button>
+
     </div>
 
   </div>
 
   <div id="planMessage"></div>
+
 </section>
 
 
@@ -489,6 +564,7 @@ h2{margin-top:0}
   id="sandboxSection"
   class="card"
 >
+
   <h2>🧪 Stripe Sandbox Test</h2>
 
   <span class="tag">
@@ -499,6 +575,7 @@ h2{margin-top:0}
     This section uses Stripe sandbox mode.
     It does not create a real payment or charge a real card.
   </p>
+
 
   <label>
     Test plan
@@ -520,6 +597,7 @@ h2{margin-top:0}
 
   </select>
 
+
   <button
     id="sandboxButton"
     class="orange"
@@ -528,6 +606,7 @@ h2{margin-top:0}
   </button>
 
   <div id="sandboxMessage"></div>
+
 </section>
 
 
@@ -579,11 +658,13 @@ async function req(u,o) {
   } catch(e) {}
 
   if (!r.ok) {
+
     throw Error(
       d.error ||
       d.message ||
       "Request failed."
     );
+
   }
 
   return d;
@@ -596,6 +677,7 @@ function clean(v) {
     .replace(/&/g,"&amp;")
     .replace(/</g,"&lt;")
     .replace(/>/g,"&gt;");
+
 }
 
 
@@ -603,21 +685,28 @@ async function load() {
 
   try {
 
-    var d = await req("/me");
+    var d =
+      await req("/me");
+
 
     if (
       !d.loggedIn ||
       !d.user
     ) {
+
       location.href = "/";
+
       return;
     }
 
+
     user = d.user;
+
 
     $("businessName").textContent =
       user.businessName ||
       "My Business";
+
 
     $("planName").textContent =
       String(
@@ -625,19 +714,23 @@ async function load() {
         "free"
       ).toUpperCase();
 
+
     $("generationCount").textContent =
       user.generationsUsed ||
       0;
 
+
     $("business").value =
       user.businessName ||
       "";
+
 
     msg(
       "accountMessage",
       "Account loaded.",
       "success"
     );
+
 
     var email =
       String(
@@ -647,17 +740,24 @@ async function load() {
       .trim()
       .toLowerCase();
 
+
     if (
       email ===
       "samtest1109@example.com"
     ) {
+
       $("sandboxSection").style.display =
         "block";
+
     }
 
+
     loadAds();
+
     loadConnections();
+
     oauthMessage();
+
 
   } catch(e) {
 
@@ -666,9 +766,22 @@ async function load() {
       e.message,
       "error"
     );
+
   }
+
 }
 
+
+/*
+  Google OAuth diagnostic result display.
+
+  The backend redirects to:
+  /dashboard.html?google=RESULT
+
+  This function now shows the exact safe
+  failure reason instead of hiding all
+  failures behind one generic message.
+*/
 
 function oauthMessage() {
 
@@ -677,12 +790,15 @@ function oauthMessage() {
       location.search
     );
 
+
   var g =
     p.get("google");
+
 
   if (!g) {
     return;
   }
+
 
   if (g === "connected") {
 
@@ -692,33 +808,147 @@ function oauthMessage() {
       "success"
     );
 
-  } else if (
-    g === "cancelled"
-  ) {
+    return;
 
-    msg(
-      "connectionMessage",
-      "Google connection was cancelled."
-    );
-
-  } else if (
-    g === "paid_plan_required"
-  ) {
-
-    msg(
-      "connectionMessage",
-      "A paid LocalBoost plan is required.",
-      "error"
-    );
-
-  } else {
-
-    msg(
-      "connectionMessage",
-      "Google Ads could not be connected. Please try again.",
-      "error"
-    );
   }
+
+
+  if (g === "cancelled") {
+
+    msg(
+      "connectionMessage",
+      "Google connection was cancelled.",
+      "warning"
+    );
+
+    return;
+
+  }
+
+
+  if (g === "paid_plan_required") {
+
+    msg(
+      "connectionMessage",
+      "Google Ads connection failed: a paid LocalBoost plan is required.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (g === "not_configured") {
+
+    msg(
+      "connectionMessage",
+      "Google Ads diagnostic: LocalBoost is missing one or more Google OAuth configuration variables.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (g === "login_required") {
+
+    msg(
+      "connectionMessage",
+      "Google Ads diagnostic: your LocalBoost login session was not available when Google returned to the site.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (g === "invalid_callback") {
+
+    msg(
+      "connectionMessage",
+      "Google Ads diagnostic: Google returned an invalid OAuth callback.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (g === "invalid_state") {
+
+    msg(
+      "connectionMessage",
+      "Google Ads diagnostic: the OAuth security state did not match. Start the Google connection again from the LocalBoost dashboard.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (g === "expired") {
+
+    msg(
+      "connectionMessage",
+      "Google Ads diagnostic: the Google connection request expired before it completed.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (g === "token_failed") {
+
+    msg(
+      "connectionMessage",
+      "Google Ads diagnostic: Google accepted the authorization but the OAuth token exchange failed.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (g === "no_refresh_token") {
+
+    msg(
+      "connectionMessage",
+      "Google Ads diagnostic: Google authorized the account but did not return the required refresh token.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  if (g === "error") {
+
+    msg(
+      "connectionMessage",
+      "Google Ads diagnostic: LocalBoost encountered an internal error while saving the Google connection.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  msg(
+    "connectionMessage",
+    "Google Ads diagnostic: connection failed with result code: " + g,
+    "error"
+  );
+
 }
 
 
@@ -731,11 +961,13 @@ async function loadConnections() {
         "/ad-connections"
       );
 
+
     var g =
       d.connections &&
       d.connections.google
         ? d.connections.google
         : null;
+
 
     if (
       g &&
@@ -751,23 +983,30 @@ async function loadConnections() {
             : ""
         );
 
+
       $("googleConnect").textContent =
         "Reconnect Google Ads";
+
 
     } else {
 
       $("googleStatus").textContent =
         "Not connected";
 
+
       $("googleConnect").textContent =
         "Connect Google Ads";
+
     }
+
 
   } catch(e) {
 
     $("googleStatus").textContent =
       "Unable to check connection";
+
   }
+
 }
 
 
@@ -775,6 +1014,7 @@ async function generate() {
 
   var b =
     $("generateButton");
+
 
   var p = {
 
@@ -802,7 +1042,9 @@ async function generate() {
       $("extraDetails")
         .value
         .trim()
+
   };
+
 
   if (
     !p.businessName ||
@@ -818,12 +1060,15 @@ async function generate() {
     );
 
     return;
+
   }
+
 
   b.disabled = true;
 
   b.textContent =
     "Creating...";
+
 
   try {
 
@@ -843,8 +1088,10 @@ async function generate() {
         }
       );
 
+
     var r =
       $("generateResult");
+
 
     var t =
       d.content ||
@@ -854,11 +1101,13 @@ async function generate() {
       d.caption ||
       "";
 
+
     var i =
       d.image ||
       d.imageUrl ||
       d.image_url ||
       "";
+
 
     r.innerHTML =
       (
@@ -879,8 +1128,10 @@ async function generate() {
           : ""
       );
 
+
     r.style.display =
       "block";
+
 
     msg(
       "generateMessage",
@@ -888,7 +1139,9 @@ async function generate() {
       "success"
     );
 
+
     load();
+
 
   } catch(e) {
 
@@ -897,12 +1150,15 @@ async function generate() {
       e.message,
       "error"
     );
+
   }
+
 
   b.disabled = false;
 
   b.textContent =
     "Create My Advert";
+
 }
 
 
@@ -910,6 +1166,7 @@ async function video() {
 
   var b =
     $("videoButton");
+
 
   var p = {
 
@@ -950,7 +1207,9 @@ async function video() {
     format:
       $("videoFormat")
         .value
+
   };
+
 
   if (
     !p.businessName ||
@@ -965,17 +1224,21 @@ async function video() {
     );
 
     return;
+
   }
+
 
   b.disabled = true;
 
   b.textContent =
     "Creating video...";
 
+
   msg(
     "videoMessage",
     "Creating your AI video..."
   );
+
 
   try {
 
@@ -995,8 +1258,10 @@ async function video() {
         }
       );
 
+
     var r =
       $("videoResult");
+
 
     r.innerHTML =
       '<strong>Video advert ready</strong><br>' +
@@ -1004,14 +1269,17 @@ async function video() {
       d.video +
       '"></video>';
 
+
     r.style.display =
       "block";
+
 
     msg(
       "videoMessage",
       "✅ Video advert ready.",
       "success"
     );
+
 
   } catch(e) {
 
@@ -1020,12 +1288,15 @@ async function video() {
       e.message,
       "error"
     );
+
   }
+
 
   b.disabled = false;
 
   b.textContent =
     "🎬 Create AI Video";
+
 }
 
 
@@ -1038,31 +1309,41 @@ async function loadAds() {
         "/ad-settings"
       );
 
+
     var s =
       d.settings ||
       {};
 
+
     $("facebookInstagram").checked =
       !!s.facebook_instagram;
+
 
     $("googleAds").checked =
       !!s.google_ads;
 
+
     $("youtubeAds").checked =
       !!s.youtube_ads;
 
+
     if (s.objective) {
+
       $("objective").value =
         s.objective;
+
     }
+
 
     $("adService").value =
       s.service ||
       "";
 
+
     $("targetLocation").value =
       s.target_location ||
       "";
+
 
     $("radiusMiles").value =
       String(
@@ -1070,15 +1351,19 @@ async function loadAds() {
         15
       );
 
+
     $("dailyBudget").value =
       s.daily_budget ||
       "";
+
 
     $("adCTA").value =
       s.call_to_action ||
       "Contact us today";
 
+
   } catch(e) {}
+
 }
 
 
@@ -1086,6 +1371,7 @@ async function saveAds() {
 
   var b =
     $("saveAdsButton");
+
 
   var p = {
 
@@ -1131,12 +1417,15 @@ async function saveAds() {
       $("adCTA")
         .value
         .trim()
+
   };
+
 
   b.disabled = true;
 
   b.textContent =
     "Saving...";
+
 
   try {
 
@@ -1156,11 +1445,13 @@ async function saveAds() {
         }
       );
 
+
     msg(
       "adsMessage",
       "✅ " + d.message,
       "success"
     );
+
 
   } catch(e) {
 
@@ -1169,12 +1460,15 @@ async function saveAds() {
       e.message,
       "error"
     );
+
   }
+
 
   b.disabled = false;
 
   b.textContent =
     "Save Advertising Setup";
+
 }
 
 
@@ -1186,10 +1480,12 @@ async function plan(
   var isSandbox =
     mode === "sandbox";
 
+
   var messageId =
     isSandbox
       ? "sandboxMessage"
       : "planMessage";
+
 
   if (isSandbox) {
 
@@ -1204,7 +1500,9 @@ async function plan(
       messageId,
       "Opening secure checkout..."
     );
+
   }
+
 
   try {
 
@@ -1212,10 +1510,14 @@ async function plan(
       plan:p
     };
 
+
     if (isSandbox) {
+
       payload.mode =
         "sandbox";
+
     }
+
 
     var d =
       await req(
@@ -1235,18 +1537,24 @@ async function plan(
         }
       );
 
+
     var u =
       d.url ||
       d.checkoutUrl ||
       d.checkout_url;
 
+
     if (!u) {
+
       throw Error(
         "Checkout link was not returned."
       );
+
     }
 
+
     location.href = u;
+
 
   } catch(e) {
 
@@ -1255,7 +1563,9 @@ async function plan(
       e.message,
       "error"
     );
+
   }
+
 }
 
 
@@ -1264,13 +1574,16 @@ async function sandboxCheckout() {
   var planName =
     $("sandboxPlan").value;
 
+
   var b =
     $("sandboxButton");
+
 
   b.disabled = true;
 
   b.textContent =
     "Opening sandbox...";
+
 
   try {
 
@@ -1279,13 +1592,16 @@ async function sandboxCheckout() {
       "sandbox"
     );
 
+
   } finally {
 
     b.disabled = false;
 
     b.textContent =
       "🧪 Open Stripe Sandbox Checkout";
+
   }
+
 }
 
 
@@ -1293,17 +1609,22 @@ window.addEventListener(
   "load",
   function() {
 
+
     $("generateButton").onclick =
       generate;
+
 
     $("videoButton").onclick =
       video;
 
+
     $("saveAdsButton").onclick =
       saveAds;
 
+
     $("sandboxButton").onclick =
       sandboxCheckout;
+
 
     $("logoutButton").onclick =
       async function() {
@@ -1319,14 +1640,18 @@ window.addEventListener(
 
         } catch(e) {}
 
+
         location.href =
           "/";
+
       };
+
 
     var a =
       document.querySelectorAll(
         ".plan"
       );
+
 
     for (
       var i = 0;
@@ -1343,10 +1668,14 @@ window.addEventListener(
             ),
             "live"
           );
+
         };
+
     }
 
+
     load();
+
   }
 );
 
