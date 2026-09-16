@@ -169,6 +169,14 @@ h2{
 #sandboxSection{
   display:none
 }
+
+/* Launch: hide unfinished features */
+section.card:has(#videoButton),
+section.card:has(#googleConnect),
+section.card:has(#saveAdsButton){
+  display:none;
+}
+}
 </style>
 </head>
 
@@ -217,9 +225,8 @@ h2{
 
   <p>
     Enter your business information once.
-    LocalBoost will automatically reuse it when creating
-    marketing content, AI videos and advertising campaigns.
-  </p>
+    LocalBoost will automatically reuse it when 
+  marketing content and AI-generated marketing materials.
 
   <div id="profileLoadMessage" class="notice">
     Loading business profile...
