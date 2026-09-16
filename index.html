@@ -91,6 +91,28 @@ button:disabled {
   margin-top: 0;
 }
 
+.how-it-works {
+  text-align: center;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.step {
+  padding: 16px;
+  background: #f8fafc;
+  border-radius: 10px;
+}
+
+.step strong {
+  display: block;
+  margin-bottom: 7px;
+}
+
 .pricing {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -146,7 +168,8 @@ button:disabled {
 }
 
 @media (max-width: 700px) {
-  .pricing {
+  .pricing,
+  .steps {
     grid-template-columns: 1fr;
   }
 }
@@ -166,15 +189,47 @@ button:disabled {
   <h2>Grow your business with AI</h2>
 
   <p class="feature">
-    Create professional social media content,
-    generate advertising images and videos,
-    and manage your digital advertising from
-    one simple dashboard.
+    Create professional social media content and
+    marketing images with AI, all from one simple
+    dashboard.
   </p>
 
   <div id="sessionStatus" class="status">
     Checking account...
   </div>
+</section>
+
+
+<section class="card how-it-works">
+
+  <h2>How LocalBoost AI Works</h2>
+
+  <p class="feature">
+    Create marketing content for your business
+    without spending hours planning every post.
+  </p>
+
+  <div class="steps">
+
+    <div class="step">
+      <strong>1. Create your account</strong>
+      Tell us about your business and choose your plan.
+    </div>
+
+    <div class="step">
+      <strong>2. Generate with AI</strong>
+      Use AI to create professional social media
+      content and marketing images.
+    </div>
+
+    <div class="step">
+      <strong>3. Use your content</strong>
+      Review your generated content and use it
+      across your business marketing.
+    </div>
+
+  </div>
+
 </section>
 
 
