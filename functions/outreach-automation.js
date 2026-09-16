@@ -1,6 +1,6 @@
 const ADMIN_EMAIL = "samtest1109@example.com";
 
-const DEFAULT_DAILY_LIMIT = 30;
+const DEFAULT_DAILY_LIMIT = 50;
 const DEFAULT_BATCH_SIZE = 10;
 
 const ALLOWED_BUSINESS_TYPES = [
@@ -160,7 +160,8 @@ async function updateSettings(request, env) {
       return json(
         {
           success: false,
-          error: `Daily limit must be between 1 and ${DEFAULT_DAILY_LIMIT}.`
+          error:
+            `Daily limit must be between 1 and ${DEFAULT_DAILY_LIMIT}.`
         },
         400
       );
@@ -180,7 +181,8 @@ async function updateSettings(request, env) {
       return json(
         {
           success: false,
-          error: `Batch size must be between 1 and ${DEFAULT_BATCH_SIZE}.`
+          error:
+            `Batch size must be between 1 and ${DEFAULT_BATCH_SIZE}.`
         },
         400
       );
@@ -190,7 +192,8 @@ async function updateSettings(request, env) {
   }
 
   if (body.businessType !== undefined) {
-    businessType = normaliseBusinessType(body.businessType);
+    businessType =
+      normaliseBusinessType(body.businessType);
 
     if (!businessType) {
       return json(
@@ -281,7 +284,8 @@ function normaliseBusinessType(value) {
   }
 
   const match = ALLOWED_BUSINESS_TYPES.find(
-    item => item.toLowerCase() === text.toLowerCase()
+    item =>
+      item.toLowerCase() === text.toLowerCase()
   );
 
   return match || null;
@@ -373,7 +377,8 @@ async function requireAdmin(request, env) {
 }
 
 function getCookie(cookieHeader, name) {
-  const cookies = String(cookieHeader || "").split(";");
+  const cookies =
+    String(cookieHeader || "").split(";");
 
   for (const cookie of cookies) {
     const separator = cookie.indexOf("=");
@@ -382,7 +387,8 @@ function getCookie(cookieHeader, name) {
       continue;
     }
 
-    const key = cookie.slice(0, separator).trim();
+    const key =
+      cookie.slice(0, separator).trim();
 
     if (key !== name) {
       continue;
@@ -418,4 +424,4 @@ function json(data, status = 200) {
       }
     }
   );
-        }
+    }
