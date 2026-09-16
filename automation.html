@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Outreach Automation | LocalBoost AI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      color: #172033;
+    }
+
+    header {
+      background: #101827;
+      color: white;
+      padding: 18px;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    header p {
+      margin: 5px 0 0;
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    main {
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 0 14px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .status {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      font-weight: bold;
+      background: #eef2f7;
+    }
+
+    .row {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccd2dc;
+      border-radius: 8px;
+      font-size: 16px;
+      background: white;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px;
+      background: #f7f9fc;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .toggle-row input {
+      width: 24px;
+      height: 24px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: 0;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+    }
+
+    .warning {
+      margin-top: 18px;
+      padding: 12px;
+      background: #fff7e6;
+      border: 1px solid #f2d49b;
+      border-radius: 8px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .back {
+      display: block;
+      text-align: center;
+      margin-top: 16px;
+      color: #2563eb;
+      text-decoration: none;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>LocalBoost AI Outreach Automation</h1>
+  <p>Automatic UK business outreach controls</p>
+</header>
+
+<main>
+  <div class="card">
+
+    <h2>AI Outreach Automation</h2>
+
+    <div id="status" class="status">
+      Loading automation settings...
+    </div>
+
+    <div class="toggle-row">
+      <div>
+        <strong>Automatic outreach</strong><br>
+        <small>Allow the scheduler to send outreach automatically.</small>
+      </div>
+
+      <input
+        type="checkbox"
+        id="enabled"
+      >
+    </div>
+
+    <div class="row">
+      <label for="dailyLimit">Maximum emails per day</label>
+      <input
+        id="dailyLimit"
+        type="number"
+        min="1"
+        max="30"
+        value="30"
+      >
+    </div>
+
+    <div class="row">
+      <label for="batchSize">Maximum emails per batch</label>
+      <input
+        id="batchSize"
+        type="number"
+        min="1"
+        max="10"
+        value="10"
+      >
+    </div>
+
+    <div class="row">
+      <label for="businessType">Business type</label>
+
+      <select id="businessType">
+        <option value="Mixed">Mixed UK businesses</option>
+        <option value="Car Valeting">Car Valeting</option>
+        <option value="Plumbers">Plumbers</option>
+        <option value="Electricians">Electricians</option>
+        <option value="Hair Salons">Hair Salons</option>
+        <option value="Beauty Salons">Beauty Salons</option>
+        <option value="Landscaping">Landscaping</option>
+      </select>
+    </div>
+
+    <button id="saveButton">
+      Save Automation Settings
+    </button>
+
+    <div class="warning">
+      <strong>Safeguards:</strong>
+      maximum 30 emails per day, maximum 10 per batch,
+      UK businesses only, minimum 70% email confidence,
+      suppression/unsubscribe checks and duplicate-contact protection.
+    </div>
+
+    <a class="back" href="/admin.html">
+      ← Back to Admin
+    </a>
+
+  </div>
+</main>
+
+<script>
+  const statusBox = document.getElementById("status");
+  const enabledInput = document.getElementById("enabled");
+  const dailyLimitInput = document.getElementById("dailyLimit");
+  const batchSizeInput = document.getElementById("batchSize");
+  const businessTypeInput = document.getElementById("businessType");
+  const saveButton = document.getElementById("saveButton");
+
+  async function loadSettings() {
+    try {
+      const response = await fetch("/outreach-automation", {
+        method: "GET",
+        credentials: "include"
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Could not load automation settings."
+        );
+      }
+
+      const settings = data.settings || data;
+
+      enabledInput.checked = Boolean(settings.enabled);
+
+      dailyLimitInput.value =
+        settings.dailyLimit ??
+        settings.daily_limit ??
+        30;
+
+      batchSizeInput.value =
+        settings.batchSize ??
+        settings.batch_size ??
+        10;
+
+      businessTypeInput.value =
+        settings.businessType ??
+        settings.business_type ??
+        "Mixed";
+
+      updateStatus();
+
+    } catch (error) {
+      statusBox.textContent = error.message;
+    }
+  }
+
+  function updateStatus() {
+    if (enabledInput.checked) {
+      statusBox.textContent =
+        "AUTOMATIC OUTREACH: ON";
+    } else {
+      statusBox.textContent =
+        "AUTOMATIC OUTREACH: OFF";
+    }
+  }
+
+  enabledInput.addEventListener("change", updateStatus);
+
+  saveButton.addEventListener("click", async () => {
+
+    const dailyLimit = Math.min(
+      30,
+      Math.max(1, Number(dailyLimitInput.value) || 30)
+    );
+
+    const batchSize = Math.min(
+      10,
+      Math.max(1, Number(batchSizeInput.value) || 10)
+    );
+
+    saveButton.disabled = true;
+    saveButton.textContent = "Saving...";
+
+    try {
+      const response = await fetch("/outreach-automation", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          enabled: enabledInput.checked,
+          dailyLimit: dailyLimit,
+          batchSize: batchSize,
+          businessType: businessTypeInput.value
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Could not save automation settings."
+        );
+      }
+
+      statusBox.textContent =
+        enabledInput.checked
+          ? "AUTOMATIC OUTREACH: ON — settings saved."
+          : "AUTOMATIC OUTREACH: OFF — settings saved.";
+
+    } catch (error) {
+      statusBox.textContent = error.message;
+
+    } finally {
+      saveButton.disabled = false;
+      saveButton.textContent = "Save Automation Settings";
+    }
+  });
+
+  loadSettings();
+</script>
+
+</body>
+</html>
