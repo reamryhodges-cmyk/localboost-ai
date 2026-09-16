@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en-GB">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -119,6 +119,30 @@ button:disabled {
   border-radius: 10px;
   padding: 14px;
   margin-top: 15px;
+}
+
+.site-footer {
+  background: #111827;
+  color: #d1d5db;
+  text-align: center;
+  padding: 30px 20px;
+  margin-top: 40px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.site-footer strong {
+  color: white;
+}
+
+.site-footer a {
+  color: white;
+  text-decoration: underline;
+  margin: 0 8px;
+}
+
+.site-footer a:hover {
+  text-decoration: none;
 }
 
 @media (max-width: 700px) {
@@ -337,6 +361,32 @@ button:disabled {
 </section>
 
 </main>
+
+
+<footer class="site-footer">
+
+  <strong>LocalBoost AI</strong>
+
+  <br><br>
+
+  <a href="/privacy.html">
+    Privacy Policy
+  </a>
+
+  <a href="/terms.html">
+    Terms of Service
+  </a>
+
+  <br><br>
+
+  LocalBoost AI is a trading name of
+  Sam Hodges, sole trader.
+
+  <br>
+
+  &copy; 2026 LocalBoost AI.
+
+</footer>
 
 
 <script>
@@ -585,11 +635,6 @@ $("loginButton").addEventListener(
           "Login failed."
         );
       }
-
-      /*
-        Confirm that the session cookie
-        is active before opening dashboard.
-      */
 
       const meResponse =
         await fetch(
