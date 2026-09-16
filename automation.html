@@ -165,8 +165,8 @@
         id="dailyLimit"
         type="number"
         min="1"
-        max="30"
-        value="30"
+        max="50"
+        value="50"
       >
     </div>
 
@@ -185,7 +185,7 @@
       <label for="businessType">Business type</label>
 
       <select id="businessType">
-        <option value="Mixed">Mixed UK businesses</option>
+        <option value="mixed">Mixed UK businesses</option>
         <option value="Car Valeting">Car Valeting</option>
         <option value="Plumbers">Plumbers</option>
         <option value="Electricians">Electricians</option>
@@ -201,7 +201,7 @@
 
     <div class="warning">
       <strong>Safeguards:</strong>
-      maximum 30 emails per day, maximum 10 per batch,
+      maximum 50 emails per day, maximum 10 per batch,
       UK businesses only, minimum 70% email confidence,
       suppression/unsubscribe checks and duplicate-contact protection.
     </div>
@@ -243,7 +243,7 @@
       dailyLimitInput.value =
         settings.dailyLimit ??
         settings.daily_limit ??
-        30;
+        50;
 
       batchSizeInput.value =
         settings.batchSize ??
@@ -253,7 +253,7 @@
       businessTypeInput.value =
         settings.businessType ??
         settings.business_type ??
-        "Mixed";
+        "mixed";
 
       updateStatus();
 
@@ -277,8 +277,8 @@
   saveButton.addEventListener("click", async () => {
 
     const dailyLimit = Math.min(
-      30,
-      Math.max(1, Number(dailyLimitInput.value) || 30)
+      50,
+      Math.max(1, Number(dailyLimitInput.value) || 50)
     );
 
     const batchSize = Math.min(
