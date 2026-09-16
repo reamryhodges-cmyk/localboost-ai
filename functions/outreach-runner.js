@@ -1,4 +1,4 @@
-const DEFAULT_DAILY_LIMIT = 30;
+const DEFAULT_DAILY_LIMIT = 50;
 const DEFAULT_BATCH_SIZE = 10;
 const MIN_CONFIDENCE = 70;
 
@@ -648,11 +648,6 @@ async function sendBusinesses(
       continue;
     }
 
-    /*
-      Record only after Resend accepts the email.
-      This preserves the same behaviour as the
-      manually tested outreach flow.
-    */
     try {
       await env.DB.prepare(`
         INSERT INTO prospects (
@@ -1238,24 +1233,4 @@ function escapeHtml(
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
-
-function json(
-  data,
-  status = 200
-) {
-  return new Response(
-    JSON.stringify(data),
-    {
-      status,
-      headers: {
-        "Content-Type":
-          "application/json; charset=utf-8",
-        "Cache-Control":
-          "no-store"
-      }
-    }
-  );
-}
+    .replace(/"/g, "&quot
