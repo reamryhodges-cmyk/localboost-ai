@@ -219,6 +219,18 @@ section.card:has(#saveAdsButton){
   </div>
 </section>
 
+<section class="card">
+  <h2>🔒 Password &amp; Security</h2>
+  <p>
+    For your security, LocalBoost cannot display your current password.
+    It is stored as a protected one-way hash.
+  </p>
+  <button id="passwordResetButton" type="button" class="grey">
+    Set a New Password
+  </button>
+  <div id="passwordResetStatus" class="notice" style="display:none"></div>
+</section>
+
 
 <section class="card">
 
@@ -1001,6 +1013,37 @@ async function load() {
 
   }
 
+}
+
+
+async function requestPasswordReset() {
+
+  var button = $("passwordResetButton");
+  var status = $("passwordResetStatus");
+
+  if (!user || !user.email) {
+    msg("passwordResetStatus", "Account email could not be loaded.", "error");
+    status.style.display = "block";
+    return;
+  }
+
+  button.disabled = true;
+  button.textContent = "Sending...";
+  status.style.display = "block";
+
+  try {
+    await req("/forgot-password", {
+      method: "POST",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({email: user.email})
+    });
+    msg("passwordResetStatus", "Reset link sent to your account email.", "success");
+  } catch (e) {
+    msg("passwordResetStatus", e.message, "error");
+  } finally {
+    button.disabled = false;
+    button.textContent = "Set a New Password";
+  }
 }
 
 
@@ -2289,6 +2332,9 @@ window.addEventListener(
 
     $("saveProfileButton").onclick =
       saveProfile;
+
+    $("passwordResetButton").onclick =
+      requestPasswordReset;
 
 
     $("generateButton").onclick =
