@@ -4,6 +4,8 @@ import assert from "node:assert/strict";
 import { onRequestPost as signup } from "../functions/signup.js";
 import { onRequestPost as login } from "../functions/login.js";
 import { onRequestPost as logout } from "../functions/logout.js";
+import { onRequestPost as forgotPassword } from "../functions/forgot-password.js";
+import { onRequestPost as resetPassword } from "../functions/reset-password.js";
 
 function request(path, body, cookie = "") {
   return new Request(`https://localboost4u.co.uk/${path}`, {
@@ -159,4 +161,27 @@ test("logout revokes the server session and clears the cookie", async () => {
   assert.equal(response.status, 200);
   assert.deepEqual(deletedTokens, ["secret-token"]);
   assert.match(response.headers.get("set-cookie"), /Max-Age=0/);
+});
+
+test("forgot password does not reveal whether an account exists", async () => {
+  const response = await forgotPassword({
+    request: request("forgot-password", { email: "not-an-email" }),
+    env: {}
+  });
+  const result = await response.json();
+  assert.equal(response.status, 200);
+  assert.match(result.message, /If that account exists/i);
+});
+
+test("reset password rejects malformed tokens before database access", async () => {
+  const response = await resetPassword({
+    request: request("reset-password", {
+      token: "not-a-valid-token",
+      password: "new secure password"
+    }),
+    env: {}
+  });
+  const result = await response.json();
+  assert.equal(response.status, 400);
+  assert.match(result.error, /invalid or expired/i);
 });
