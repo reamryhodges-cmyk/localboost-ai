@@ -245,6 +245,8 @@ button:disabled {
     id="signupBusinessName"
     type="text"
     autocomplete="organization"
+    maxlength="150"
+    required
   >
 
   <label for="signupEmail">
@@ -255,6 +257,8 @@ button:disabled {
     id="signupEmail"
     type="email"
     autocomplete="email"
+    maxlength="320"
+    required
   >
 
   <label for="signupPassword">
@@ -265,6 +269,9 @@ button:disabled {
     id="signupPassword"
     type="password"
     autocomplete="new-password"
+    minlength="8"
+    maxlength="200"
+    required
   >
 
   <button
