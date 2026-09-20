@@ -27,10 +27,10 @@ export async function onRequestPost(context) {
       .trim()
       .slice(0, 150);
 
-    if (!email || !password) {
+    if (!email || !password || !businessName) {
       return Response.json(
         {
-          error: "Email and password are required."
+          error: "Business name, email and password are required."
         },
         {
           status: 400
@@ -127,7 +127,7 @@ export async function onRequestPost(context) {
         {
           name: "PBKDF2",
           salt,
-          iterations: 100000,
+          iterations: 210000,
           hash: "SHA-256"
         },
         keyMaterial,
@@ -143,6 +143,7 @@ export async function onRequestPost(context) {
       Array.from(salt);
 
     const passwordHash =
+      "pbkdf2-sha256$210000$" +
       saltArray
         .map(byte =>
           byte
@@ -150,7 +151,7 @@ export async function onRequestPost(context) {
             .padStart(2, "0")
         )
         .join("") +
-      ":" +
+      "$" +
       hashArray
         .map(byte =>
           byte

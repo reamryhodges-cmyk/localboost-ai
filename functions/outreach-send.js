@@ -7,7 +7,7 @@ const FROM_EMAIL =
 const REPLY_TO_EMAIL =
   "support@localboost4u.co.uk";
 
-const DAILY_LIMIT = 30;
+const DAILY_LIMIT = 50;
 const MAX_BATCH_SIZE = 10;
 const MIN_CONFIDENCE = 70;
 

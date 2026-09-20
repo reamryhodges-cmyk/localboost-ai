@@ -288,8 +288,7 @@ async function saveProfile(request, env, user) {
     );
   }
 
-  await env.DB
-    .prepare(`
+  const profileStatement = env.DB.prepare(`
       INSERT INTO business_profiles (
         user_id,
         business_name,
@@ -363,8 +362,18 @@ async function saveProfile(request, env, user) {
       defaultCallToAction,
       targetCustomer,
       brandTone
-    )
-    .run();
+    );
+
+  const userStatement = env.DB.prepare(`
+    UPDATE users
+    SET business_name = ?
+    WHERE id = ?
+  `).bind(businessName, user.id);
+
+  await env.DB.batch([
+    profileStatement,
+    userStatement
+  ]);
 
   const saved = await env.DB
     .prepare(`

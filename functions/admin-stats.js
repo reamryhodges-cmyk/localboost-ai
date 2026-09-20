@@ -1,7 +1,7 @@
 const ADMIN_EMAIL =
   "samtest1109@example.com";
 
-const DAILY_OUTREACH_LIMIT = 30;
+const DAILY_OUTREACH_LIMIT = 50;
 
 export async function onRequestGet({
   request,
