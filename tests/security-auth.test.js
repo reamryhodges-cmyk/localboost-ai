@@ -93,7 +93,33 @@ test("login accepts a legacy password then upgrades its hash", async () => {
   assert.equal(response.status, 200);
   assert.match(response.headers.get("set-cookie"), /HttpOnly; Secure; SameSite=Lax/);
   assert.equal(updates.length, 1);
-  assert.match(updates[0], /^pbkdf2-sha256\$210000\$/);
+  assert.match(updates[0], /^pbkdf2-sha256\$100000\$/);
+});
+
+test("signup saves a required business name with a versioned hash", async () => {
+  const inserts = [];
+  const handler = async (operation, sql, values) => {
+    if (operation === "first" && sql.includes("FROM users")) return null;
+    if (operation === "run" && sql.includes("INSERT INTO users")) {
+      inserts.push(values);
+      return { meta: { last_row_id: 42 } };
+    }
+    return { success: true };
+  };
+  const env = { DB: { prepare: sql => fakeStatement(handler, sql) } };
+  const response = await signup({
+    request: request("signup", {
+      businessName: "Test Business",
+      email: "new-owner@example.com",
+      password: "correct horse battery staple"
+    }),
+    env
+  });
+  assert.equal(response.status, 201);
+  assert.equal(inserts.length, 1);
+  assert.equal(inserts[0][0], "new-owner@example.com");
+  assert.match(inserts[0][1], /^pbkdf2-sha256\$100000\$/);
+  assert.equal(inserts[0][2], "Test Business");
 });
 
 test("login rejects a wrong password without exposing internals", async () => {
