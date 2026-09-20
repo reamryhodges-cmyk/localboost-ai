@@ -211,6 +211,11 @@ section.card:has(#saveAdsButton){
       <b id="generationCount">—</b>
     </div>
 
+    <div class="stat">
+      Account Email
+      <b id="accountEmail">—</b>
+    </div>
+
   </div>
 </section>
 
@@ -938,6 +943,11 @@ async function load() {
     $("generationCount").textContent =
       user.generationsUsed ||
       0;
+
+
+    $("accountEmail").textContent =
+      user.email ||
+      "—";
 
 
     $("business").value =
