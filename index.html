@@ -325,6 +325,29 @@ button:disabled {
     class="status"
   ></div>
 
+  <hr style="border:0;border-top:1px solid #e5e7eb;margin:22px 0;">
+
+  <h3>Forgot your password?</h3>
+
+  <p class="feature">
+    Enter your account email and we will send a secure reset link.
+  </p>
+
+  <label for="resetEmail">Account email</label>
+
+  <input
+    id="resetEmail"
+    type="email"
+    autocomplete="email"
+    maxlength="320"
+  >
+
+  <button id="resetButton" type="button">
+    Send Password Reset Link
+  </button>
+
+  <div id="resetStatus" class="status"></div>
+
 </section>
 
 
@@ -747,6 +770,48 @@ $("loginButton").addEventListener(
 
       button.textContent =
         "Login";
+    }
+  }
+);
+
+
+$("resetButton").addEventListener(
+  "click",
+  async function () {
+    const button = $("resetButton");
+    const status = $("resetStatus");
+    const email = $("resetEmail").value.trim();
+
+    if (!email) {
+      status.textContent = "❌ Enter your account email.";
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = "Sending...";
+    status.textContent = "";
+
+    try {
+      const response = await fetch("/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email })
+      });
+      const data = await readJson(response);
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "The reset request could not be completed."
+        );
+      }
+
+      status.textContent =
+        "✅ If that account exists, a reset link has been sent.";
+    } catch (error) {
+      status.textContent = "❌ " + error.message;
+    } finally {
+      button.disabled = false;
+      button.textContent = "Send Password Reset Link";
     }
   }
 );
