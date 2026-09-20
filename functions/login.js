@@ -162,7 +162,10 @@ export async function onRequestPost(context) {
   }
 }
 
-const CURRENT_ITERATIONS = 210000;
+// Keep this within Cloudflare Pages Functions CPU limits.
+// The versioned format allows a future increase without
+// breaking existing accounts.
+const CURRENT_ITERATIONS = 100000;
 
 async function verifyPassword(password, storedValue) {
   const stored = String(storedValue || "");

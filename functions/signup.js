@@ -127,7 +127,7 @@ export async function onRequestPost(context) {
         {
           name: "PBKDF2",
           salt,
-          iterations: 210000,
+          iterations: 100000,
           hash: "SHA-256"
         },
         keyMaterial,
@@ -143,7 +143,7 @@ export async function onRequestPost(context) {
       Array.from(salt);
 
     const passwordHash =
-      "pbkdf2-sha256$210000$" +
+      "pbkdf2-sha256$100000$" +
       saltArray
         .map(byte =>
           byte
