@@ -61,6 +61,25 @@ input {
   border-radius: 8px;
 }
 
+.password-wrap {
+  position: relative;
+}
+
+.password-wrap input {
+  padding-right: 78px;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 8px;
+  top: 12px;
+  width: auto;
+  padding: 7px 10px;
+  margin: 0;
+  background: #475467;
+  font-size: 13px;
+}
+
 button {
   padding: 13px;
   border: 0;
@@ -265,14 +284,17 @@ button:disabled {
     Password
   </label>
 
-  <input
-    id="signupPassword"
-    type="password"
-    autocomplete="new-password"
-    minlength="8"
-    maxlength="200"
-    required
-  >
+  <div class="password-wrap">
+    <input
+      id="signupPassword"
+      type="password"
+      autocomplete="new-password"
+      minlength="8"
+      maxlength="200"
+      required
+    >
+    <button class="password-toggle" type="button" data-password-target="signupPassword" aria-label="Show password">Show</button>
+  </div>
 
   <button
     id="signupButton"
@@ -307,11 +329,14 @@ button:disabled {
     Password
   </label>
 
-  <input
-    id="loginPassword"
-    type="password"
-    autocomplete="current-password"
-  >
+  <div class="password-wrap">
+    <input
+      id="loginPassword"
+      type="password"
+      autocomplete="current-password"
+    >
+    <button class="password-toggle" type="button" data-password-target="loginPassword" aria-label="Show password">Show</button>
+  </div>
 
   <button
     id="loginButton"
@@ -479,6 +504,16 @@ button:disabled {
 
 const $ = (id) =>
   document.getElementById(id);
+
+document.querySelectorAll("[data-password-target]").forEach(function (button) {
+  button.addEventListener("click", function () {
+    const input = $(button.getAttribute("data-password-target"));
+    const showing = input.type === "text";
+    input.type = showing ? "password" : "text";
+    button.textContent = showing ? "Show" : "Hide";
+    button.setAttribute("aria-label", (showing ? "Show" : "Hide") + " password");
+  });
+});
 
 
 async function readJson(response) {
