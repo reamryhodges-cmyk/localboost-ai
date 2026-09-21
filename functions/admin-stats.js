@@ -1,5 +1,5 @@
 const ADMIN_EMAIL =
-  "samtest1109@example.com";
+  "reamryhodges@gmail.com";
 
 const DAILY_OUTREACH_LIMIT = 50;
 
