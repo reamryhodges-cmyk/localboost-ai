@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Professional mobile car valeting demonstration</title>
+  <desc id="desc">A clean dark car outside a Gloucester home with valeting equipment nearby.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#b9dcff"/>
+      <stop offset="1" stop-color="#eef7ff"/>
+    </linearGradient>
+    <linearGradient id="car" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#364152"/>
+      <stop offset=".5" stop-color="#101828"/>
+      <stop offset="1" stop-color="#475467"/>
+    </linearGradient>
+    <radialGradient id="shine">
+      <stop offset="0" stop-color="#fff" stop-opacity=".95"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="28" stdDeviation="24" flood-color="#101828" flood-opacity=".3"/>
+    </filter>
+  </defs>
+  <rect width="1200" height="1200" fill="url(#sky)"/>
+  <circle cx="980" cy="170" r="95" fill="#fff" opacity=".72"/>
+  <path d="M0 530h1200v670H0z" fill="#b8c9a5"/>
+  <path d="M80 280h810v440H80z" fill="#d98052"/>
+  <path d="M35 305 480 85l460 220" fill="#7b3f31"/>
+  <path d="M140 355h180v205H140zm270 0h180v205H410zm270 0h150v365H680z" fill="#eaf2fa" stroke="#475467" stroke-width="18"/>
+  <path d="M0 730h1200v470H0z" fill="#abb4be"/>
+  <path d="M0 815h1200" stroke="#d8dee5" stroke-width="18"/>
+  <ellipse cx="610" cy="980" rx="455" ry="105" fill="#667085" opacity=".28"/>
+  <g filter="url(#shadow)">
+    <path d="M205 820c42-118 135-191 255-218l252-25c112 4 209 66 265 173l92 47c35 18 55 54 55 94v71H116v-72c0-33 18-64 47-81z" fill="url(#car)"/>
+    <path d="m397 645 94-24 211-18c78 5 145 43 190 111l-520 4z" fill="#cce7f7" opacity=".88"/>
+    <path d="m512 620-30 99m235-113 45 107" stroke="#344054" stroke-width="18"/>
+    <path d="M165 807c225 30 608 30 902-10" fill="none" stroke="#98a2b3" stroke-width="9" opacity=".75"/>
+    <path d="M164 872h119m657 0h142" stroke="#f2f4f7" stroke-width="25" stroke-linecap="round"/>
+    <circle cx="335" cy="948" r="105" fill="#101828"/>
+    <circle cx="335" cy="948" r="58" fill="#98a2b3" stroke="#e4e7ec" stroke-width="13"/>
+    <circle cx="887" cy="948" r="105" fill="#101828"/>
+    <circle cx="887" cy="948" r="58" fill="#98a2b3" stroke="#e4e7ec" stroke-width="13"/>
+  </g>
+  <g transform="translate(950 770)">
+    <rect width="94" height="145" rx="18" fill="#155eef"/>
+    <path d="M22 40h50M22 64h50" stroke="#fff" stroke-width="10" stroke-linecap="round"/>
+    <path d="M47 0v-50" stroke="#155eef" stroke-width="14"/>
+    <path d="M47-50c40-48 82-25 82 15" fill="none" stroke="#155eef" stroke-width="14" stroke-linecap="round"/>
+  </g>
+  <g fill="url(#shine)">
+    <circle cx="286" cy="772" r="88"/>
+    <circle cx="802" cy="706" r="68"/>
+    <circle cx="1015" cy="817" r="55"/>
+  </g>
+</svg>
