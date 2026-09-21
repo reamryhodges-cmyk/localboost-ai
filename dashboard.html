@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>LocalBoost AI Dashboard</title>
+<title>LocalBoost Dashboard</title>
+<link rel="icon" type="image/png" href="/localboost-logo.png">
 
 <style>
 *{box-sizing:border-box}
@@ -24,6 +25,8 @@ header{
 header .header-inner{max-width:900px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
 header h1{font-size:22px;margin:0 0 3px}
 header p{font-size:13px;color:#d0d5dd;margin:0}
+.dashboard-brand{display:block;width:145px;height:auto;margin:0 0 5px}
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .secure-badge{font-size:12px;font-weight:700;color:#d1fadf;background:#05603a;padding:7px 10px;border-radius:999px;white-space:nowrap}
 
 .wrap{
@@ -222,7 +225,11 @@ body.owner section.card:has(#profileBusinessName){display:none}
 
 <header>
   <div class="header-inner">
-    <div><h1>LocalBoost AI</h1><p>Your marketing dashboard</p></div>
+    <div>
+      <img class="dashboard-brand" src="/localboost-logo.png" alt="LocalBoost">
+      <h1 class="visually-hidden">LocalBoost</h1>
+      <p>Your marketing dashboard</p>
+    </div>
     <span class="secure-badge">Secure account</span>
   </div>
 </header>
