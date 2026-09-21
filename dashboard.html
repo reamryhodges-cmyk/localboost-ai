@@ -10,7 +10,7 @@
 
 body{
   margin:0;
-  font-family:Arial;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
   background:#f5f7fb;
   color:#18212f
 }
@@ -18,8 +18,13 @@ body{
 header{
   background:#101828;
   color:#fff;
-  padding:18px
+  padding:20px 18px
 }
+
+header .header-inner{max-width:900px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:16px}
+header h1{font-size:22px;margin:0 0 3px}
+header p{font-size:13px;color:#d0d5dd;margin:0}
+.secure-badge{font-size:12px;font-weight:700;color:#d1fadf;background:#05603a;padding:7px 10px;border-radius:999px;white-space:nowrap}
 
 .wrap{
   max-width:900px;
@@ -85,6 +90,10 @@ button,.button{
   text-decoration:none
 }
 
+button{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.65}
+button:focus-visible,.button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid #84adff;outline-offset:2px}
+
 .green{background:#16a34a}
 .grey{background:#475467}
 .orange{background:#d97706}
@@ -122,8 +131,14 @@ button,.button{
   padding:14px;
   background:#f8fafc;
   border-radius:10px;
-  white-space:pre-wrap
+  border:1px solid #d0d5dd
 }
+
+.result-title{font-size:18px;margin:0 0 12px}
+.caption-box{white-space:pre-wrap;line-height:1.55;background:#fff;border:1px solid #e4e7ec;border-radius:10px;padding:14px}
+.result-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.result-actions button,.result-actions .button{margin-top:0}
+.secondary{background:#fff;color:#344054;border:1px solid #d0d5dd}
 
 .result img,.result video{
   width:100%;
@@ -166,6 +181,11 @@ h2{
   color:#667085
 }
 
+.required{color:#b42318}
+.plan-current{border:2px solid #155eef;background:#f5f8ff}
+.plan-current .plan{background:#667085;pointer-events:none}
+.usage-note{display:block;font-size:12px;color:#667085;margin-top:5px;font-weight:400}
+
 #sandboxSection{
   display:none
 }
@@ -177,16 +197,27 @@ section.card:has(#saveAdsButton){
   display:none;
 }
 
-body.owner section.card:has(#videoButton){
-  display:block;
+@media (max-width:600px){
+  .wrap{padding:10px}
+  .card{padding:15px;border-radius:12px;margin-bottom:10px}
+  .grid{grid-template-columns:1fr 1fr;gap:8px}
+  .stat,.connect{padding:11px;min-width:0}
+  .stat b{font-size:16px;overflow-wrap:anywhere}
+  header .header-inner{align-items:flex-start}
+  button,.button{min-height:46px}
+  #generateButton,#saveProfileButton{width:100%}
+  .result-actions{display:grid;grid-template-columns:1fr}
+  .result-actions button,.result-actions .button{text-align:center;width:100%}
 }
 
 </style>
 <body>
 
 <header>
-  <h1>LocalBoost AI</h1>
-  <div>Your Marketing Dashboard</div>
+  <div class="header-inner">
+    <div><h1>LocalBoost AI</h1><p>Your marketing dashboard</p></div>
+    <span class="secure-badge">Secure account</span>
+  </div>
 </header>
 
 <main class="wrap">
@@ -211,8 +242,9 @@ body.owner section.card:has(#videoButton){
     </div>
 
     <div class="stat">
-      AI Generations
+      Monthly usage
       <b id="generationCount">—</b>
+      <span id="generationRemaining" class="usage-note"></span>
     </div>
 
     <div class="stat">
@@ -244,14 +276,14 @@ body.owner section.card:has(#videoButton){
 
   <p>
     Enter your business information once.
-    LocalBoost will automatically reuse it when 
-  marketing content and AI-generated marketing materials.
+    LocalBoost will automatically reuse it when creating
+    marketing content and AI-generated materials.
   </p>
   <div id="profileLoadMessage" class="notice">
     Loading business profile...
   </div>
 
-  <label>Business name</label>
+  <label for="profileBusinessName">Business name <span class="required">*</span></label>
   <input
     id="profileBusinessName"
     placeholder="Gloucester Shine"
@@ -430,22 +462,22 @@ body.owner section.card:has(#videoButton){
     You can still change them for an individual advert.
   </p>
 
-  <label>Business name</label>
+  <label for="business">Business name <span class="required">*</span></label>
   <input id="business">
 
-  <label>Business type</label>
+  <label for="businessType">Business type <span class="required">*</span></label>
   <input
     id="businessType"
     placeholder="Mobile car valeting"
   >
 
-  <label>Location</label>
+  <label for="location">Location <span class="required">*</span></label>
   <input
     id="location"
     placeholder="Gloucester"
   >
 
-  <label>Service</label>
+  <label for="service">Service <span class="required">*</span></label>
   <input id="service">
 
   <label>Extra details</label>
@@ -460,6 +492,7 @@ body.owner section.card:has(#videoButton){
   <div
     id="generateResult"
     class="result"
+    aria-live="polite"
   ></div>
 
 </section>
@@ -842,6 +875,15 @@ body.owner section.card:has(#videoButton){
 
 var user = null;
 var businessProfile = null;
+var generatedCaption = "";
+var generatedImage = "";
+
+var planLimits = {
+  starter: 30,
+  business: 100,
+  growth: 100,
+  pro: 300
+};
 
 var $ = function(x) {
   return document.getElementById(x);
@@ -959,8 +1001,18 @@ async function load() {
 
 
     $("generationCount").textContent =
-      user.generationsUsed ||
-      0;
+      (user.generationsUsed || 0) +
+      " used";
+
+    var currentPlan = String(user.plan || "free").toLowerCase();
+    var currentLimit = planLimits[currentPlan];
+
+    $("generationRemaining").textContent = currentLimit
+      ? Math.max(0, currentLimit - Number(user.generationsUsed || 0)) +
+        " of " + currentLimit + " remaining"
+      : "Upgrade to create content";
+
+    markCurrentPlan(currentPlan);
 
 
     $("accountEmail").textContent =
@@ -1810,10 +1862,6 @@ async function generate() {
       );
 
 
-    var r =
-      $("generateResult");
-
-
     var t =
       d.content ||
       d.text ||
@@ -1830,28 +1878,7 @@ async function generate() {
       "";
 
 
-    r.innerHTML =
-      (
-        t
-          ? clean(t)
-              .replace(
-                /\n/g,
-                "<br>"
-              )
-          : "Advert created."
-      )
-      +
-      (
-        i
-          ? '<br><img src="' +
-            i +
-            '">'
-          : ""
-      );
-
-
-    r.style.display =
-      "block";
+    renderGeneratedAdvert(t, i);
 
 
     msg(
@@ -1861,7 +1888,11 @@ async function generate() {
     );
 
 
-    load();
+    if (typeof d.generationsUsed !== "undefined") {
+      $("generationCount").textContent = d.generationsUsed + " used";
+      $("generationRemaining").textContent =
+        d.remaining + " of " + d.limit + " remaining";
+    }
 
 
   } catch(e) {
@@ -1880,6 +1911,100 @@ async function generate() {
   b.textContent =
     "Create My Advert";
 
+}
+
+
+function renderGeneratedAdvert(caption, imageUrl) {
+  var result = $("generateResult");
+
+  generatedCaption = caption || "Advert created.";
+  generatedImage = imageUrl || "";
+
+  result.replaceChildren();
+
+  var title = document.createElement("h3");
+  title.className = "result-title";
+  title.textContent = "Your advert is ready";
+  result.appendChild(title);
+
+  var captionBox = document.createElement("div");
+  captionBox.className = "caption-box";
+  captionBox.textContent = generatedCaption;
+  result.appendChild(captionBox);
+
+  if (generatedImage) {
+    var image = document.createElement("img");
+    image.src = generatedImage;
+    image.alt = "AI-generated advertising image for " +
+      ($("business").value.trim() || "your business");
+    result.appendChild(image);
+  }
+
+  var actions = document.createElement("div");
+  actions.className = "result-actions";
+
+  var copyButton = document.createElement("button");
+  copyButton.type = "button";
+  copyButton.textContent = "Copy caption";
+  copyButton.onclick = copyCaption;
+  actions.appendChild(copyButton);
+
+  if (generatedImage) {
+    var download = document.createElement("a");
+    download.className = "button secondary";
+    download.href = generatedImage;
+    download.download = "localboost-advert.jpg";
+    download.textContent = "Download image";
+    actions.appendChild(download);
+  }
+
+  var another = document.createElement("button");
+  another.type = "button";
+  another.className = "secondary";
+  another.textContent = "Create another";
+  another.onclick = function() {
+    $("service").focus();
+    window.scrollTo({top: $("service").getBoundingClientRect().top + window.scrollY - 100, behavior: "smooth"});
+  };
+  actions.appendChild(another);
+
+  result.appendChild(actions);
+  result.style.display = "block";
+  result.scrollIntoView({behavior: "smooth", block: "start"});
+}
+
+
+async function copyCaption() {
+  try {
+    await navigator.clipboard.writeText(generatedCaption);
+    msg("generateMessage", "Caption copied. It is ready to paste into social media.", "success");
+  } catch (error) {
+    var area = document.createElement("textarea");
+    area.value = generatedCaption;
+    area.style.position = "fixed";
+    area.style.opacity = "0";
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand("copy");
+    area.remove();
+    msg("generateMessage", "Caption copied. It is ready to paste into social media.", "success");
+  }
+}
+
+
+function markCurrentPlan(currentPlan) {
+  var plans = document.querySelectorAll(".plan");
+
+  for (var i = 0; i < plans.length; i++) {
+    var button = plans[i];
+    var isCurrent = button.getAttribute("data-plan") === currentPlan;
+    button.closest(".stat").classList.toggle("plan-current", isCurrent);
+    button.disabled = isCurrent;
+    button.textContent = isCurrent
+      ? "Current plan"
+      : "Choose " + button.getAttribute("data-plan").charAt(0).toUpperCase() +
+        button.getAttribute("data-plan").slice(1);
+  }
 }
 
 
