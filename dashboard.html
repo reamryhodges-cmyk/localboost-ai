@@ -177,6 +177,10 @@ section.card:has(#saveAdsButton){
   display:none;
 }
 
+body.owner section.card:has(#videoButton){
+  display:block;
+}
+
 </style>
 <body>
 
@@ -987,6 +991,10 @@ async function load() {
       email ===
       "reamryhodges@gmail.com"
     ) {
+
+      document.body.classList.add(
+        "owner"
+      );
 
       $("sandboxSection").style.display =
         "block";
