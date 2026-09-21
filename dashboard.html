@@ -470,7 +470,6 @@ section.card:has(#saveAdsButton){
       <button type="button" class="campaign-preset" data-campaign="stan">Stan's Books</button>
       <button type="button" class="campaign-preset" data-campaign="localboost">LocalBoost AI</button>
       <button type="button" class="campaign-preset" data-campaign="nearvibe">NearVibe App</button>
-      <button type="button" class="campaign-preset" data-campaign="business">My Business Profile</button>
     </div>
     <div id="campaignMessage" class="small" aria-live="polite"></div>
   </div>
@@ -2053,10 +2052,7 @@ function markCurrentPlan(currentPlan) {
 function selectOwnerCampaign(name, button) {
   var campaign = ownerCampaigns[name];
 
-  if (name === "business") {
-    applyProfile(businessProfile || {});
-    $("campaignMessage").textContent = "Your saved business profile is ready to use.";
-  } else if (campaign) {
+  if (campaign) {
     value("business", campaign.businessName);
     value("businessType", campaign.businessType);
     value("location", campaign.location);
