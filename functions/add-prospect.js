@@ -1,4 +1,4 @@
-const ADMIN_EMAIL = "samtest1109@example.com";
+const ADMIN_EMAIL = "reamryhodges@gmail.com";
 
 export async function onRequestPost({ request, env }) {
   try {
