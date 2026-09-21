@@ -252,12 +252,12 @@ Requirements:
 - Write naturally in British English.
 - Make it sound like a genuine local business.
 - Do not make up prices, discounts, awards or guarantees.
-- Keep it concise and engaging.
+- Keep the main caption between 60 and 100 words, excluding hashtags.
 - Start with a strong opening line.
 - Clearly explain the service.
 - Mention the location naturally.
 - Include a clear call to action.
-- Finish with 4 to 7 relevant hashtags.
+- Finish with exactly 5 relevant hashtags.
 - Do not include headings such as "Caption" or "Social Media Post".
 `;
 
