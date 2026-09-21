@@ -185,6 +185,11 @@ h2{
 .plan-current{border:2px solid #155eef;background:#f5f8ff}
 .plan-current .plan{background:#667085;pointer-events:none}
 .usage-note{display:block;font-size:12px;color:#667085;margin-top:5px;font-weight:400}
+.owner-tools{display:none;background:#f5f8ff;border:1px solid #b2ccff;border-radius:12px;padding:14px;margin-bottom:18px}
+body.owner .owner-tools{display:block}
+.campaign-buttons{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.campaign-buttons button{margin-top:0;background:#fff;color:#1849a9;border:1px solid #84adff}
+.campaign-buttons button.active{background:#155eef;color:#fff;border-color:#155eef}
 
 #sandboxSection{
   display:none
@@ -456,6 +461,19 @@ section.card:has(#saveAdsButton){
 <section class="card">
 
   <h2>✨ Create Marketing Content</h2>
+
+  <div id="ownerCampaignTools" class="owner-tools">
+    <span class="tag">OWNER CAMPAIGNS</span>
+    <h3>What are you advertising?</h3>
+    <p class="small">Choose one of your projects to fill the generator. This does not change any customer profile or publish an advert.</p>
+    <div class="campaign-buttons">
+      <button type="button" class="campaign-preset" data-campaign="stan">Stan's Books</button>
+      <button type="button" class="campaign-preset" data-campaign="localboost">LocalBoost AI</button>
+      <button type="button" class="campaign-preset" data-campaign="nearvibe">NearVibe App</button>
+      <button type="button" class="campaign-preset" data-campaign="business">My Business Profile</button>
+    </div>
+    <div id="campaignMessage" class="small" aria-live="polite"></div>
+  </div>
 
   <p class="small">
     These fields are automatically filled from your Business Profile.
@@ -883,6 +901,30 @@ var planLimits = {
   business: 100,
   growth: 100,
   pro: 300
+};
+
+var ownerCampaigns = {
+  stan: {
+    businessName: "Calm Steps Kids",
+    businessType: "Children's picture books",
+    location: "United Kingdom",
+    service: "Stan's colourful adventure books for children aged 3 to 6",
+    extraDetails: "Promote the Calm Steps Kids series, including Stan's Big Adventure, Jungle Adventure, Fire Engine Adventure, Dinosaur Adventure, Ocean Adventure and Space Adventure. Suitable for bedtime, early readers, family reading and gifts. Available on Amazon. Use a warm, reassuring and parent-friendly tone."
+  },
+  localboost: {
+    businessName: "LocalBoost AI",
+    businessType: "AI marketing platform for local businesses",
+    location: "United Kingdom",
+    service: "Create professional social media posts and marketing images quickly with AI",
+    extraDetails: "Promote localboost4u.co.uk to UK small businesses. Explain that customers can save their business profile, generate ready-to-use captions and images, and choose a monthly plan. Use a trustworthy, practical tone and invite businesses to view the live demo."
+  },
+  nearvibe: {
+    businessName: "NearVibe",
+    businessType: "Adults-only nearby social discovery app",
+    location: "United Kingdom",
+    service: "Discover and connect with adults nearby through an 18+ mobile-first app",
+    extraDetails: "Promote nearvibe.pages.dev as an 18+ app for creating a profile, discovering nearby people, matching and private messaging. Do not promise specific matches or outcomes. Use an inclusive, safety-conscious tone and clearly state that it is for adults aged 18 and over."
+  }
 };
 
 var $ = function(x) {
@@ -2008,6 +2050,28 @@ function markCurrentPlan(currentPlan) {
 }
 
 
+function selectOwnerCampaign(name, button) {
+  var campaign = ownerCampaigns[name];
+
+  if (name === "business") {
+    applyProfile(businessProfile || {});
+    $("campaignMessage").textContent = "Your saved business profile is ready to use.";
+  } else if (campaign) {
+    value("business", campaign.businessName);
+    value("businessType", campaign.businessType);
+    value("location", campaign.location);
+    value("service", campaign.service);
+    value("extraDetails", campaign.extraDetails);
+    $("campaignMessage").textContent = campaign.businessName + " campaign loaded. Review it, then create the advert.";
+  }
+
+  var buttons = document.querySelectorAll(".campaign-preset");
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].classList.toggle("active", buttons[i] === button);
+  }
+}
+
+
 async function video() {
 
   var b =
@@ -2533,6 +2597,13 @@ window.addEventListener(
 
         };
 
+    }
+
+    var campaignButtons = document.querySelectorAll(".campaign-preset");
+    for (var c = 0; c < campaignButtons.length; c++) {
+      campaignButtons[c].onclick = function() {
+        selectOwnerCampaign(this.getAttribute("data-campaign"), this);
+      };
     }
 
 
