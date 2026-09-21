@@ -1,6 +1,6 @@
 window.addEventListener("load", function () {
 
-  var ADMIN_EMAIL = "samtest1109@example.com";
+  var ADMIN_EMAIL = "reamryhodges@gmail.com";
 
   var discoveredBusinesses = [];
   var preparedBusinesses = [];
