@@ -10,7 +10,7 @@ const SANDBOX_PRICES = {
   pro: "price_1UEqHKDwvLIba56ze80OnSFB",
 };
 
-const SANDBOX_TEST_EMAIL = "samtest1109@example.com";
+const SANDBOX_TEST_EMAIL = "reamryhodges@gmail.com";
 
 function getCookie(request, name) {
   const cookieHeader = request.headers.get("Cookie") || "";
