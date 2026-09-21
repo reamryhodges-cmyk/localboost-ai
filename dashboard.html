@@ -1220,39 +1220,39 @@ function applyProfile(p) {
   }
 
 
-  fillIfEmpty(
+  value(
     "business",
     p.businessName
   );
 
-  fillIfEmpty(
+  value(
     "businessType",
     p.businessType
   );
 
-  fillIfEmpty(
+  value(
     "location",
     p.townCity ||
     p.serviceArea
   );
 
-  fillIfEmpty(
+  value(
     "service",
     p.primaryService
   );
 
-  fillIfEmpty(
+  value(
     "extraDetails",
     p.description
   );
 
 
-  fillIfEmpty(
+  value(
     "videoService",
     p.primaryService
   );
 
-  fillIfEmpty(
+  value(
     "videoOffer",
     p.defaultOffer
   );
@@ -1274,12 +1274,12 @@ function applyProfile(p) {
   }
 
 
-  fillIfEmpty(
+  value(
     "adService",
     p.primaryService
   );
 
-  fillIfEmpty(
+  value(
     "targetLocation",
     p.townCity ||
     p.serviceArea
