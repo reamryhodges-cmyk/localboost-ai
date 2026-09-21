@@ -1,5 +1,5 @@
 const ADMIN_EMAIL =
-  "samtest1109@example.com";
+  "reamryhodges@gmail.com";
 
 const MAX_BUSINESSES = 10;
 const HUNTER_EMAIL_LIMIT = 10;
