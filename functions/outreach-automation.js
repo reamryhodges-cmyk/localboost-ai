@@ -1,4 +1,4 @@
-const ADMIN_EMAIL = "samtest1109@example.com";
+const ADMIN_EMAIL = "reamryhodges@gmail.com";
 
 const DEFAULT_DAILY_LIMIT = 50;
 const DEFAULT_BATCH_SIZE = 10;
