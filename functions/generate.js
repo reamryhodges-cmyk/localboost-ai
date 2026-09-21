@@ -297,7 +297,6 @@ Requirements:
     const imagePrompt = `
 Create a realistic professional advertising photograph for a UK local business.
 
-Business: ${businessName}
 Business type: ${businessType}
 Location: ${location}
 Service: ${service}
@@ -309,9 +308,10 @@ Requirements:
 - professional and trustworthy
 - clean composition
 - relevant to the service
-- no logos
+- no logos, brand names or business signage
 - no watermarks
-- no written text
+- no words, letters, numbers, captions, labels or promotional graphics anywhere in the image
+- keep registration plates, shop signs and uniforms blank, blurred or out of view
 - no fake prices
 - no promotional banners
 `;
