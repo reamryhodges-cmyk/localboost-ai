@@ -1,5 +1,5 @@
 const ADMIN_EMAIL =
-  "samtest1109@example.com";
+  "reamryhodges@gmail.com";
 
 const FROM_EMAIL =
   "LocalBoost AI <hello@localboost4u.co.uk>";
