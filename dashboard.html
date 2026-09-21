@@ -877,7 +877,9 @@ async function req(u,o) {
     throw Error(
       d.error ||
       d.message ||
-      "Request failed."
+      "Request failed (HTTP " +
+      r.status +
+      ")."
     );
 
   }
