@@ -5,7 +5,7 @@ const VIDEO_LIMITS = {
 };
 
 const ADMIN_TEST_EMAIL =
-  "samtest1109@example.com";
+  "reamryhodges@gmail.com";
 
 export async function onRequestPost({
   request,
