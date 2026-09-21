@@ -202,6 +202,8 @@ section.card:has(#saveAdsButton){
   display:none;
 }
 
+body.owner section.card:has(#profileBusinessName){display:none}
+
 @media (max-width:600px){
   .wrap{padding:10px}
   .card{padding:15px;border-radius:12px;margin-bottom:10px}
@@ -894,6 +896,8 @@ var user = null;
 var businessProfile = null;
 var generatedCaption = "";
 var generatedImage = "";
+var activeCampaignUrl = "";
+var activeCampaignName = "";
 
 var planLimits = {
   starter: 30,
@@ -908,21 +912,24 @@ var ownerCampaigns = {
     businessType: "Children's picture books",
     location: "United Kingdom",
     service: "Stan's colourful adventure books for children aged 3 to 6",
-    extraDetails: "Promote the Calm Steps Kids series, including Stan's Big Adventure, Jungle Adventure, Fire Engine Adventure, Dinosaur Adventure, Ocean Adventure and Space Adventure. Suitable for bedtime, early readers, family reading and gifts. Available on Amazon. Use a warm, reassuring and parent-friendly tone."
+    extraDetails: "Promote the Calm Steps Kids series, including Stan's Big Adventure, Jungle Adventure, Fire Engine Adventure, Dinosaur Adventure, Ocean Adventure and Space Adventure. Suitable for bedtime, early readers, family reading and gifts. Available on Amazon. Use a warm, reassuring and parent-friendly tone.",
+    url: ""
   },
   localboost: {
     businessName: "LocalBoost AI",
     businessType: "AI marketing platform for local businesses",
     location: "United Kingdom",
     service: "Create professional social media posts and marketing images quickly with AI",
-    extraDetails: "Promote localboost4u.co.uk to UK small businesses. Explain that customers can save their business profile, generate ready-to-use captions and images, and choose a monthly plan. Use a trustworthy, practical tone and invite businesses to view the live demo."
+    extraDetails: "Promote localboost4u.co.uk to UK small businesses. Explain that customers can save their business profile, generate ready-to-use captions and images, and choose a monthly plan. Use a trustworthy, practical tone and invite businesses to view the live demo.",
+    url: "https://localboost4u.co.uk/demo"
   },
   nearvibe: {
     businessName: "NearVibe",
     businessType: "Adults-only nearby social discovery app",
     location: "United Kingdom",
     service: "Discover and connect with adults nearby through an 18+ mobile-first app",
-    extraDetails: "Promote nearvibe.pages.dev as an 18+ app for creating a profile, discovering nearby people, matching and private messaging. Do not promise specific matches or outcomes. Use an inclusive, safety-conscious tone and clearly state that it is for adults aged 18 and over."
+    extraDetails: "Promote nearvibe.pages.dev as an 18+ app for creating a profile, discovering nearby people, matching and private messaging. Do not promise specific matches or outcomes. Use an inclusive, safety-conscious tone and clearly state that it is for adults aged 18 and over.",
+    url: "https://nearvibe.pages.dev"
   }
 };
 
@@ -1093,6 +1100,9 @@ async function load() {
 
       $("sandboxSection").style.display =
         "block";
+
+      $("businessName").textContent =
+        "LocalBoost AI";
 
     }
 
@@ -2009,6 +2019,25 @@ function renderGeneratedAdvert(caption, imageUrl) {
   };
   actions.appendChild(another);
 
+  if (document.body.classList.contains("owner") && activeCampaignName) {
+    var shareButton = document.createElement("button");
+    shareButton.type = "button";
+    shareButton.className = "secondary";
+    shareButton.textContent = "Share free from phone";
+    shareButton.onclick = shareGeneratedAdvert;
+    actions.appendChild(shareButton);
+
+    if (activeCampaignUrl) {
+      var facebook = document.createElement("a");
+      facebook.className = "button secondary";
+      facebook.target = "_blank";
+      facebook.rel = "noopener noreferrer";
+      facebook.href = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(activeCampaignUrl);
+      facebook.textContent = "Share link on Facebook";
+      actions.appendChild(facebook);
+    }
+  }
+
   result.appendChild(actions);
   result.style.display = "block";
   result.scrollIntoView({behavior: "smooth", block: "start"});
@@ -2030,6 +2059,31 @@ async function copyCaption() {
     area.remove();
     msg("generateMessage", "Caption copied. It is ready to paste into social media.", "success");
   }
+}
+
+
+async function shareGeneratedAdvert() {
+  var shareData = {
+    title: activeCampaignName || "LocalBoost advert",
+    text: generatedCaption
+  };
+
+  if (activeCampaignUrl) {
+    shareData.url = activeCampaignUrl;
+  }
+
+  if (navigator.share) {
+    try {
+      await navigator.share(shareData);
+      msg("generateMessage", "Advert opened in your phone's free sharing menu.", "success");
+      return;
+    } catch (error) {
+      if (error && error.name === "AbortError") return;
+    }
+  }
+
+  await copyCaption();
+  msg("generateMessage", "Sharing is not available in this browser, so the caption was copied instead.", "warning");
 }
 
 
@@ -2058,6 +2112,8 @@ function selectOwnerCampaign(name, button) {
     value("location", campaign.location);
     value("service", campaign.service);
     value("extraDetails", campaign.extraDetails);
+    activeCampaignUrl = campaign.url || "";
+    activeCampaignName = campaign.businessName;
     $("campaignMessage").textContent = campaign.businessName + " campaign loaded. Review it, then create the advert.";
   }
 
