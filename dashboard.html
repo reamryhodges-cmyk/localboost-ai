@@ -2146,6 +2146,20 @@ function renderGeneratedAdvert(caption, imageUrl) {
     actions.appendChild(download);
   }
 
+  var approve = document.createElement("button");
+  approve.type = "button";
+  approve.className = "green";
+  approve.textContent = "Approve for publishing";
+  approve.onclick = approveGeneratedContent;
+  actions.appendChild(approve);
+
+  var schedule = document.createElement("button");
+  schedule.type = "button";
+  schedule.className = "secondary";
+  schedule.textContent = "Schedule";
+  schedule.onclick = scheduleGeneratedContent;
+  actions.appendChild(schedule);
+
   var another = document.createElement("button");
   another.type = "button";
   another.className = "secondary";
@@ -2180,6 +2194,32 @@ function renderGeneratedAdvert(caption, imageUrl) {
   result.scrollIntoView({behavior: "smooth", block: "start"});
 }
 
+
+async function saveApprovedContent(scheduledFor) {
+  var d=await req("/content-queue",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({caption:generatedCaption,image:generatedImage,scheduledFor:scheduledFor||""})
+  });
+  msg("generateMessage",scheduledFor
+    ? "✅ Approved and scheduled. It will stay queued until a connected publishing account is authorised."
+    : "✅ Approved. It is ready in the publishing queue.","success");
+  return d;
+}
+
+async function approveGeneratedContent() {
+  try { await saveApprovedContent(""); }
+  catch(e) { msg("generateMessage",e.message,"error"); }
+}
+
+async function scheduleGeneratedContent() {
+  var value=window.prompt("Schedule date/time (example: 2026-10-01 09:00)");
+  if(!value)return;
+  var date=new Date(value);
+  if(Number.isNaN(date.getTime())){msg("generateMessage","Enter a valid date and time.","error");return;}
+  try { await saveApprovedContent(date.toISOString()); }
+  catch(e) { msg("generateMessage",e.message,"error"); }
+}
 
 async function copyCaption() {
   try {
