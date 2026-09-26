@@ -483,7 +483,16 @@ body.owner section.card:has(#profileBusinessName){display:none}
 
 <section class="card" id="createContentSection">
 
-  <h2>Create marketing content</h2>
+  <span class="tag">AI MANAGER</span>
+  <h2>Let LocalBoost AI run your marketing</h2>
+  <p class="small">Your AI Manager reads your saved business profile, chooses what to promote next and creates the advert for you. You review the result before anything is published.</p>
+  <button id="aiManagerButton" class="green" type="button">Let AI create my next campaign</button>
+  <div id="aiManagerMessage" class="notice" style="display:none"></div>
+
+  <details style="margin-top:18px">
+    <summary><strong>Manual controls</strong> — optional</summary>
+    <div style="padding-top:12px">
+  <h3>Create marketing content manually</h3>
 
   <div id="ownerCampaignTools" class="owner-tools">
     <span class="tag">OWNER CAMPAIGNS</span>
@@ -534,6 +543,8 @@ body.owner section.card:has(#profileBusinessName){display:none}
     class="result"
     aria-live="polite"
   ></div>
+    </div>
+  </details>
 
 </section>
 
@@ -971,8 +982,10 @@ $("setupProfileButton").addEventListener("click", function() {
 
 $("setupCreateButton").addEventListener("click", function() {
   goToSection("createContentSection");
-  setTimeout(function(){ $("service").focus(); }, 350);
+  setTimeout(function(){ $("aiManagerButton").focus(); }, 350);
 });
+
+$("aiManagerButton").addEventListener("click", runAIManager);
 
 
 function msg(id,t,c) {
@@ -1901,6 +1914,30 @@ async function loadConnections() {
 
 }
 
+
+async function runAIManager() {
+  var b=$("aiManagerButton");
+  b.disabled=true;
+  b.textContent="AI Manager is planning...";
+  msg("aiManagerMessage","Reading your business profile and choosing the next campaign...");
+  $("aiManagerMessage").style.display="block";
+  try {
+    var d=await req("/ai-manager",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});
+    var p=d.campaign||{};
+    value("business",p.businessName);
+    value("businessType",p.businessType);
+    value("location",p.location);
+    value("service",p.service);
+    value("extraDetails",[p.angle,p.extraDetails].filter(Boolean).join("\n\n"));
+    msg("aiManagerMessage","Campaign chosen. AI is now creating the advert...","success");
+    await generate();
+  } catch(e) {
+    msg("aiManagerMessage",e.message,"error");
+  } finally {
+    b.disabled=false;
+    b.textContent="Let AI create my next campaign";
+  }
+}
 
 async function generate() {
 
