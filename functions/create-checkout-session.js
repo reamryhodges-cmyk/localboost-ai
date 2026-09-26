@@ -169,10 +169,10 @@ export async function onRequestPost(context) {
     const siteOrigin = requestUrl.origin;
 
     const successUrl =
-      `${siteOrigin}/?checkout=success&plan=${encodeURIComponent(plan)}`;
+      `${siteOrigin}/dashboard.html?checkout=success&plan=${encodeURIComponent(plan)}`;
 
     const cancelUrl =
-      `${siteOrigin}/?checkout=cancelled`;
+      `${siteOrigin}/dashboard.html?checkout=cancelled`;
 
     const stripeBody = new URLSearchParams();
 
