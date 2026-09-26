@@ -1084,11 +1084,30 @@ async function load() {
       "";
 
 
-    msg(
-      "accountMessage",
-      "Account loaded.",
-      "success"
-    );
+    var checkoutParams = new URLSearchParams(location.search);
+    var checkoutState = checkoutParams.get("checkout");
+
+    if (checkoutState === "success") {
+      msg(
+        "accountMessage",
+        "Payment completed. Your subscription is being confirmed; your plan will update automatically once Stripe confirmation is received.",
+        "success"
+      );
+      history.replaceState(null, "", "/dashboard.html");
+    } else if (checkoutState === "cancelled") {
+      msg(
+        "accountMessage",
+        "Checkout was cancelled. No new subscription was completed.",
+        "warning"
+      );
+      history.replaceState(null, "", "/dashboard.html");
+    } else {
+      msg(
+        "accountMessage",
+        "Account loaded.",
+        "success"
+      );
+    }
 
 
     var email =
