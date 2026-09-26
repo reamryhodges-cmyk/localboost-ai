@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /admin.html
+Disallow: /automation.html
+Disallow: /dashboard.html
+Disallow: /reset-password.html
 
 Sitemap: https://localboost4u.co.uk/sitemap.xml
