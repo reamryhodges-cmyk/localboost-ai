@@ -238,6 +238,17 @@ body.owner section.card:has(#profileBusinessName){display:none}
 
 <main class="wrap">
 
+<section id="gettingStarted" class="card">
+  <span class="tag">GET STARTED</span>
+  <h2 style="margin-top:10px">Create your first LocalBoost post</h2>
+  <p class="small">Three quick steps. Nothing is published automatically.</p>
+  <div class="grid">
+    <div class="stat"><b>1. Business profile</b><span class="usage-note">Tell LocalBoost what your business does.</span><button type="button" class="secondary" id="setupProfileButton">Complete profile</button></div>
+    <div class="stat"><b>2. Create content</b><span class="usage-note">Your saved details are reused automatically.</span><button type="button" class="secondary" id="setupCreateButton">Create a post</button></div>
+    <div class="stat"><b>3. Review &amp; use</b><span class="usage-note">Check the result, then copy or share it when you are happy.</span></div>
+  </div>
+</section>
+
 <section class="card">
   <h2>Account overview</h2>
   <p class="small">Your LocalBoost account, plan and monthly content allowance.</p>
@@ -285,7 +296,7 @@ body.owner section.card:has(#profileBusinessName){display:none}
 </section>
 
 
-<section class="card">
+<section class="card" id="businessProfileSection">
 
   <h2>Business profile</h2>
 
@@ -470,7 +481,7 @@ body.owner section.card:has(#profileBusinessName){display:none}
 </section>
 
 
-<section class="card">
+<section class="card" id="createContentSection">
 
   <h2>Create marketing content</h2>
 
@@ -948,6 +959,21 @@ var $ = function(x) {
   return document.getElementById(x);
 };
 
+function goToSection(id) {
+  var section = $(id);
+  if (section) section.scrollIntoView({behavior:"smooth", block:"start"});
+}
+
+$("setupProfileButton").addEventListener("click", function() {
+  goToSection("businessProfileSection");
+  setTimeout(function(){ $("profileBusinessType").focus(); }, 350);
+});
+
+$("setupCreateButton").addEventListener("click", function() {
+  goToSection("createContentSection");
+  setTimeout(function(){ $("service").focus(); }, 350);
+});
+
 
 function msg(id,t,c) {
 
@@ -1342,6 +1368,13 @@ async function loadProfile() {
         : ""
     );
 
+    if (d.profile) {
+      $("setupProfileButton").textContent = "Profile saved ✓";
+      $("setupProfileButton").disabled = true;
+      $("setupCreateButton").classList.remove("secondary");
+      $("setupCreateButton").classList.add("green");
+    }
+
 
   } catch(e) {
 
@@ -1612,6 +1645,11 @@ async function saveProfile() {
       "✅ Business profile saved. LocalBoost will now reuse these details automatically.",
       "success"
     );
+
+    $("setupProfileButton").textContent = "Profile saved ✓";
+    $("setupProfileButton").disabled = true;
+    $("setupCreateButton").classList.remove("secondary");
+    $("setupCreateButton").classList.add("green");
 
 
   } catch(e) {
