@@ -6,3 +6,15 @@
   Cross-Origin-Opener-Policy: same-origin-allow-popups
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; form-action 'self' https://checkout.stripe.com; script-src 'self' 'unsafe-inline' https://js.stripe.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; media-src 'self' blob: https:; connect-src 'self' https://api.stripe.com https://accounts.google.com https://oauth2.googleapis.com; frame-src https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com; upgrade-insecure-requests
+
+/admin.html
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/automation.html
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/dashboard.html
+  X-Robots-Tag: noindex, nofollow, noarchive
+
+/reset-password.html
+  X-Robots-Tag: noindex, nofollow, noarchive
