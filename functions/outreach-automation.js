@@ -249,6 +249,19 @@ async function updateSettings(request, env) {
 
 async function ensureSettingsRow(env) {
   await env.DB.prepare(`
+    CREATE TABLE IF NOT EXISTS outreach_automation (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      enabled INTEGER NOT NULL DEFAULT 0,
+      daily_limit INTEGER NOT NULL DEFAULT 50,
+      batch_size INTEGER NOT NULL DEFAULT 10,
+      business_type TEXT NOT NULL DEFAULT 'mixed',
+      last_run_at TEXT,
+      created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `).run();
+
+  await env.DB.prepare(`
     INSERT INTO outreach_automation (
       enabled,
       daily_limit,
