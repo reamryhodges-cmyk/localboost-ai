@@ -486,8 +486,9 @@ body.owner section.card:has(#profileBusinessName){display:none}
   <span class="tag">AI MANAGER</span>
   <h2>Let LocalBoost AI run your marketing</h2>
   <p class="small">Your AI Manager reads your saved business profile, chooses what to promote next and creates the advert for you. You review the result before anything is published.</p>
-  <button id="aiManagerButton" class="green" type="button">Let AI create my next campaign</button>
+  <button id="aiManagerButton" class="green" type="button">Let AI plan &amp; create my marketing</button>
   <div id="aiManagerMessage" class="notice" style="display:none"></div>
+  <div id="aiQueue" class="result" style="display:none"></div>
 
   <details style="margin-top:18px">
     <summary><strong>Manual controls</strong> — optional</summary>
@@ -931,6 +932,8 @@ var generatedCaption = "";
 var generatedImage = "";
 var activeCampaignUrl = "";
 var activeCampaignName = "";
+var aiCampaignQueue = [];
+var aiCampaignIndex = 0;
 
 var planLimits = {
   starter: 30,
@@ -1915,28 +1918,57 @@ async function loadConnections() {
 }
 
 
+function renderAIQueue() {
+  var box=$("aiQueue");
+  if(!aiCampaignQueue.length){box.style.display="none";return;}
+  box.replaceChildren();
+  var h=document.createElement("h3"); h.textContent="AI marketing queue"; box.appendChild(h);
+  aiCampaignQueue.forEach(function(item,index){
+    var row=document.createElement("div"); row.className="stat"; row.style.marginTop="8px";
+    var title=document.createElement("b"); title.textContent=(index+1)+". "+(item.service||"Campaign"); row.appendChild(title);
+    var detail=document.createElement("span"); detail.className="usage-note"; detail.textContent=item.angle||"AI-planned campaign"; row.appendChild(detail);
+    box.appendChild(row);
+  });
+  box.style.display="block";
+}
+
+function loadAICampaign(item) {
+  value("business",item.businessName);
+  value("businessType",item.businessType);
+  value("location",item.location);
+  value("service",item.service);
+  value("extraDetails",[item.angle,item.extraDetails].filter(Boolean).join("\n\n"));
+}
+
 async function runAIManager() {
   var b=$("aiManagerButton");
-  b.disabled=true;
-  b.textContent="AI Manager is planning...";
-  msg("aiManagerMessage","Reading your business profile and choosing the next campaign...");
+  b.disabled=true; b.textContent="AI Manager is planning...";
+  msg("aiManagerMessage","Reading your profile and building your marketing queue...");
   $("aiManagerMessage").style.display="block";
   try {
     var d=await req("/ai-manager",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});
-    var p=d.campaign||{};
-    value("business",p.businessName);
-    value("businessType",p.businessType);
-    value("location",p.location);
-    value("service",p.service);
-    value("extraDetails",[p.angle,p.extraDetails].filter(Boolean).join("\n\n"));
-    msg("aiManagerMessage","Campaign chosen. AI is now creating the advert...","success");
+    aiCampaignQueue=Array.isArray(d.campaigns)&&d.campaigns.length?d.campaigns:[d.campaign];
+    aiCampaignQueue=aiCampaignQueue.filter(Boolean);
+    aiCampaignIndex=0;
+    renderAIQueue();
+    if(!aiCampaignQueue.length) throw new Error("AI Manager did not return a campaign.");
+    loadAICampaign(aiCampaignQueue[0]);
+    msg("aiManagerMessage","3-post marketing queue prepared. AI is creating campaign 1 now...","success");
     await generate();
   } catch(e) {
     msg("aiManagerMessage",e.message,"error");
   } finally {
-    b.disabled=false;
-    b.textContent="Let AI create my next campaign";
+    b.disabled=false; b.textContent="Let AI plan & create my marketing";
   }
+}
+
+async function createNextAICampaign() {
+  if(!aiCampaignQueue.length) return runAIManager();
+  aiCampaignIndex+=1;
+  if(aiCampaignIndex>=aiCampaignQueue.length) return runAIManager();
+  loadAICampaign(aiCampaignQueue[aiCampaignIndex]);
+  msg("aiManagerMessage","Creating campaign "+(aiCampaignIndex+1)+" of "+aiCampaignQueue.length+"...","success");
+  await generate();
 }
 
 async function generate() {
@@ -2117,8 +2149,8 @@ function renderGeneratedAdvert(caption, imageUrl) {
   var another = document.createElement("button");
   another.type = "button";
   another.className = "secondary";
-  another.textContent = "Create another";
-  another.onclick = function() {
+  another.textContent = aiCampaignQueue.length ? "Create next AI campaign" : "Create another";
+  another.onclick = aiCampaignQueue.length ? createNextAICampaign : function() {
     $("service").focus();
     window.scrollTo({top: $("service").getBoundingClientRect().top + window.scrollY - 100, behavior: "smooth"});
   };
