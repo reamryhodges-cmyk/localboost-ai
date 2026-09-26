@@ -76,15 +76,15 @@ export async function onRequestPost({ request, env }) {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        from: "LocalBoost AI <hello@localboost4u.co.uk>",
+        from: "LocalBoost <hello@localboost4u.co.uk>",
         to: [email],
         reply_to: "support@localboost4u.co.uk",
-        subject: "Reset your LocalBoost AI password",
+        subject: "Reset your LocalBoost password",
         text:
-          `Reset your LocalBoost AI password using this secure link:\n\n${resetUrl}\n\n` +
+          `Reset your LocalBoost password using this secure link:\n\n${resetUrl}\n\n` +
           "This link expires in 30 minutes. If you did not request it, ignore this email.",
         html:
-          `<p>Reset your LocalBoost AI password using the secure link below.</p>` +
+          `<p>Reset your LocalBoost password using the secure link below.</p>` +
           `<p><a href="${resetUrl}">Reset my password</a></p>` +
           `<p>This link expires in 30 minutes. If you did not request it, ignore this email.</p>`
       })
