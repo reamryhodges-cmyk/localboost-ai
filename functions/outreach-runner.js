@@ -1070,37 +1070,38 @@ function parseAiJson(
   }
 }
 
-async function createUnsubscribeToken(
-  email,
-  secret
-) {
-  const encoder =
-    new TextEncoder();
+async function createUnsubscribeToken(email, secret) {
+  const normalized = normalizeEmail(email);
+  if (!normalized) throw new Error("Invalid unsubscribe email.");
 
-  const key =
-    await crypto.subtle.importKey(
-      "raw",
-      encoder.encode(secret),
-      {
-        name: "HMAC",
-        hash: "SHA-256"
-      },
-      false,
-      ["sign"]
-    );
-
-  const signature =
-    await crypto.subtle.sign(
-      "HMAC",
-      key,
-      encoder.encode(
-        email.toLowerCase()
-      )
-    );
-
-  return bytesToHex(
-    new Uint8Array(signature)
+  const encodedEmail = base64UrlEncode(
+    new TextEncoder().encode(normalized)
   );
+
+  const key = await crypto.subtle.importKey(
+    "raw",
+    new TextEncoder().encode(String(secret)),
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"]
+  );
+
+  const signature = await crypto.subtle.sign(
+    "HMAC",
+    key,
+    new TextEncoder().encode(encodedEmail)
+  );
+
+  return encodedEmail + "." + base64UrlEncode(new Uint8Array(signature));
+}
+
+function base64UrlEncode(bytes) {
+  let binary = "";
+  for (const byte of bytes) binary += String.fromCharCode(byte);
+  return btoa(binary)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
 }
 
 function safeEqual(
