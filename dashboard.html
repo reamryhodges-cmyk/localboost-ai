@@ -500,7 +500,7 @@ body.owner section.card:has(#profileBusinessName){display:none}
     <h3>What are you advertising?</h3>
     <p class="small">Choose one of your projects to fill the generator. This does not change any customer profile or publish an advert.</p>
     <div class="campaign-buttons">
-      <button type="button" class="campaign-preset" data-campaign="stan">Stan's Books</button>
+      <button type="button" class="campaign-preset" data-campaign="stan">Calm Steps Kids — Facebook Advert</button>
       <button type="button" class="campaign-preset" data-campaign="stanfb">Stan's Books — Facebook Ad</button>
       <button type="button" class="campaign-preset" data-campaign="localboost">LocalBoost</button>
       <button type="button" class="campaign-preset" data-campaign="nearvibe">NearVibe App</button>
@@ -2053,7 +2053,7 @@ function renderGeneratedAdvert(caption, imageUrl) {
       facebook.target = "_blank";
       facebook.rel = "noopener noreferrer";
       facebook.href = "https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(activeCampaignUrl);
-      facebook.textContent = "Share link on Facebook";
+      facebook.textContent = "Advertise on Facebook";
       actions.appendChild(facebook);
     }
   }
@@ -2134,7 +2134,7 @@ function selectOwnerCampaign(name, button) {
     value("extraDetails", campaign.extraDetails);
     activeCampaignUrl = campaign.url || "";
     activeCampaignName = campaign.businessName;
-    $("campaignMessage").textContent = campaign.businessName + " campaign loaded. Review it, then create the advert.";
+    $("campaignMessage").textContent = campaign.businessName + " Facebook advertising pack loaded. Tap Create My Advert to generate the caption and image, then use the Facebook button in the finished pack.";
   }
 
   var buttons = document.querySelectorAll(".campaign-preset");
