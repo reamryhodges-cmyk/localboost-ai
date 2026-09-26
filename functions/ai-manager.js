@@ -30,9 +30,11 @@ export async function onRequestPost(context) {
       return json({error:"Complete your business type, main service and location in Business Profile first."},400);
     }
     const prompt=`You are the marketing manager for a UK local business.
-Decide the single best social-media post to create next using only supplied facts.
-Do not invent prices, offers, awards, guarantees, urgency, current events or business facts.
-Return ONLY valid JSON with keys: service, angle, extraDetails.
+Create a practical 3-post marketing queue using only supplied facts.
+Vary the purpose: one service/value post, one trust/education post, and one direct-response post.
+Do not invent prices, offers, awards, guarantees, urgency, testimonials, current events or business facts.
+Return ONLY valid JSON in this exact shape:
+{"campaigns":[{"service":"","angle":"","extraDetails":""},{"service":"","angle":"","extraDetails":""},{"service":"","angle":"","extraDetails":""}]}
 Business: ${p.business_name||user.business_name}
 Type: ${p.business_type}
 Description: ${p.description||"Not provided"}
@@ -51,11 +53,16 @@ Use a real supplied service. Make the angle useful and specific without inventin
     let data;
     try { const m=raw.match(/\{[\s\S]*\}/); data=JSON.parse(m?m[0]:raw); }
     catch { return json({error:"AI Manager could not prepare a campaign. Please try again."},502); }
-    return json({success:true,campaign:{
-      businessName:p.business_name||user.business_name,businessType:p.business_type,
-      location:p.town_city||p.service_area,service:String(data.service||p.primary_service).slice(0,200),
-      angle:String(data.angle||"").slice(0,500),extraDetails:String(data.extraDetails||"").slice(0,1000)
-    }});
+    const rawCampaigns=Array.isArray(data.campaigns)?data.campaigns.slice(0,3):[data];
+    const campaigns=rawCampaigns.map(item=>({
+      businessName:p.business_name||user.business_name,
+      businessType:p.business_type,
+      location:p.town_city||p.service_area,
+      service:String(item?.service||p.primary_service).slice(0,200),
+      angle:String(item?.angle||"").slice(0,500),
+      extraDetails:String(item?.extraDetails||"").slice(0,1000)
+    }));
+    return json({success:true,campaign:campaigns[0],campaigns});
   } catch(error) {
     console.error("AI Manager error:",error);
     return json({error:"AI Manager could not prepare the next campaign."},500);
