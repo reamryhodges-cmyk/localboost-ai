@@ -134,14 +134,14 @@
 <body>
 
 <header>
-  <h1>LocalBoost AI Outreach Automation</h1>
-  <p>Automatic UK business outreach controls</p>
+  <h1>LocalBoost AI Sales Manager</h1>
+  <p>AI-assisted customer acquisition controls</p>
 </header>
 
 <main>
   <div class="card">
 
-    <h2>AI Outreach Automation</h2>
+    <h2>AI Sales Manager</h2>
 
     <div id="status" class="status">
       Loading automation settings...
@@ -149,8 +149,8 @@
 
     <div class="toggle-row">
       <div>
-        <strong>Automatic outreach</strong><br>
-        <small>Allow the scheduler to send outreach automatically.</small>
+        <strong>AI customer acquisition</strong><br>
+        <small>Let the AI find suitable UK small businesses, prepare relevant outreach and send within the safeguards below.</small>
       </div>
 
       <input
@@ -265,10 +265,10 @@
   function updateStatus() {
     if (enabledInput.checked) {
       statusBox.textContent =
-        "AUTOMATIC OUTREACH: ON";
+        "AI SALES MANAGER: ON";
     } else {
       statusBox.textContent =
-        "AUTOMATIC OUTREACH: OFF";
+        "AI SALES MANAGER: OFF";
     }
   }
 
@@ -314,8 +314,8 @@
 
       statusBox.textContent =
         enabledInput.checked
-          ? "AUTOMATIC OUTREACH: ON — settings saved."
-          : "AUTOMATIC OUTREACH: OFF — settings saved.";
+          ? "AI SALES MANAGER: ON — settings saved."
+          : "AI SALES MANAGER: OFF — settings saved.";
 
     } catch (error) {
       statusBox.textContent = error.message;
