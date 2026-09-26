@@ -485,7 +485,7 @@ body.owner section.card:has(#profileBusinessName){display:none}
 
   <span class="tag">AI MANAGER</span>
   <h2>Let LocalBoost AI run your marketing</h2>
-  <p class="small">Your AI Manager reads your saved business profile, chooses what to promote next and creates the advert for you. You review the result before anything is published.</p>
+  <p class="small">Your AI Manager reads your saved business profile, chooses what to promote and creates a ready-to-post pack. You only need to copy the caption, download the image and upload them to your social media.</p>
   <button id="aiManagerButton" class="green" type="button">Let AI plan &amp; create my marketing</button>
   <div id="aiManagerMessage" class="notice" style="display:none"></div>
   <div id="aiQueue" class="result" style="display:none"></div>
@@ -1984,6 +1984,11 @@ function renderGeneratedAdvert(caption, imageUrl) {
   instructions.textContent = "Recommended: Facebook & Instagram. Copy the caption, download the image, then upload both to your social account. Review everything before posting.";
   result.appendChild(instructions);
 
+  var instructions = document.createElement("div");
+  instructions.className = "notice success";
+  instructions.textContent = "Recommended: Facebook & Instagram. Copy the caption, download the image, then upload both to your social account. Review everything before posting.";
+  result.appendChild(instructions);
+
   var captionBox = document.createElement("div");
   captionBox.className = "caption-box";
   captionBox.textContent = generatedCaption;
@@ -2029,7 +2034,7 @@ function renderGeneratedAdvert(caption, imageUrl) {
     var shareButton = document.createElement("button");
     shareButton.type = "button";
     shareButton.className = "secondary";
-    shareButton.textContent = "Share free from phone";
+    shareButton.textContent = "Open phone share menu";
     shareButton.onclick = shareGeneratedAdvert;
     actions.appendChild(shareButton);
 
@@ -2049,32 +2054,6 @@ function renderGeneratedAdvert(caption, imageUrl) {
   result.scrollIntoView({behavior: "smooth", block: "start"});
 }
 
-
-async function saveApprovedContent(scheduledFor) {
-  var d=await req("/content-queue",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({caption:generatedCaption,image:generatedImage,scheduledFor:scheduledFor||""})
-  });
-  msg("generateMessage",scheduledFor
-    ? "✅ Approved and scheduled. It will stay queued until a connected publishing account is authorised."
-    : "✅ Approved. It is ready in the publishing queue.","success");
-  return d;
-}
-
-async function approveGeneratedContent() {
-  try { await saveApprovedContent(""); }
-  catch(e) { msg("generateMessage",e.message,"error"); }
-}
-
-async function scheduleGeneratedContent() {
-  var value=window.prompt("Schedule date/time (example: 2026-10-01 09:00)");
-  if(!value)return;
-  var date=new Date(value);
-  if(Number.isNaN(date.getTime())){msg("generateMessage","Enter a valid date and time.","error");return;}
-  try { await saveApprovedContent(date.toISOString()); }
-  catch(e) { msg("generateMessage",e.message,"error"); }
-}
 
 async function copyCaption() {
   try {
