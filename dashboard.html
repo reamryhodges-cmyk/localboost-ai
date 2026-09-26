@@ -606,24 +606,23 @@ body.owner section.card:has(#profileBusinessName){display:none}
 
 <section class="card">
 
-  <h2>🔗 Advertising Accounts</h2>
+  <h2>📲 Manual social posting</h2>
 
   <p>
-    Connect your own advertising accounts securely.
-    LocalBoost never needs your Google or Facebook password.
+    LocalBoost creates the marketing pack for you. You stay in control and upload the finished caption and image to your own social accounts.
   </p>
 
   <div class="grid">
 
     <div class="connect">
 
-      <b>Google Ads & YouTube</b>
+      <b>Facebook & Instagram</b>
 
       <div
         id="googleStatus"
         class="status"
       >
-        Checking...
+        No connection required
       </div>
 
       <a
@@ -631,7 +630,7 @@ body.owner section.card:has(#profileBusinessName){display:none}
         class="button"
         href="/google-ads-connect"
       >
-        Connect Google Ads
+        You post manually
       </a>
 
     </div>
@@ -658,148 +657,13 @@ body.owner section.card:has(#profileBusinessName){display:none}
 
 
 <section class="card">
-
-  <h2>📣 Advertise My Business</h2>
-
-  <span class="tag">SETUP</span>
-
-  <p>
-    Choose where you want LocalBoost to advertise your business.
-  </p>
-
-  <label class="check">
-    <input
-      type="checkbox"
-      id="facebookInstagram"
-    >
-    Facebook & Instagram
-  </label>
-
-  <label class="check">
-    <input
-      type="checkbox"
-      id="googleAds"
-    >
-    Google Ads
-  </label>
-
-  <label class="check">
-    <input
-      type="checkbox"
-      id="youtubeAds"
-    >
-    YouTube Ads
-  </label>
-
-  <label>Campaign objective</label>
-
-  <select id="objective">
-
-    <option value="leads">
-      Get enquiries / leads
-    </option>
-
-    <option value="calls">
-      Get phone calls
-    </option>
-
-    <option value="website">
-      Website visits
-    </option>
-
-    <option value="bookings">
-      Get bookings
-    </option>
-
-    <option value="sales">
-      Generate sales
-    </option>
-
-  </select>
-
-  <label>Service to advertise</label>
-
-  <input
-    id="adService"
-    placeholder="Full mobile car valet"
-  >
-
-  <label>Target town / area</label>
-
-  <input
-    id="targetLocation"
-    placeholder="Gloucester"
-  >
-
-  <label>Target radius</label>
-
-  <select id="radiusMiles">
-
-    <option value="5">
-      5 miles
-    </option>
-
-    <option value="10">
-      10 miles
-    </option>
-
-    <option
-      value="15"
-      selected
-    >
-      15 miles
-    </option>
-
-    <option value="20">
-      20 miles
-    </option>
-
-    <option value="25">
-      25 miles
-    </option>
-
-    <option value="50">
-      50 miles
-    </option>
-
-  </select>
-
-  <label>
-    Daily advertising budget (£)
-  </label>
-
-  <input
-    id="dailyBudget"
-    type="number"
-    min="1"
-    step="1"
-    placeholder="10"
-  >
-
-  <label>Call to action</label>
-
-  <input
-    id="adCTA"
-    value="Contact us today"
-  >
-
-  <button id="saveAdsButton">
-    Save Advertising Setup
-  </button>
-
-  <div id="adsMessage"></div>
-
-  <div class="notice">
-
-    Saving does not launch adverts or spend money.
-
-    Campaigns require approval before going live.
-
-    Google or Meta will charge advertising spend directly
-    to the customer's advertising account.
-
+  <h2>What LocalBoost does for you</h2>
+  <div class="grid">
+    <div class="stat"><b>AI plans</b><span class="usage-note">Chooses useful campaign ideas from your saved business profile.</span></div>
+    <div class="stat"><b>AI creates</b><span class="usage-note">Produces the caption and matching marketing image.</span></div>
+    <div class="stat"><b>You post</b><span class="usage-note">Download the pack and upload it to your chosen social account.</span></div>
   </div>
-
+  <div class="notice">LocalBoost does not publish to your social accounts or spend advertising money.</div>
 </section>
 
 
@@ -2112,8 +1976,13 @@ function renderGeneratedAdvert(caption, imageUrl) {
 
   var title = document.createElement("h3");
   title.className = "result-title";
-  title.textContent = "Your advert is ready";
+  title.textContent = "Ready-to-Post Pack";
   result.appendChild(title);
+
+  var instructions = document.createElement("div");
+  instructions.className = "notice success";
+  instructions.textContent = "Recommended: Facebook & Instagram. Copy the caption, download the image, then upload both to your social account. Review everything before posting.";
+  result.appendChild(instructions);
 
   var captionBox = document.createElement("div");
   captionBox.className = "caption-box";
@@ -2145,20 +2014,6 @@ function renderGeneratedAdvert(caption, imageUrl) {
     download.textContent = "Download image";
     actions.appendChild(download);
   }
-
-  var approve = document.createElement("button");
-  approve.type = "button";
-  approve.className = "green";
-  approve.textContent = "Approve for publishing";
-  approve.onclick = approveGeneratedContent;
-  actions.appendChild(approve);
-
-  var schedule = document.createElement("button");
-  schedule.type = "button";
-  schedule.className = "secondary";
-  schedule.textContent = "Schedule";
-  schedule.onclick = scheduleGeneratedContent;
-  actions.appendChild(schedule);
 
   var another = document.createElement("button");
   another.type = "button";
