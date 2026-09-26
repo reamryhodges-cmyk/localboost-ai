@@ -51,6 +51,48 @@
 const $ = (id) =>
   document.getElementById(id);
 
+const VALID_PLANS = ["starter", "business", "pro"];
+
+function rememberPlan(plan) {
+  if (VALID_PLANS.includes(plan)) {
+    sessionStorage.setItem("localboost_pending_plan", plan);
+  }
+}
+
+function takeRememberedPlan() {
+  const plan = sessionStorage.getItem("localboost_pending_plan") || "";
+  if (!VALID_PLANS.includes(plan)) return "";
+  sessionStorage.removeItem("localboost_pending_plan");
+  return plan;
+}
+
+async function startCheckout(plan, status) {
+  status.textContent = "Opening secure checkout...";
+
+  const response = await fetch("/create-checkout-session", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ plan })
+  });
+
+  const data = await readJson(response);
+
+  if (!response.ok) {
+    throw new Error(
+      data.error || data.message || "Checkout could not be started."
+    );
+  }
+
+  const checkoutUrl = data.url || data.checkoutUrl || data.checkout_url;
+
+  if (!checkoutUrl) {
+    throw new Error("Checkout link was not returned.");
+  }
+
+  window.location.href = checkoutUrl;
+}
+
 document.querySelectorAll("[data-password-target]").forEach(function (button) {
   button.addEventListener("click", function () {
     const input = $(button.getAttribute("data-password-target"));
@@ -331,6 +373,13 @@ $("loginButton").addEventListener(
       status.textContent =
         "✅ Login successful";
 
+      const pendingPlan = takeRememberedPlan();
+
+      if (pendingPlan) {
+        await startCheckout(pendingPlan, $("pricingStatus"));
+        return;
+      }
+
       window.location.replace(
         "/dashboard.html"
       );
@@ -444,10 +493,12 @@ document
               !meData.user
             ) {
 
-              status.textContent =
-                "Please log in before choosing a plan.";
+              rememberPlan(plan);
 
-              $("loginCard")
+              status.textContent =
+                "Plan saved. Log in or create an account to continue to secure checkout.";
+
+              $("account")
                 .scrollIntoView({
                   behavior: "smooth"
                 });
@@ -455,56 +506,7 @@ document
               return;
             }
 
-            status.textContent =
-              "Opening secure checkout...";
-
-            const response =
-              await fetch(
-                "/create-checkout-session",
-                {
-                  method: "POST",
-
-                  credentials:
-                    "same-origin",
-
-                  headers: {
-                    "Content-Type":
-                      "application/json"
-                  },
-
-                  body:
-                    JSON.stringify({
-                      plan
-                    })
-                }
-              );
-
-            const data =
-              await readJson(
-                response
-              );
-
-            if (!response.ok) {
-              throw new Error(
-                data.error ||
-                data.message ||
-                "Checkout could not be started."
-              );
-            }
-
-            const checkoutUrl =
-              data.url ||
-              data.checkoutUrl ||
-              data.checkout_url;
-
-            if (!checkoutUrl) {
-              throw new Error(
-                "Checkout link was not returned."
-              );
-            }
-
-            window.location.href =
-              checkoutUrl;
+            await startCheckout(plan, status);
 
           } catch (error) {
 
