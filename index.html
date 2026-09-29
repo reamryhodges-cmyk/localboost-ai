@@ -111,6 +111,15 @@ async function startCheckout(plan, status) {
 
   const data = await readJson(response);
 
+  if (response.status === 409) {
+    status.textContent = "This account already has a subscription. ";
+    const link = document.createElement("a");
+    link.href = "/dashboard.html";
+    link.textContent = "Manage billing in your dashboard.";
+    status.appendChild(link);
+    return;
+  }
+
   if (!response.ok) {
     throw new Error(
       data.error || data.message || "Checkout could not be started."
