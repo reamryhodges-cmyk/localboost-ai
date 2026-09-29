@@ -673,7 +673,7 @@ body.owner section.card:has(#profileBusinessName){display:none}
   <h2>Plans &amp; billing</h2>
   <p class="small">Choose a monthly plan. Checkout is handled securely by Stripe. Subscriptions renew until cancelled.</p>
 
-  <div class="grid">
+  <div class="grid" id="planOptions">
 
     <div class="stat">
 
@@ -723,6 +723,13 @@ body.owner section.card:has(#profileBusinessName){display:none}
   </div>
 
   <div id="planMessage"></div>
+
+  <div id="billingManagement" class="notice" style="display:none">
+    <p id="billingManagementCopy">You already have a subscription. Manage billing with Stripe, or email us for help changing or cancelling your plan.</p>
+    <button id="billingPortalButton" class="green" type="button">Manage billing in Stripe</button>
+    <div id="billingPortalMessage" role="status"></div>
+    <p class="small">If billing management is unavailable, contact <a href="mailto:support@localboost4u.co.uk">support@localboost4u.co.uk</a>.</p>
+  </div>
 
 </section>
 
@@ -2109,16 +2116,30 @@ async function shareGeneratedAdvert() {
 
 function markCurrentPlan(currentPlan) {
   var plans = document.querySelectorAll(".plan");
+  if (currentPlan === "growth") currentPlan = "business";
+  var hasPaidPlan = ["starter", "business", "pro"].includes(currentPlan);
+  $("planOptions").style.display = hasPaidPlan ? "none" : "grid";
+  $("billingManagement").style.display = hasPaidPlan ? "block" : "none";
 
   for (var i = 0; i < plans.length; i++) {
     var button = plans[i];
     var isCurrent = button.getAttribute("data-plan") === currentPlan;
     button.closest(".stat").classList.toggle("plan-current", isCurrent);
-    button.disabled = isCurrent;
+    button.disabled = isCurrent || hasPaidPlan;
     button.textContent = isCurrent
       ? "Current plan"
-      : "Choose " + button.getAttribute("data-plan").charAt(0).toUpperCase() +
-        button.getAttribute("data-plan").slice(1);
+      : hasPaidPlan
+        ? "Manage in billing"
+        : "Choose " + button.getAttribute("data-plan").charAt(0).toUpperCase() +
+          button.getAttribute("data-plan").slice(1);
+  }
+
+  if (hasPaidPlan) {
+    $("billingManagementCopy").innerHTML =
+      "Your current plan is <strong>" +
+      currentPlan.charAt(0).toUpperCase() +
+      currentPlan.slice(1) +
+      "</strong>. Manage billing with Stripe, or email us for help changing or cancelling your plan.";
   }
 }
 
@@ -2622,6 +2643,42 @@ window.addEventListener(
 
     $("sandboxButton").onclick =
       sandboxCheckout;
+
+    $("billingPortalButton").onclick =
+      async function() {
+        var button = $("billingPortalButton");
+        var status = $("billingPortalMessage");
+        button.disabled = true;
+        button.textContent = "Opening billing...";
+        status.textContent = "";
+
+        try {
+          var result = await req(
+            "/create-billing-portal-session",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json"
+              },
+              body: "{}"
+            }
+          );
+          var billingUrl = new URL(result.url);
+          if (
+            billingUrl.protocol !== "https:" ||
+            billingUrl.hostname !== "billing.stripe.com"
+          ) {
+            throw Error("Stripe returned an unexpected billing link.");
+          }
+          location.href = billingUrl.href;
+        } catch (error) {
+          status.textContent = error.message;
+          status.className = "error";
+        } finally {
+          button.disabled = false;
+          button.textContent = "Manage billing in Stripe";
+        }
+      };
 
 
     $("logoutButton").onclick =
