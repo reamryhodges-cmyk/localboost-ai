@@ -53,7 +53,9 @@ export async function onRequestPost(context) {
         sessions.expires_at,
         users.email,
         users.business_name,
-        users.plan
+        users.plan,
+        users.stripe_subscription_id,
+        users.subscription_status
       FROM sessions
       JOIN users ON users.id = sessions.user_id
       WHERE sessions.token = ?
@@ -80,6 +82,29 @@ export async function onRequestPost(context) {
       return jsonResponse(
         { error: "Your login session has expired. Please log in again." },
         401
+      );
+    }
+
+    const existingSubscriptionId =
+      String(session.stripe_subscription_id || "").trim();
+    const existingSubscriptionStatus =
+      String(session.subscription_status || "").trim().toLowerCase();
+    const endedSubscriptionStatuses = [
+      "canceled",
+      "cancelled",
+      "incomplete_expired"
+    ];
+
+    if (
+      existingSubscriptionId &&
+      !endedSubscriptionStatuses.includes(existingSubscriptionStatus)
+    ) {
+      return jsonResponse(
+        {
+          error:
+            "This account already has a subscription. Use Manage billing in your dashboard or contact support before starting another recurring plan."
+        },
+        409
       );
     }
 
