@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { onRequestPost as createCheckout } from "../functions/create-checkout-session.js";
 import { onRequestPost as createBillingPortal } from "../functions/create-billing-portal-session.js";
+import { onRequestGet as getSession } from "../functions/me.js";
 
 const future = new Date(Date.now() + 60_000).toISOString();
 
@@ -158,5 +159,32 @@ test("billing portal rejects a URL outside Stripe's billing host", async () => {
     assert.match((await response.json()).error, /invalid billing link/i);
   } finally {
     globalThis.fetch = oldFetch;
+  }
+});
+
+
+test("session response exposes active subscription state for billing management", async () => {
+  for (const [subscriptionStatus, expected] of [["past_due", true], ["cancelled", false]]) {
+    const response = await getSession({
+      request: new Request("https://localboost4u.co.uk/me", {
+        headers: { Cookie: "localboost_session=valid" }
+      }),
+      env: {
+        DB: makeDb({
+          session_id: 1,
+          expires_at: future,
+          id: 46,
+          email: "customer@example.co.uk",
+          business_name: "Example Business",
+          plan: "unpaid",
+          generations_used: 0,
+          stripe_subscription_id: "sub_existing",
+          subscription_status: subscriptionStatus
+        })
+      }
+    });
+
+    assert.equal(response.status, 200);
+    assert.equal((await response.json()).user.hasSubscription, expected);
   }
 });
