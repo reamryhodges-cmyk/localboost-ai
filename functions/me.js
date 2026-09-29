@@ -52,7 +52,9 @@ export async function onRequestGet(context) {
           users.email,
           users.business_name,
           users.plan,
-          users.generations_used
+          users.generations_used,
+          users.stripe_subscription_id,
+          users.subscription_status
         FROM sessions
         JOIN users
           ON users.id = sessions.user_id
@@ -103,7 +105,12 @@ export async function onRequestGet(context) {
         email: session.email,
         businessName: session.business_name,
         plan: session.plan,
-        generationsUsed: session.generations_used
+        generationsUsed: session.generations_used,
+        hasSubscription:
+          Boolean(session.stripe_subscription_id) &&
+          !["canceled", "cancelled", "incomplete_expired"].includes(
+            String(session.subscription_status || "").toLowerCase()
+          )
       }
     });
 
