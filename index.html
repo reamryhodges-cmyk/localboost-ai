@@ -292,15 +292,76 @@ $("signupButton").addEventListener(
       }
 
       status.textContent =
-        "✅ Account created. Log in below to continue.";
+        "Account created. Signing you in...";
 
       $("loginEmail").value =
         email;
 
-      $("signupPassword").value =
-        "";
+      let signedIn = false;
 
-      $("loginPassword").focus();
+      try {
+        const loginResponse = await fetch(
+          "/login",
+          {
+            method: "POST",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+          }
+        );
+        const loginData = await readJson(loginResponse);
+
+        if (!loginResponse.ok) {
+          throw new Error(loginData.error || "Automatic sign-in failed.");
+        }
+
+        const sessionResponse = await fetch(
+          "/me",
+          {
+            method: "GET",
+            credentials: "same-origin",
+            cache: "no-store"
+          }
+        );
+        const sessionData = await readJson(sessionResponse);
+
+        if (!sessionResponse.ok || sessionData.loggedIn !== true || !sessionData.user) {
+          throw new Error("Your new session could not be confirmed.");
+        }
+
+        signedIn = true;
+      } catch (signInError) {
+        status.textContent =
+          "Account created. Automatic sign-in did not finish, so log in below to continue.";
+        $("loginPassword").value = password;
+        $("loginPassword").focus();
+      }
+
+      if (signedIn) {
+        $("signupPassword").value = "";
+        $("loginPassword").value = "";
+
+        const pendingPlan = takeRememberedPlan();
+
+        if (pendingPlan) {
+          status.textContent =
+            "Account ready. Opening secure checkout...";
+
+          try {
+            await startCheckout(pendingPlan, $("pricingStatus"));
+          } catch (checkoutError) {
+            status.textContent =
+              "Account created and signed in. Choose your plan below to retry checkout.";
+            $("pricingStatus").textContent =
+              "Checkout could not be opened: " + checkoutError.message;
+            $("pricing").scrollIntoView({ behavior: "smooth" });
+          }
+
+          return;
+        }
+
+        window.location.replace("/dashboard.html");
+      }
 
     } catch (error) {
 
