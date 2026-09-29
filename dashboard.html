@@ -993,7 +993,7 @@ async function load() {
         " of " + currentLimit + " remaining"
       : "Upgrade to create content";
 
-    markCurrentPlan(currentPlan);
+    markCurrentPlan(currentPlan, user.hasSubscription === true);
 
 
     $("accountEmail").textContent =
@@ -2114,32 +2114,34 @@ async function shareGeneratedAdvert() {
 }
 
 
-function markCurrentPlan(currentPlan) {
+function markCurrentPlan(currentPlan, hasSubscription) {
   var plans = document.querySelectorAll(".plan");
   if (currentPlan === "growth") currentPlan = "business";
   var hasPaidPlan = ["starter", "business", "pro"].includes(currentPlan);
-  $("planOptions").style.display = hasPaidPlan ? "none" : "grid";
-  $("billingManagement").style.display = hasPaidPlan ? "block" : "none";
+  var needsBillingManagement = hasPaidPlan || hasSubscription === true;
+  $("planOptions").style.display = needsBillingManagement ? "none" : "grid";
+  $("billingManagement").style.display = needsBillingManagement ? "block" : "none";
 
   for (var i = 0; i < plans.length; i++) {
     var button = plans[i];
     var isCurrent = button.getAttribute("data-plan") === currentPlan;
     button.closest(".stat").classList.toggle("plan-current", isCurrent);
-    button.disabled = isCurrent || hasPaidPlan;
+    button.disabled = isCurrent || needsBillingManagement;
     button.textContent = isCurrent
       ? "Current plan"
-      : hasPaidPlan
+      : needsBillingManagement
         ? "Manage in billing"
         : "Choose " + button.getAttribute("data-plan").charAt(0).toUpperCase() +
           button.getAttribute("data-plan").slice(1);
   }
 
-  if (hasPaidPlan) {
-    $("billingManagementCopy").innerHTML =
-      "Your current plan is <strong>" +
-      currentPlan.charAt(0).toUpperCase() +
-      currentPlan.slice(1) +
-      "</strong>. Manage billing with Stripe, or email us for help changing or cancelling your plan.";
+  if (needsBillingManagement) {
+    $("billingManagementCopy").textContent = hasPaidPlan
+      ? "Your current plan is " +
+        currentPlan.charAt(0).toUpperCase() +
+        currentPlan.slice(1) +
+        ". Manage billing with Stripe, or email us for help changing or cancelling your plan."
+      : "A subscription is already linked to this account. Manage its payment details or cancellation with Stripe, or email us for help.";
   }
 }
 
