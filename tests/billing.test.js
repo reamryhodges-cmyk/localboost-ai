@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { onRequestPost as createCheckout } from "../functions/create-checkout-session.js";
-import { onRequestPost as createBillingPortal } from "../functions/create-billing-portal.js";
+import { onRequestPost as createBillingPortal } from "../functions/create-billing-portal-session.js";
 
 const future = new Date(Date.now() + 60_000).toISOString();
 
