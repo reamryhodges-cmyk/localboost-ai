@@ -5,7 +5,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const publicPages = ["index.html", "demo.html", "privacy.html", "terms.html", "dashboard.html"];
+const publicPages = ["index.html", "demo.html", "privacy.html", "terms.html", "dashboard.html", "reset-password.html"];
 
 function localPath(reference) {
   const clean = reference.split(/[?#]/, 1)[0];
