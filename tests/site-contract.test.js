@@ -68,3 +68,24 @@ test("dashboard billing and logout controls match their Pages Functions", () => 
     assert.ok(fs.existsSync(path.join(root, "functions", endpoint.slice(1) + ".js")), endpoint + " function exists");
   }
 });
+
+test("robots and sitemap expose public pages and keep account screens out of search", () => {
+  const robots = fs.readFileSync(path.join(root, "robots.txt"), "utf8");
+  assert.match(robots, /^User-agent: \*$/m);
+  assert.match(robots, /^Allow: \/$/m);
+  assert.match(robots, /^Sitemap: https:\/\/localboost4u\.co\.uk\/sitemap\.xml$/m);
+  for (const privatePage of ["admin.html", "automation.html", "dashboard.html", "reset-password.html"]) {
+    assert.match(robots, new RegExp("^Disallow: /" + privatePage.replace(".", "\\.") + "$", "m"));
+  }
+
+  const sitemap = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
+  const urls = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
+  assert.ok(urls.includes("https://localboost4u.co.uk/"), "homepage is listed");
+  assert.ok(urls.includes("https://localboost4u.co.uk/demo.html"), "public examples page is listed");
+  for (const url of urls) {
+    const parsed = new URL(url);
+    assert.equal(parsed.origin, "https://localboost4u.co.uk", "sitemap uses the canonical host");
+    const page = parsed.pathname === "/" ? "index.html" : parsed.pathname.slice(1);
+    assert.ok(fs.existsSync(path.join(root, page)), "sitemap page exists: " + url);
+  }
+});
