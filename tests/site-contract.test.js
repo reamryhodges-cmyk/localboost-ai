@@ -86,6 +86,9 @@ test("robots and sitemap expose public pages and keep account screens out of sea
     const parsed = new URL(url);
     assert.equal(parsed.origin, "https://localboost4u.co.uk", "sitemap uses the canonical host");
     const page = parsed.pathname === "/" ? "index.html" : parsed.pathname.slice(1);
-    assert.ok(fs.existsSync(path.join(root, page)), "sitemap page exists: " + url);
+    const pagePath = path.join(root, page);
+    assert.ok(fs.existsSync(pagePath), "sitemap page exists: " + url);
+    const pageHtml = fs.readFileSync(pagePath, "utf8");
+    assert.ok(pageHtml.includes('<link rel="canonical" href="' + url + '">'), "canonical matches sitemap URL: " + url);
   }
 });
